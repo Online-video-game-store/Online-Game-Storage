@@ -13,8 +13,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import reactor.core.publisher.Mono;
@@ -38,6 +40,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+//    @Bean
+//    public ReactiveJwtAuthenticationConverterAdapter jwtAuthenticationConverter() {
+//        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+//
+//        // Указываем, что роли хранятся в "realm_access.roles"
+//        grantedAuthoritiesConverter.setAuthoritiesClaimName("realm_access.roles");
+//
+//        // Добавляем "ROLE_" перед каждой ролью, чтобы работало hasRole()
+//        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+//
+//        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+//        jwtConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+//
+//        return new ReactiveJwtAuthenticationConverterAdapter(jwtConverter);
+//    }
 
 //    /**
 //     * Настройка потока безопасности (цепочки фильтров). Обрабатывает все входящие запросы.
