@@ -1,0 +1,30 @@
+# docker run -d --name keycloak -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:16.1.1 start-dev
+
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: "WEB-CLIENT"
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  security:
+    oauth2:
+      client:
+        provider:
+          spring:
+            issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:8090} # сервер аутентификации
+        registration:
+          apm-client:
+            provider: spring
+            client-id: client
+            client-secret: "secret"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_basic
+            redirect-uri: ${OAUTH2_REDIRECT_URI:{baseUrl}/login/oauth2/code/{registrationId}}
+            scope:
+              - openid

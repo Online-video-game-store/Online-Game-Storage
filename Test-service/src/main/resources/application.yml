@@ -1,0 +1,16 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: "TEST-CLIENT"
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/my-online-store
