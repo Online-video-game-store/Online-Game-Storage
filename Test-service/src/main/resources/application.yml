@@ -13,4 +13,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/my-online-store
+          issuer-uri: http://localhost:8080/realms/online-store-realm

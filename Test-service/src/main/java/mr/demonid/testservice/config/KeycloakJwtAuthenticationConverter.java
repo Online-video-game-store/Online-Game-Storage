@@ -26,6 +26,11 @@ public class KeycloakJwtAuthenticationConverter
             .collect(Collectors.toList());
 
         // 3. Создание объекта аутентификации
+
+        System.out.println("-- JWT: " + jwt);
+        System.out.println("-- Roles: " + roles);
+        System.out.println("-- Authorities: " + authorities);
+
         return new JwtAuthenticationToken(jwt, authorities);
     }
 }
