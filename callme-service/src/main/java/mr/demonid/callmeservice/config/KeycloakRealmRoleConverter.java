@@ -8,15 +8,17 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Log4j2
 public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
+        log.info("Keycloak realm role converter. Jwt.claims = {}", jwt.getClaims());
+        log.info("token = {}", jwt.getTokenValue());
         return Optional.ofNullable(jwt.getClaimAsMap("realm_access"))
                 .map(realmAccess -> realmAccess.get("roles"))
                 .filter(List.class::isInstance)

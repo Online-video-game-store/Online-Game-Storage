@@ -9,8 +9,9 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eureka-server" />
         <module name="gateway-server" />
+        <module name="callme-service" />
       </profile>
-      <profile name="Annotation profile for callme-service" enabled="true">
+      <profile name="Annotation profile for Test-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -18,7 +19,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="test-service" />
-        <module name="callme-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
