@@ -13,16 +13,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/test-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:8080/realms/test-realm
+            issuer-uri: http://localhost:8080/realms/online-store-realm
         registration:
-          test-client-id:
+          online-store-client-id:
             provider: keycloak
-            client-id: test-client-id
-            client-secret: 91js8TIy4Y3XMwARYlygE3EN4jPkN1O1
+            client-id: online-store-client-id
+            client-secret: 2swx2MAuKGTixklOhUAvg2Pmrjs5znmI
             authorization-grant-type: authorization_code
             scope: openid
 
