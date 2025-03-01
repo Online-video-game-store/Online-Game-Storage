@@ -1,10 +1,10 @@
-package mr.demonid.callmeservice;
+package mr.demonid.web.client;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CallmeServiceApplicationTests {
+class WebClientApplicationTests {
 
     @Test
     void contextLoads() {

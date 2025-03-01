@@ -7,23 +7,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="eureka-server" />
         <module name="gateway-server" />
         <module name="callme-service" />
-      </profile>
-      <profile name="Annotation profile for Test-service" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
-        </processorPath>
-        <module name="test-service" />
+        <module name="eureka-server" />
+        <module name="web-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="auth-server" target="17" />
-      <module name="web-client" target="17" />
+      <module name="test-service" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
