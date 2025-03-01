@@ -1,5 +1,6 @@
 package mr.demonid.web.client.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.ProductInfo;
@@ -20,12 +21,21 @@ import java.util.Map;
 @RequestMapping("/pk8000")
 public class WebController {
 
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public String login(@RequestHeader Map<String, String> headers) {
-        log.info("-- login");
+        log.info("-->> login");
         headers.forEach((k, v) -> log.info("  -- {}: {}", k, v));
+
         return "redirect:/pk8000/catalog/index";
     }
+
+    @GetMapping("/auth/info-out")
+    public String logout() {
+        log.info("-->> logout");
+
+        return "redirect:/pk8000/catalog/index";
+    }
+
 
     @GetMapping("/catalog/index")
     public String index(Model model) {

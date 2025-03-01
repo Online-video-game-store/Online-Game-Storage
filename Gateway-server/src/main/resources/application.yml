@@ -30,6 +30,7 @@ spring:
     gateway:
       default-filters:
         - TokenRelay=
+        - PreserveHostHeader
       discovery:
         locator:
           enabled: true
@@ -38,7 +39,7 @@ spring:
         - id: web-client
           uri: lb://WEB-CLIENT
           predicates:
-            - Path=/pk8000/catalog/**, /pk8000/catalog/static/**
+            - Path=/pk8000/catalog/**, /catalog/static/**, /pk8000/auth/**
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
     loadbalancer:
@@ -51,8 +52,8 @@ spring:
 # Настройки приложения.
 # Адреса переадресации после аутентификации и выхода из профиля
 application:
-  login-uri: http://localhost:9000/pk8000/catalog/index
-  logout-uri: http://localhost:9000/pk8000/catalog/index
+  login-uri: http://localhost:9000/pk8000/auth/login
+  logout-uri: http://localhost:9000/pk8000/auth/info-out
 
 
 eureka:
@@ -66,6 +67,10 @@ eureka:
     prefer-ip-address: false                  # Использовать IP-адрес вместо имени хоста
     lease-renewal-interval-in-seconds: 10     # Интервал отправки heartbeats
     lease-expiration-duration-in-seconds: 30  # Таймаут для истечения lease (сердцебиений)
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
 
 #logging.level:
 #  org.springframework.cloud.gateway: DEBUG

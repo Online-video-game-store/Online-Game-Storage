@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Log4j2
 @AllArgsConstructor
-@RequestMapping("/pk8000")
+//@RequestMapping("/pk8000/auth")
 public class AuthController {
 
 
@@ -20,10 +20,10 @@ public class AuthController {
 //        return "redirect:/pk8000/catalog/index";
 //    }
 
-    @GetMapping("logout")
-    public String logout(Model model) {
-        log.info("-- logout");
-        return "redirect:/pk8000/catalog/index";
-    }
+//    @GetMapping("logout")
+//    public String logout(Model model) {
+//        log.info("-- logout");
+//        return "redirect:/pk8000/catalog/index";
+//    }
 
 }

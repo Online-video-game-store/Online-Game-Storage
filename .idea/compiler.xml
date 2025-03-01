@@ -8,13 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gateway-server" />
-        <module name="callme-service" />
         <module name="eureka-server" />
         <module name="web-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="auth-server" target="17" />
+      <module name="callme-service" target="17" />
       <module name="test-service" target="17" />
     </bytecodeTargetLevel>
   </component>
