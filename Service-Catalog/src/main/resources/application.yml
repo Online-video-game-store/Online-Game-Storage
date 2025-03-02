@@ -1,0 +1,60 @@
+server:
+  port: 9100
+
+
+spring:
+  application:
+    name: "CATALOG-SERVICE"
+
+  output.ansi.enabled: ALWAYS
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
+
+  # H2 database
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:magazin         # будем использовать БД в памяти.
+    username: sa
+    password:
+  # консоль для отладки
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true      # для удаленного доступа: localhost:8090/CATALOG-SERVICE/h2-console
+
+  # автозапуск schema.sql
+  sql:
+    init:
+      mode: always
+#      platform: mysql
+  # Spring Jpa Hibernate
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        show_sql: false
+        format_sql: false
+
+    generate-ddl: false
+#    defer-datasource-initialization: true
+#    open-in-view: false
+
+# настройки Эврики
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:7777/eureka}
+    register-with-eureka: true                # Регистрация клиента в Eureka Server
+    fetch-registry: true                      # Извлечение реестра из Eureka Server
+    retry-on-connect-errors: true             # Повторные подключения к Eureka при сбоях
+  instance:
+    prefer-ip-address: false                  # Использовать IP-адрес вместо имени хоста
+    lease-renewal-interval-in-seconds: 10     # Интервал отправки heartbeats
+    lease-expiration-duration-in-seconds: 30  # Таймаут для истечения lease (сердцебиений)

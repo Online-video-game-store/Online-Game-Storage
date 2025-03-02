@@ -23,6 +23,7 @@ public class SecurityConfig {
     @Autowired
     private AppConfig appConfig;
 
+// TODO: после тестирования убрать путь "/pk8000/api/catalog/**" !!!
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveClientRegistrationRepository clientRegistrationRepository) {
@@ -30,7 +31,7 @@ public class SecurityConfig {
         logoutHandler.setPostLogoutRedirectUri(appConfig.getLogoutUri());
 
         http.authorizeExchange(auth -> auth
-                .pathMatchers("/pk8000/catalog/**", "/pk8000/auth/**", "/login", "/logout").permitAll()
+                .pathMatchers("/pk8000/catalog/**", "/pk8000/auth/**", "/login", "/logout", "/pk8000/api/catalog/**").permitAll()
                 .anyExchange().authenticated())
                 // Настраиваем аутентификацию
                 .oauth2Login(oauth2Login -> oauth2Login

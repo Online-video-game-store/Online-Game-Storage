@@ -32,27 +32,19 @@ public class AnonymousCookieFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (IdnUtil.isAuthenticated()) {
-            log.info("-- Anonymous cookie filter: Jwt-token present!");
-            Cookie cookie = IdnUtil.getCookie(COOKIE_NAME, request.getCookies());
-            if (cookie != null) {
-                log.debug("-- Found cookie with name {}", cookie.getName());
-            }
-        } else {
-            // Проверяем наличие cookie и если его нет, то создаем.
-            if (IdnUtil.getCookie(COOKIE_NAME, request.getCookies()) == null) {
-                String anonId = UUID.randomUUID().toString();
-                Cookie cookie = new Cookie(COOKIE_NAME, anonId);
-                cookie.setPath("/");
-                cookie.setHttpOnly(true);   // защита от JavaScript атак
-                cookie.setSecure(request.isSecure());
-                cookie.setMaxAge(COOKIE_MAX_AGE);
-                response.addCookie(cookie);
+        // Проверяем наличие cookie и если его нет, то создаем.
+        if (IdnUtil.getCookie(COOKIE_NAME, request.getCookies()) == null) {
+            String anonId = UUID.randomUUID().toString();
+            Cookie cookie = new Cookie(COOKIE_NAME, anonId);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);   // защита от JavaScript атак
+            cookie.setSecure(request.isSecure());
+            cookie.setMaxAge(COOKIE_MAX_AGE);
+            response.addCookie(cookie);
 
-                log.info("-- Cookie created: {}", cookie);
-            } else {
-                log.info("-- Cookie already exists: {}", IdnUtil.getCookie(COOKIE_NAME, request.getCookies()));
-            }
+            log.info("-- Cookie created: {}", cookie);
+        } else {
+            log.info("-- Cookie already exists: {}", IdnUtil.getCookie(COOKIE_NAME, request.getCookies()));
         }
 
         filterChain.doFilter(request, response);

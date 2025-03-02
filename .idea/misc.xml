@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
@@ -9,6 +10,7 @@
         <option value="$PROJECT_DIR$/Web-client/pom.xml" />
         <option value="$PROJECT_DIR$/Test-service/pom.xml" />
         <option value="$PROJECT_DIR$/callme-service/pom.xml" />
+        <option value="$PROJECT_DIR$/Service-Catalog/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
