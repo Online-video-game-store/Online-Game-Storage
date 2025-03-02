@@ -7,6 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.utils.IdnUtil;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,19 +32,27 @@ public class AnonymousCookieFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // Проверяем наличие cookie и если его нет, то создаем.
-        if (IdnUtil.getCookie(COOKIE_NAME, request.getCookies()) == null) {
-            String anonId = UUID.randomUUID().toString();
-            Cookie cookie = new Cookie(COOKIE_NAME, anonId);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);   // защита от JavaScript атак
-            cookie.setSecure(request.isSecure());
-            cookie.setMaxAge(COOKIE_MAX_AGE);
-            response.addCookie(cookie);
-
-            log.info("-- Cookie created: {}", cookie);
+        if (IdnUtil.isAuthenticated()) {
+            log.info("-- Anonymous cookie filter: Jwt-token present!");
+            Cookie cookie = IdnUtil.getCookie(COOKIE_NAME, request.getCookies());
+            if (cookie != null) {
+                log.debug("-- Found cookie with name {}", cookie.getName());
+            }
         } else {
-            log.info("-- Cookie already exists: {}", IdnUtil.getCookie(COOKIE_NAME, request.getCookies()));
+            // Проверяем наличие cookie и если его нет, то создаем.
+            if (IdnUtil.getCookie(COOKIE_NAME, request.getCookies()) == null) {
+                String anonId = UUID.randomUUID().toString();
+                Cookie cookie = new Cookie(COOKIE_NAME, anonId);
+                cookie.setPath("/");
+                cookie.setHttpOnly(true);   // защита от JavaScript атак
+                cookie.setSecure(request.isSecure());
+                cookie.setMaxAge(COOKIE_MAX_AGE);
+                response.addCookie(cookie);
+
+                log.info("-- Cookie created: {}", cookie);
+            } else {
+                log.info("-- Cookie already exists: {}", IdnUtil.getCookie(COOKIE_NAME, request.getCookies()));
+            }
         }
 
         filterChain.doFilter(request, response);

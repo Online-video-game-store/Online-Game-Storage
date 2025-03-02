@@ -22,7 +22,7 @@ spring:
           online-store-client-id:
             provider: keycloak
             client-id: online-store-client-id
-            client-secret: SPAk8C8b4sD0TtoAYGRy28rouzh9BFHH
+            client-secret: oB4Wpq1rP190Y0Bs9nGQGoloTkv0GXlm
             authorization-grant-type: authorization_code
             scope: openid
 
@@ -53,7 +53,7 @@ spring:
 # Адреса переадресации после аутентификации и выхода из профиля
 application:
   login-uri: http://localhost:9000/pk8000/auth/login
-  logout-uri: http://localhost:9000/pk8000/auth/info-out
+  logout-uri: http://localhost:9000/pk8000/auth/logout
 
 
 eureka:
@@ -68,9 +68,9 @@ eureka:
     lease-renewal-interval-in-seconds: 10     # Интервал отправки heartbeats
     lease-expiration-duration-in-seconds: 30  # Таймаут для истечения lease (сердцебиений)
 
-logging:
-  level:
-    org.springframework.cloud.gateway: TRACE
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: TRACE
 
 #logging.level:
 #  org.springframework.cloud.gateway: DEBUG

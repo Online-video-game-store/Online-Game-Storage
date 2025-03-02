@@ -18,26 +18,26 @@ import java.util.Map;
 @Controller
 @AllArgsConstructor
 @Log4j2
-@RequestMapping("/pk8000")
+@RequestMapping("/pk8000/catalog")
 public class WebController {
 
-    @GetMapping("/auth/login")
-    public String login(@RequestHeader Map<String, String> headers) {
-        log.info("-->> login");
-        headers.forEach((k, v) -> log.info("  -- {}: {}", k, v));
+//    @GetMapping("/auth/login")
+//    public String login(@RequestHeader Map<String, String> headers) {
+//        log.info("-->> login");
+//        headers.forEach((k, v) -> log.info("  -- {}: {}", k, v));
+//
+//        return "redirect:/pk8000/catalog/index";
+//    }
+//
+//    @GetMapping("/auth/info-out")
+//    public String logout() {
+//        log.info("-->> logout");
+//
+//        return "redirect:/pk8000/catalog/index";
+//    }
 
-        return "redirect:/pk8000/catalog/index";
-    }
 
-    @GetMapping("/auth/info-out")
-    public String logout() {
-        log.info("-->> logout");
-
-        return "redirect:/pk8000/catalog/index";
-    }
-
-
-    @GetMapping("/catalog/index")
+    @GetMapping("/index")
     public String index(Model model) {
 
         log.info("-- index page");
