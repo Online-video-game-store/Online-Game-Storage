@@ -3,6 +3,81 @@
 <head>
     <title>Products</title>
     <style>
+        /* Стили для контейнера */
+        .container {
+            display: flex;
+        }
+
+        /* Стили для боковой панели */
+        .category-container button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .category-container button:hover {
+            background: linear-gradient(90deg, #8f94fb, #4e54c8);
+            transform: scale(1.05);
+        }
+
+        .sidebar {
+            width: 150px;
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0; /* Запрещаем уменьшение ширины */
+        }
+
+        .categories {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-button {
+            background: linear-gradient(90deg, #34495e, #2c3e50);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            font-size: 1.1em;
+        }
+
+        .category-button:hover {
+            background: linear-gradient(90deg, #1abc9c, #16a085);
+            transform: scale(1.05);
+        }
+
+        .active-category {
+            background: linear-gradient(90deg, #e67e22, #d35400);
+            font-weight: bold;
+        }
+
+
+        /* Контент товаров */
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+
         /* Стили для заголовка */
         .header {
             display: flex;
@@ -13,6 +88,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень для разделения хедера */
             border-bottom: none; /* Убрал скучную линию снизу */
             color: #fff; /* Белый текст */
+            margin-bottom: 20px;
         }
 
         /* Заголовок страницы */
@@ -56,17 +132,29 @@
             flex-wrap: wrap;
             gap: 10px;
             justify-content: flex-start;
+            margin-bottom: 20px;
         }
 
         .product-item {
             width: calc(25% - 10px);
             box-sizing: border-box;
-            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            /*border: 1px solid #ddd;*/
             padding: 10px;
             text-align: center;
             background-color: #f9f9f9;
             margin-bottom: 10px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
+        .product-item:hover {
+            transform: scale(1.05); /* Немного увеличиваем карточку */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Добавляем тень */
+        }
+
         .product-grid {
             display: flex;
             flex-wrap: wrap;
@@ -199,6 +287,65 @@
             font-weight: bold;
             margin-left: 5px;
         }
+
+
+
+        /*Пагинация*/
+        .pagination-container {
+            display: flex;
+            align-items: center; /* Вертикальное выравнивание по центру */
+            justify-content: space-between; /* Равное расстояние между кнопкой и пагинатором */
+            padding-top: 15px;
+        }
+
+        .back-button-container {
+            flex-shrink: 0; /* Не сжимается */
+        }
+
+        .pagination {
+            flex-grow: 1; /* Занимает оставшееся пространство */
+            text-align: center; /* Центрирует пагинатор */
+        }
+
+        .pagination ul {
+            display: inline-flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination ul li {
+            margin: 0 5px;
+        }
+
+        .pagination-button {
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #333;
+            background-color: white;
+            cursor: pointer;
+            font-size: inherit;
+        }
+
+        .pagination-button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination-button:hover {
+            background-color: #818aac;
+            /*#f0f0f0;*/
+        }
+
+        .pagination-button:disabled {
+            color: gray;
+            background-color: #e9ecef;
+            cursor: default;
+        }
+
     </style>
 </head>
 <body>
@@ -213,16 +360,6 @@
         <div th:if="${!isAuthenticated}">
             <a th:href="@{/oauth2/authorization/online-store-client-id}" class="login-button">Вход</a>
         </div>
-        <form th:action="@{/set-category}" method="get" style="margin-left: 20px;">
-            <label for="category">Выберите категорию:</label>
-            <select id="category" name="category" onchange="this.form.submit()">
-                <option th:each="category : ${categories}"
-                        th:value="${category.getName()}"
-                        th:text="${category.getName()}"
-                        th:selected="${category == currentCategory}">
-                </option>
-            </select>
-        </form>
         <!-- Корзина -->
         <div class="cart">
             <a th:href="@{/cart}" class="cart-link">
@@ -233,30 +370,129 @@
     </div>
 </div>
 
-<div class="product-grid">
-    <!-- Перебор товаров из модели -->
-    <div th:each="product : ${products}" class="product-item" th:data-product-id="${product.id}" th:data-product-price="${product.price}">
-        <div class="product-title" th:text="${product.name}">Product Name</div>
-        <img th:src="'data:image/jpeg;base64,' + ${product.imageBase64}" alt="Product Image" class="product-image"/>
-        <div class="product-description" th:text="${product.description}">Product description...</div>
-        <div class="product-price" th:text="'$' + ${product.price}">Price</div>
-        <div class="product-stock" th:text="'In stock: ' + ${product.stock}">Stock</div>
-        <!-- Форма для отправки данных о заказе -->
-        <form th:action="@{/add-to-cart}" method="post">
-            <input type="hidden" name="productId" th:value="${product.id}" />
-            <input type="hidden" name="name" th:value="${product.name}" />
-            <input type="hidden" name="price" th:value="${product.price}" />
-            <div class="quantity-controls">
-                <button type="button" onclick="decreaseQuantity(this)">-</button>
-                <input type="number" name="quantity" value="1" min="1" max="5" class="quantity-input" style="width: 50px; text-align: center;" />
-                <button type="button" onclick="increaseQuantity(this)">+</button>
+<div class="container">
+    <!-- Боковая панель с категориями -->
+    <div class="sidebar">
+        <div class="categories">
+            <div th:each="category : ${categories}"
+                 class="category-button"
+                 th:classappend="${category.name == currentCategory} ? 'active-category' : ''"
+                 th:data-category-id="${category.id}"
+                 onclick="redirectToCategory(this)">
+                <span th:text="${category.name}"></span>
             </div>
-            <button type="submit" class="buy-button">Купить</button>
-        </form>
+        </div>
+    </div>
+<!--    <aside class="sidebar">-->
+<!--        <h3>Категории</h3>-->
+<!--        <ul class="category-list">-->
+<!--            <li th:each="category : ${categories}" class="category-item">-->
+<!--                <a th:href="@{/products(category=${category.name})}"-->
+<!--                   th:text="${category.name}"-->
+<!--                   th:class="${category.name == currentCategory} ? 'active-category' : ''">-->
+<!--                </a>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </aside>-->
+    <!--                <a th:href="@{/category/{id}(id=${category.id})}" th:text="${category.name}" class="category-link"></a>-->
+
+    <!-- Контент товаров -->
+    <main class="content">
+        <div class="product-grid">
+            <div th:each="product : ${products}" class="product-item">
+                <div class="product-title" th:text="${product.name}">Product Name</div>
+                <img th:src="'data:image/jpeg;base64,' + ${product.imageBase64}" class="product-image" />
+                <div class="product-description" th:text="${product.description}">Product description...</div>
+                <div class="product-price" th:text="'$' + ${product.price}">Price</div>
+                <div class="product-stock" th:text="'In stock: ' + ${product.stock}">Stock</div>
+                <form th:action="@{/add-to-cart}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}" />
+                    <div class="quantity-controls">
+                        <button type="button" onclick="decreaseQuantity(this)">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="5" class="quantity-input" style="width: 50px; text-align: center;" />
+                        <button type="button" onclick="increaseQuantity(this)">+</button>
+                    </div>
+                    <button type="submit" class="buy-button">Купить</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+<div class="pagination-container">
+    <!-- Кнопка "Back" -->
+<!--    <div class="back-button-container">-->
+<!--        <a href="/pk8000/catalog/index" class="button">Назад</a>-->
+<!--    </div>-->
+
+    <!-- Пагинатор. Для отправки данных тек. страницы и фильтра, применяем скрытые поля форм -->
+    <div class="pagination" th:with="startPage=${currentPage > 5 ? currentPage - 5 : 0},
+                                     endPage=${totalPages > currentPage + 5 ? currentPage + 5 : totalPages - 1}">
+        <ul>
+            <!-- Кнопка "Previous" -->
+            <li th:if="${currentPage > 0}">
+                <form th:action="@{/pk8000/catalog/index}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${currentPage - 1}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit" class="pagination-button">Previous</button>
+                </form>
+            </li>
+
+            <!-- Номера страниц -->
+            <li th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                <form th:action="@{/pk8000/catalog/index}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${i}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit"
+                            class="pagination-button"
+                            th:classappend="${currentPage == i} ? 'active' : ''"
+                            th:text="${i + 1}">
+                    </button>
+                </form>
+            </li>
+
+            <!-- Кнопка "Next" -->
+            <li th:if="${currentPage < totalPages - 1}">
+                <form th:action="@{/pk8000/catalog/index}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${currentPage + 1}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit" class="pagination-button">Next</button>
+                </form>
+            </li>
+        </ul>
     </div>
 </div>
 
+
+
 <script>
+    function redirectToCategory(element) {
+        const categoryId = element.getAttribute("data-category-id");
+        const elemsOfPage = 8;
+        const pageNo = 0;
+
+        window.location.href = `/pk8000/catalog/index?categoryId=${categoryId}&elemsOfPage=${elemsOfPage}&pageNo=${pageNo}`;
+        //
+        // const categoryId = element.getAttribute("data-category-id");
+        // const elemsOfPage = 8;
+        // const pageNo = 0;
+        //
+        // fetch(`/pk8000/catalog/index?categoryId=${categoryId}&elemsOfPage=${elemsOfPage}&pageNo=${pageNo}`)
+        //     .then(response => response.text())
+        //     .then(html => {
+        //         // Обновляем содержимое страницы с новыми продуктами
+        //         document.getElementById('products').innerHTML = html;
+        //         // location.reload();
+        //     })
+        //     .catch(error => {
+        //         console.error("Ошибка загрузки продуктов:", error);
+        //     });
+    }
+
     function increaseQuantity(button) {
         const quantityInput = button.parentElement.querySelector('.quantity-input');
         let currentQuantity = parseInt(quantityInput.value);

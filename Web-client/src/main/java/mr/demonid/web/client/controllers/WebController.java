@@ -2,6 +2,7 @@ package mr.demonid.web.client.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.links.ProductServiceClient;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -28,25 +31,50 @@ public class WebController {
 
 
     @GetMapping("/index")
-    public String index(Model model) {
-
-        log.info("-- index page");
+    public String index(
+        @RequestParam(name = "elemsOfPage", defaultValue = "8") int pageSize,
+        @RequestParam(name = "pageNo", defaultValue = "0") int currentPage,
+        @RequestParam(name = "categoryId", defaultValue = "0") Long categoryId,
+        Model model) {
+        log.info("index. Current page = {}, categoryId = {}", currentPage, categoryId);
 
         boolean isAuthenticated = IdnUtil.isAuthenticated();
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("username", isAuthenticated ? IdnUtil.getUserName() : null);
 
         List<ProductCategoryDTO> categories = productServices.getAllCategories();
+        categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
+        if (categoryId != null) {
+            ProductCategoryDTO curCat = categories.stream().filter(e -> e.getId() == categoryId).findFirst().orElse(null);
+            log.warn("-- found category: {}", curCat);
+            if (curCat != null) {
+                model.addAttribute("currentCategory", curCat.getName());
+            } else {
+                model.addAttribute("currentCategory", "All");
+            }
+        } else {
+            log.warn("-- no category found");
+            model.addAttribute("currentCategory", "All");
+        }
         model.addAttribute("categories", categories);
-        model.addAttribute("currentCategory", categories.get(0).getName());
 
-        Pageable pageable = PageRequest.of(0, 8, Sort.by("id").ascending());
-        List<ProductDTO> products = productServices.getAllProducts(null, pageable).getContent();
+        // Создаем выборку очередной страницы
+        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
+        PageDTO<ProductDTO> page = productServices.getAllProducts(categoryId, pageable);
+        model.addAttribute("products", page.getContent());
+        log.info("-- products = {}", page.getContent());
 
-        model.addAttribute("products", products);
+        // корректируем данные о страницах
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("currentPage", page.getNumber());
+        model.addAttribute("elemsOfPage", pageSize);
+        model.addAttribute("categoryId", categoryId);
 
         model.addAttribute("cartItemCount", 0);
 
         return "home";
     }
+
+
+
 }

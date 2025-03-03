@@ -2,8 +2,7 @@ INSERT INTO categories (name, description) VALUES
                                                ('Logic', 'Развивающие игры на логику'),
                                                ('Action', 'Игры на реакцию и быстрое мышление, на сообразительность'),
                                                ('Race', 'Гоночные игры'),
-                                               ('Other', 'Игры не подходящие ни под один из разделов'),
-                                               ('All', 'Любая категория');
+                                               ('Other', 'Игры не подходящие ни под один из разделов');
 
 insert into products (category_id, name, price, stock, description, image_file)
 values (2, 'Клад', 12.00, 1000, 'Собери все клады, оставь людоедов голодными!', 'klad.png'),

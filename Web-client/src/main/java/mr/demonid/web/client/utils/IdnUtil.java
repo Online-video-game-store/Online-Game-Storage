@@ -1,5 +1,6 @@
 package mr.demonid.web.client.utils;
 
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +11,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class IdnUtil {
@@ -73,6 +76,36 @@ public class IdnUtil {
         cookie.setSecure(true);
         cookie.setMaxAge(7 * 24 * 60 * 60); // 7 дней
         response.addCookie(cookie);
+    }
+
+    /**
+     * Возвращает Jwt-токен текущего пользователя.
+     *
+     * @return Строка токена, или null - если пользователь не аутентифицирован.
+     */
+    public static String getCurrentUserToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken jwtToken) {
+            return jwtToken.getToken().getTokenValue();
+        } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
+            return oidcUser.getIdToken().getTokenValue();
+        }
+        return null;
+    }
+
+    /**
+     * Возвращает список прав текущего пользователя.
+     * @return null - при ошибке, или если пользователь не авторизирован.
+     */
+    public static List<String> extractScopesFromToken() {
+        try {
+            String token = getCurrentUserToken();
+            if (token != null) {
+                SignedJWT signedJWT = SignedJWT.parse(token);
+                return signedJWT.getJWTClaimsSet().getStringListClaim("scope");
+            }
+        } catch (Exception ignored) {}
+        return Collections.emptyList();
     }
 
 

@@ -13,7 +13,7 @@ public class ProductSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (categoryId != null) {
+            if (categoryId != null && categoryId > 0) {
                 predicates.add(criteriaBuilder.equal(root.get("category").get("id"), categoryId));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
