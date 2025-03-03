@@ -2,17 +2,14 @@ package mr.demonid.service.catalog.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mr.demonid.service.catalog.dto.PageDTO;
-import mr.demonid.service.catalog.dto.ProductCategoryDTO;
-import mr.demonid.service.catalog.dto.ProductDTO;
 import mr.demonid.service.catalog.services.CategoryService;
 import mr.demonid.service.catalog.services.ProductService;
+import mr.demonid.store.commons.dto.PageDTO;
+import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.ProductDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,8 +26,8 @@ public class ProductController {
      * Возвращает постраничный список доступных товаров.
      */
     @GetMapping("/get-all")
-    public ResponseEntity<PageDTO<ProductDTO>> getAllProducts(Long categoryId, Pageable pageable) {
-        log.info("getAllProducts categoryId: {} pageable: {}", categoryId, pageable);
+    public ResponseEntity<PageDTO<ProductDTO>> getAllProducts(@RequestParam(required = false) Long categoryId, Pageable pageable) {
+        log.info("-- getAllProducts categoryId: {} pageable: {}", categoryId, pageable);
         return ResponseEntity.ok(new PageDTO<>(productService.getProducts(categoryId, pageable)));
     }
 // http://localhost:9100/pk8000/api/catalog/get-all?&page=0&size=10&sort=name,asc
@@ -40,6 +37,7 @@ public class ProductController {
      */
     @GetMapping("/get-product/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+        log.info("-- getProductById: {}", id);
         ProductDTO dto = productService.getProductById(id);
         return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
@@ -50,6 +48,7 @@ public class ProductController {
      */
     @GetMapping("/get-categories")
     public ResponseEntity<List<ProductCategoryDTO>> getAllCategories() {
+        log.info("-- getCategories");
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 

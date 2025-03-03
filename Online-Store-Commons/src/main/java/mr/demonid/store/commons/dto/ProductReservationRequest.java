@@ -1,4 +1,4 @@
-package mr.demonid.service.catalog.dto;
+package mr.demonid.store.commons.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

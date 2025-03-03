@@ -1,0 +1,4 @@
+mr\demonid\store\commons\dto\PageDTO.class
+mr\demonid\store\commons\dto\ProductDTO.class
+mr\demonid\store\commons\dto\ProductReservationRequest.class
+mr\demonid\store\commons\dto\ProductCategoryDTO.class

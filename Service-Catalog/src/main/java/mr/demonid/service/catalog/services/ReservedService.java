@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.domain.BlockedProductEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
-import mr.demonid.service.catalog.dto.ProductReservationRequest;
 import mr.demonid.service.catalog.exceptions.CatalogException;
 import mr.demonid.service.catalog.exceptions.NotAvailableException;
 import mr.demonid.service.catalog.exceptions.NotFoundException;
 import mr.demonid.service.catalog.repositories.ProductRepository;
+import mr.demonid.store.commons.dto.ProductReservationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

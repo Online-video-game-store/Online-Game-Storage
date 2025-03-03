@@ -2,9 +2,9 @@ package mr.demonid.service.catalog.services;
 
 import lombok.AllArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductEntity;
-import mr.demonid.service.catalog.dto.ProductDTO;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
+import mr.demonid.store.commons.dto.ProductDTO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -23,6 +23,9 @@ public class FeignClientConfig {
 
     private static final Set<String> TARGET_COOKIES = Set.of("ANON_ID");    // потом добавим еще куков
 
+    /**
+     * Вставляем в Feign-запрос Jwt-Токен, поскольку сам Feign этого делать не умеет.
+     */
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
@@ -35,15 +38,15 @@ public class FeignClientConfig {
                 // Пользователь авторизован через Jwt
                 Jwt jwt = jwtToken.getToken();
                 requestTemplate.header("Authorization", "Bearer " + jwt.getTokenValue());
-                log.info("RequestInterceptor(): JWT token: {}", jwt.getTokenValue());
+                log.info("-- RequestInterceptor(): JWT token: {}", jwt.getTokenValue());
             } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
                 // Пользователь авторизован через OIDC
                 String tokenValue = oidcUser.getIdToken().getTokenValue();
                 requestTemplate.header("Authorization", "Bearer " + tokenValue);
-                log.info("RequestInterceptor(): OidcUser: {}", oidcUser.getIdToken().getTokenValue());
+                log.info("-- RequestInterceptor(): OidcUser: {}", oidcUser.getIdToken().getTokenValue());
             } else {
                 // Пользователь не авторизован
-                log.info("RequestInterceptor(): Anonymous");
+                log.info("-- RequestInterceptor(): Anonymous");
             }
         };
     }

@@ -1,0 +1,27 @@
+package mr.demonid.web.client.links;
+
+import mr.demonid.store.commons.dto.PageDTO;
+import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.ProductDTO;
+import mr.demonid.web.client.configs.FeignClientConfig;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+
+@FeignClient(name = "CATALOG-SERVICE", configuration = FeignClientConfig.class)      // имя сервиса, под которым он зарегистрирован в Eureka
+public interface ProductServiceClient {
+
+    @GetMapping("/pk8000/api/catalog/get-all")
+    ResponseEntity<PageDTO<ProductDTO>> getAllProducts(@RequestParam(required = false) Long categoryId, Pageable pageable);
+
+    @GetMapping("/pk8000/api/catalog/get-product/{id}")
+    ResponseEntity<ProductDTO> getProductById(@PathVariable Long id);
+
+    @GetMapping("/pk8000/api/catalog/get-categories")
+    ResponseEntity<List<ProductCategoryDTO>> getAllCategories();
+
+}

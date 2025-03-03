@@ -50,7 +50,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        log.info("start jwt authentication converter");
+        log.info("-- start jwt authentication converter");
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
         converter.setPrincipalClaimName("name");

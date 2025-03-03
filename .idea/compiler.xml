@@ -11,11 +11,14 @@
         <module name="eureka-server" />
         <module name="web-client" />
         <module name="service-catalog" />
+        <module name="online-store-commons-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="auth-server" target="17" />
       <module name="callme-service" target="17" />
+      <module name="online-store-common" target="21" />
+      <module name="online-store-commons" target="17" />
       <module name="test-service" target="17" />
     </bytecodeTargetLevel>
   </component>
@@ -25,6 +28,7 @@
       <module name="callme-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="gateway-server" options="-parameters" />
+      <module name="online-store-commons" options="-parameters" />
       <module name="service-catalog" options="-parameters" />
       <module name="test-service" options="-parameters" />
       <module name="web-client" options="-parameters" />
