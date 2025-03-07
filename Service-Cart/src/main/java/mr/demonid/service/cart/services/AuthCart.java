@@ -1,0 +1,70 @@
+package mr.demonid.service.cart.services;
+
+import lombok.Setter;
+import mr.demonid.service.cart.domain.CartItem;
+import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.repositories.CartRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+/**
+ * Корзина авторизированного пользователя.
+ */
+@Component
+@Scope("prototype")
+public class AuthCart implements Cart {
+
+    @Autowired
+    private CartRepository cartRepository;      // внедряем БД
+
+    @Setter
+    private String userId;
+
+
+    @Override
+    public CartItemRequest addItem(Long productId, int quantity) {
+        CartItem item = cartRepository.findByUserIdAndProductId(userId, productId);
+        if (item == null) {
+            item = new CartItem(userId, productId, 0);
+        }
+        item.setQuantity(item.getQuantity() + quantity);
+        item = cartRepository.save(item);
+        return new CartItemRequest(item.getProductId(), item.getQuantity());
+    }
+
+    @Override
+    public void removeItem(Long productId) {
+        cartRepository.deleteByUserIdAndProductId(userId, productId);
+    }
+
+    @Override
+    public List<CartItemRequest> getItems() {
+        List<CartItem> items = cartRepository.findByUserId(userId);
+        return items.stream().map(item -> new CartItemRequest(item.getProductId(), item.getQuantity())).toList();
+    }
+
+//    @Override
+//    public int getQuantity(String productId) {
+//        List<CartItem> cart = getItems();
+//        return cart.stream()
+//                .filter(cartItem -> cartItem.getProductId().equals(productId))
+//                .findFirst()
+//                .orElse(new CartItem()).getQuantity();
+//    }
+
+    @Override
+    public int getQuantity() {
+        List<CartItemRequest> cart = getItems();
+        return cart.stream().mapToInt(CartItemRequest::getQuantity).sum();
+    }
+
+    @Override
+    public void clearCart() {
+        List<CartItem> items = cartRepository.findByUserId(userId);
+        cartRepository.deleteAll(items);
+    }
+
+}

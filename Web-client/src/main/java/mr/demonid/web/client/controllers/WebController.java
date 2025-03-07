@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,7 +29,6 @@ import java.util.Objects;
 public class WebController {
 
     private ProductServices productServices;
-
 
     @GetMapping("/index")
     public String index(
@@ -62,7 +62,6 @@ public class WebController {
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
         PageDTO<ProductDTO> page = productServices.getAllProducts(categoryId, pageable);
         model.addAttribute("products", page.getContent());
-        log.info("-- products = {}", page.getContent());
 
         // корректируем данные о страницах
         model.addAttribute("totalPages", page.getTotalPages());

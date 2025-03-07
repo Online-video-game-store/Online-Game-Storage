@@ -22,7 +22,7 @@ spring:
           online-store-client-id:
             provider: keycloak
             client-id: online-store-client-id
-            client-secret: oB4Wpq1rP190Y0Bs9nGQGoloTkv0GXlm
+            client-secret: ${CLIENT_SECRET:SPAk8C8b4sD0TtoAYGRy28rouzh9BFHH}
             authorization-grant-type: authorization_code
             scope: openid
 
@@ -39,7 +39,7 @@ spring:
         - id: web-client
           uri: lb://WEB-CLIENT
           predicates:
-            - Path=/pk8000/catalog/**, /catalog/static/**, /pk8000/auth/**
+            - Path=/pk8000/catalog/**, /pk8000/catalog/static/**, /pk8000/auth/**
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
 

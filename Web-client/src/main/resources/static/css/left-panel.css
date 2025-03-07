@@ -1,0 +1,61 @@
+/* Стили для контейнера */
+.container {
+    display: flex;
+}
+
+/* Стили для боковой панели */
+.category-container button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-weight: bold;
+}
+
+.category-container button:hover {
+    background: linear-gradient(90deg, #8f94fb, #4e54c8);
+    transform: scale(1.05);
+}
+
+.sidebar {
+    width: 150px;
+    padding: 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0; /* Запрещаем уменьшение ширины */
+}
+
+.categories {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.category-button {
+    background: linear-gradient(90deg, #34495e, #2c3e50);
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 1.1em;
+}
+
+.category-button:hover {
+    background: linear-gradient(90deg, #1abc9c, #16a085);
+    transform: scale(1.05);
+}
+
+.active-category {
+    background: linear-gradient(90deg, #e67e22, #d35400);
+    font-weight: bold;
+}
+

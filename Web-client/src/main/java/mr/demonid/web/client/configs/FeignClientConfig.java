@@ -24,7 +24,7 @@ public class FeignClientConfig {
     private static final Set<String> TARGET_COOKIES = Set.of("ANON_ID");    // потом добавим еще куков
 
     /**
-     * Вставляем в Feign-запрос Jwt-Токен, поскольку сам Feign этого делать не умеет.
+     * Вставляем в Feign-запрос Jwt-Токен и куки, поскольку сам Feign этого делать не умеет.
      */
     @Bean
     public RequestInterceptor requestInterceptor() {

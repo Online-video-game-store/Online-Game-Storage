@@ -11,14 +11,13 @@
         <option value="$PROJECT_DIR$/Test-service/pom.xml" />
         <option value="$PROJECT_DIR$/callme-service/pom.xml" />
         <option value="$PROJECT_DIR$/Service-Catalog/pom.xml" />
-        <option value="$PROJECT_DIR$/Online-Store-Common/pom.xml" />
         <option value="$PROJECT_DIR$/Online-Store-Commons/pom.xml" />
+        <option value="$PROJECT_DIR$/Service-Cart/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/Auth-server/pom.xml" />
-        <option value="$PROJECT_DIR$/Online-Store-Common/pom.xml" />
         <option value="$PROJECT_DIR$/callme-service/pom.xml" />
       </set>
     </option>
