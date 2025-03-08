@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/pk8000/api/public/cart")
-public class CartController {
+public class CartPublicController {
 
     @Autowired
     private CartFactory cartFactory;
@@ -35,17 +35,14 @@ public class CartController {
     public ResponseEntity<CartItemRequest> addItem(@RequestParam Long productId, @RequestParam Integer quantity, HttpServletRequest request) {
 
         log.info("-- cart add product = {}, quantity = {}", productId, quantity);
-
         Cart cart = cartFactory.getCart(request);
-
-//        return ResponseEntity.ok(cart.addItem(productId, quantity));
-        return ResponseEntity.ok(new CartItemRequest(productId, quantity));
+        return ResponseEntity.ok(cart.addItem(productId, quantity));
     }
 
     /**
      * Возвращает список товаров в корзине пользователя.
      */
-    @GetMapping
+    @GetMapping("/read")
     public ResponseEntity<List<CartItemRequest>> getItems(HttpServletRequest request) {
         Cart cart = cartFactory.getCart(request);
         return ResponseEntity.ok(cart.getItems());
@@ -63,10 +60,20 @@ public class CartController {
     /**
      * Очищает корзину.
      */
-    @GetMapping("clear")
-    public ResponseEntity<String> clearCart(HttpServletRequest request) {
+    @GetMapping("/clear")
+    public ResponseEntity<Void> clearCart(HttpServletRequest request) {
         Cart cart = cartFactory.getCart(request);
         cart.clearCart();
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Удаление товара из корзины.
+     */
+    @PostMapping("/remove")
+    public ResponseEntity<Void> removeItem(@RequestParam Long productId, HttpServletRequest request) {
+        Cart cart = cartFactory.getCart(request);
+        cart.removeItem(productId);
         return ResponseEntity.ok().build();
     }
 
@@ -77,6 +84,7 @@ public class CartController {
      */
     @PostMapping("/register-user")
     public ResponseEntity<Void> registerUser(@RequestParam String anonId, @RequestParam String userId) {
+        log.info("-- Registering anon {} to user with id {}", anonId, userId);
         cartFactory.registerUser(anonId, userId);
         return ResponseEntity.ok().build();
     }

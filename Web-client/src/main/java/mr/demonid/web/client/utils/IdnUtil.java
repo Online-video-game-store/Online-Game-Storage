@@ -28,9 +28,9 @@ public class IdnUtil {
     public static String getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
-            return jwtToken.getToken().getClaimAsString("user_id");
+            return jwtToken.getToken().getClaimAsString("sub");
         } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
-            return oidcUser.getIdToken().getClaimAsString("user_id");
+            return oidcUser.getIdToken().getClaimAsString("sub");
         }
         return null;
     }

@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.web.client.links.CartServiceClient;
+import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RequestMapping("/pk8000/auth")
 public class AuthController {
 
+    private CartServices cartServices;
+
     private static final String COOKIE_NAME = "ANON_ID";
 
     /**
@@ -29,15 +33,11 @@ public class AuthController {
     @GetMapping("/login")
     public String login(HttpServletRequest request, HttpServletResponse response) {
         log.info("-->> login");
-
-        if (IdnUtil.isAuthenticated()) {
-            log.info("  -->> authenticated");
-        }
-
         Cookie anonCookie = IdnUtil.getCookie(COOKIE_NAME, request.getCookies());
         if (anonCookie != null) {
             // Переносим данные из анонимного контекста в авторизованный
-//            cartService.transferAnonToUser(anonCookie.getValue(), IdnUtil.getUserId());
+            log.info("  -- auth from {} to {}", anonCookie.getValue(), IdnUtil.getUserId());
+            cartServices.authUser(anonCookie.getValue(), IdnUtil.getUserId());
 
             // Удаляем куки после успешной авторизации
             anonCookie.setMaxAge(0);

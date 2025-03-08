@@ -6,6 +6,7 @@ import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.links.ProductServiceClient;
+import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,8 @@ import java.util.Objects;
 public class WebController {
 
     private ProductServices productServices;
+    private CartServices cartServices;
+
 
     @GetMapping("/index")
     public String index(
@@ -69,7 +72,7 @@ public class WebController {
         model.addAttribute("elemsOfPage", pageSize);
         model.addAttribute("categoryId", categoryId);
 
-        model.addAttribute("cartItemCount", 0);
+        model.addAttribute("cartItemCount", cartServices.getCountItems());
 
         return "home";
     }
