@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(data => {
                     if (data.success) {
                         showNotification(`Добавлено: ${data.productName} x${data.quantity} (Сумма: $${data.totalPrice})`);
+                        updateCartCount(data.cartTotalItems);                           // Обновляем значок корзины
                     } else {
                         showNotification(`Ошибка: ${data.error}`, true);
                     }
@@ -29,6 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+function updateCartCount(newCount) {
+    let cartCountElement = document.querySelector(".cart-count");
+    if (cartCountElement) {
+        cartCountElement.textContent = newCount;
+    }
+}
 
 function showNotification(message, isError = false) {
     let notification = document.createElement("div");
