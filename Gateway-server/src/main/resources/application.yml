@@ -39,7 +39,7 @@ spring:
         - id: web-client
           uri: lb://WEB-CLIENT
           predicates:
-            - Path=/pk8000/catalog/**, /pk8000/catalog/static/**, /pk8000/auth/**
+            - Path=/pk8000/catalog/**, /pk8000/catalog/static/**, /pk8000/auth/**, /pk8000/user/api/**
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
 

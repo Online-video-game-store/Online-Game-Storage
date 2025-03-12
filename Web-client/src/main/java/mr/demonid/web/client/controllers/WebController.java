@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
-import mr.demonid.web.client.links.ProductServiceClient;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
@@ -15,13 +14,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+
 
 @Controller
 @AllArgsConstructor
@@ -48,15 +46,13 @@ public class WebController {
         List<ProductCategoryDTO> categories = productServices.getAllCategories();
         categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
         if (categoryId != null) {
-            ProductCategoryDTO curCat = categories.stream().filter(e -> e.getId() == categoryId).findFirst().orElse(null);
-            log.warn("-- found category: {}", curCat);
+            ProductCategoryDTO curCat = categories.stream().filter(e -> Objects.equals(e.getId(), categoryId)).findFirst().orElse(null);
             if (curCat != null) {
                 model.addAttribute("currentCategory", curCat.getName());
             } else {
                 model.addAttribute("currentCategory", "All");
             }
         } else {
-            log.warn("-- no category found");
             model.addAttribute("currentCategory", "All");
         }
         model.addAttribute("categories", categories);

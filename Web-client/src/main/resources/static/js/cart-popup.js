@@ -4,10 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeButton = document.querySelector(".close-button");
     const cartItemsContainer = document.querySelector(".cart-items");
     const cartTotal = document.querySelector(".cart-total span");
+    const checkoutButton = document.querySelector(".checkout-button");
 
     // Загрузка данных корзины
     function loadCartItems() {
-        fetch("/pk8000/catalog/api/get-cart-items")
+        fetch("/pk8000/catalog/api/get-cart-items", { credentials: "include" })
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Ошибка при получении данных корзины");
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function removeCartItem(itemId) {
         fetch(`/pk8000/catalog/api/remove-cart-item/${itemId}`, {
             method: 'DELETE',
+            credentials: "include"
         })
             .then(response => {
                 if (!response.ok) {
@@ -102,10 +104,99 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    //
+    // Authenticated methods
+    //
+    async function checkAuthentication() {
+        try {
+            const response = await fetch("/pk8000/catalog/api/check", { credentials: "include" });
+            return response.ok; // true, если статус 200, иначе false
+        } catch (error) {
+            console.error("Ошибка проверки авторизации:", error);
+            return false;
+        }
+    }
+
+    // Покупка товаров корзины
+    async function processCheckout() {
+        const isAuthenticated = await checkAuthentication();    // await() - ожидание выполнения
+        if (!isAuthenticated) {
+            window.location.href = "/oauth2/authorization/online-store-client-id";
+            return;
+        }
+        const selectedPaymentMethod = document.querySelector("input[name='payment']:checked").value;
+        try {
+            const response = await fetch("/pk8000/user/api/checkout", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ paymentMethod: selectedPaymentMethod })  // class CartOrderRequest {}
+            });
+
+            if (response.ok) {
+                alert("Оплата успешно завершена!");
+                window.location.reload();
+            } else {
+                const errorText = await response.text();
+                alert("Ошибка при оплате: " + errorText);
+            }
+        } catch (error) {
+            console.error("Ошибка оформления заказа:", error);
+            alert("Ошибка при подключении к серверу.");
+        }
+    }
 
     // Привязка обработчиков событий
     cartButton.addEventListener("click", openCartPopup);
     closeButton.addEventListener("click", closeCartPopup);
     window.addEventListener("click", handleOutsideClick);
+    checkoutButton.addEventListener("click", processCheckout);
 });
 
+
+// версия в старом стиле
+// function checkAuthentication() {
+//     return fetch("/pk8000/catalog/api/check", { credentials: "include" })
+//         .then(response => response.ok)
+//         .catch(error => {
+//             console.error("Ошибка проверки авторизации:", error);
+//             return false;
+//         });
+// }
+//
+// function processCheckout() {
+//     checkAuthentication().then(isAuthenticated => {
+//         if (!isAuthenticated) {
+//             sessionStorage.setItem("redirectAfterLogin", "checkout");
+//             window.location.href = "/oauth2/authorization/online-store-client-id";
+//             return;
+//         }
+//
+//         const selectedPaymentMethod = document.querySelector("input[name='payment']:checked").value;
+//
+//         fetch("/pk8000/user/api/checkout", {
+//             method: "POST",
+//             credentials: "include",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({ paymentMethod: selectedPaymentMethod })
+//         })
+//             .then(response => {
+//                 if (response.ok) {
+//                     alert("Оплата успешно завершена!");
+//                     window.location.reload();
+//                 } else {
+//                     return response.text().then(errorText => {
+//                         alert("Ошибка при оплате: " + errorText);
+//                     });
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error("Ошибка оформления заказа:", error);
+//                 alert("Ошибка при подключении к серверу.");
+//             });
+//     });
+// }

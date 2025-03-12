@@ -9,6 +9,7 @@ import mr.demonid.web.client.dto.CartItemRequest;
 import mr.demonid.web.client.dto.CartAddItemSuccess;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
+import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,21 @@ public class ApiController {
 
     private ProductServices productServices;
     private CartServices cartServices;
+
+
+    /**
+     * Проверка аутентификации пользователя.
+     */
+    @GetMapping("/check")
+    public ResponseEntity<Void> check() {
+        log.info("-- check");
+        if (IdnUtil.isAuthenticated()) {
+            log.info("  -- authenticated");
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
 
     /**
      * Добавление товара в корзину
