@@ -7,9 +7,11 @@
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/product.css}">
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/pagination.css}">
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/notification.css}">
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/cart-popup.css}">
     <script th:src="@{/pk8000/catalog/static/js/add-to-cart.js}"></script>
-
+    <script th:src="@{/pk8000/catalog/static/js/cart-popup.js}"></script>
 </head>
+
 <body>
 
 <div class="header">
@@ -22,6 +24,7 @@
         <div th:if="${!isAuthenticated}">
             <a th:href="@{/oauth2/authorization/online-store-client-id}" class="login-button">Вход</a>
         </div>
+
         <!-- Корзина -->
         <div class="cart">
             <a th:href="@{/cart}" class="cart-link">
@@ -145,6 +148,31 @@
         }
     }
 </script>
+
+<!-- Всплывающее окно корзины -->
+<div id="cart-popup" class="cart-popup">
+    <div class="cart-popup-content">
+        <span class="close-button">&times;</span>
+        <h2>Ваша корзина</h2>
+
+        <div class="cart-items">
+            <!-- Товары добавляются динамически через JS -->
+        </div>
+
+        <div class="cart-total">
+            <strong>Итого:</strong> <span>$0.00</span>
+        </div>
+
+        <div class="payment-methods">
+            <h3>Выберите способ оплаты</h3>
+            <label><input type="radio" name="payment" value="card" checked> Банковская карта</label>
+            <label><input type="radio" name="payment" value="paypal"> PayPal</label>
+            <label><input type="radio" name="payment" value="crypto"> Криптовалюта</label>
+        </div>
+
+        <button class="checkout-button">Оплатить</button>
+    </div>
+</div>
 
 </body>
 </html>
