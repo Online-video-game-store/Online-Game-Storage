@@ -119,34 +119,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Покупка товаров корзины
     async function processCheckout() {
-        const isAuthenticated = await checkAuthentication();    // await() - ожидание выполнения
+        const isAuthenticated = await checkAuthentication();
         if (!isAuthenticated) {
             window.location.href = "/oauth2/authorization/online-store-client-id";
             return;
         }
-        const selectedPaymentMethod = document.querySelector("input[name='payment']:checked").value;
-        try {
-            const response = await fetch("/pk8000/user/api/checkout", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ paymentMethod: selectedPaymentMethod })  // class CartOrderRequest {}
-            });
-
-            if (response.ok) {
-                alert("Оплата успешно завершена!");
-                window.location.reload();
-            } else {
-                const errorText = await response.text();
-                alert("Ошибка при оплате: " + errorText);
-            }
-        } catch (error) {
-            console.error("Ошибка оформления заказа:", error);
-            alert("Ошибка при подключении к серверу.");
-        }
+        window.location.href = "/pk8000/catalog/payment";   // переходим контроллер
     }
+    //
+    // async function processCheckout() {
+    //     const isAuthenticated = await checkAuthentication();    // await() - ожидание выполнения
+    //     if (!isAuthenticated) {
+    //         window.location.href = "/oauth2/authorization/online-store-client-id";
+    //         return;
+    //     }
+    //     const selectedPaymentMethod = document.querySelector("input[name='payment']:checked").value;
+    //     try {
+    //         const response = await fetch("/pk8000/user/api/checkout", {
+    //             method: "POST",
+    //             credentials: "include",
+    //             headers: {
+    //                 "Content-Type": "application/json"
+    //             },
+    //             body: JSON.stringify({ paymentMethod: selectedPaymentMethod })  // class CartOrderRequest {}
+    //         });
+    //
+    //         if (response.ok) {
+    //             alert("Оплата успешно завершена!");
+    //             window.location.reload();
+    //         } else {
+    //             const errorText = await response.text();
+    //             alert("Ошибка при оплате: " + errorText);
+    //         }
+    //     } catch (error) {
+    //         console.error("Ошибка оформления заказа:", error);
+    //         alert("Ошибка при подключении к серверу.");
+    //     }
+    // }
 
     // Привязка обработчиков событий
     cartButton.addEventListener("click", openCartPopup);

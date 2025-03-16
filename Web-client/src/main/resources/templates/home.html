@@ -143,11 +143,12 @@
     function decreaseQuantity(button) {
         const quantityInput = button.parentElement.querySelector('.quantity-input');
         let currentQuantity = parseInt(quantityInput.value);
-        if (currentQuantity > 1) { // Проверка на минимальное значение
-            quantityInput.value = currentQuantity - 1; // Уменьшаем количество
+        if (currentQuantity > 1) {                          // Проверка на минимальное значение
+            quantityInput.value = currentQuantity - 1;      // Уменьшаем количество
         }
     }
 </script>
+
 
 <!-- Всплывающее окно корзины -->
 <div id="cart-popup" class="cart-popup">
@@ -161,13 +162,6 @@
 
         <div class="cart-total">
             <strong>Итого:</strong> <span>$0.00</span>
-        </div>
-
-        <div class="payment-methods">
-            <h3>Выберите способ оплаты</h3>
-            <label><input type="radio" name="payment" value="card" checked> Банковская карта</label>
-            <label><input type="radio" name="payment" value="paypal"> PayPal</label>
-            <label><input type="radio" name="payment" value="crypto"> Криптовалюта</label>
         </div>
         <button class="checkout-button">Оплатить</button>
     </div>

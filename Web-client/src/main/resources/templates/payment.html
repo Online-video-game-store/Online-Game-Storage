@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Оплата заказа</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            text-align: center;
+        }
+        .payment-option {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function updatePaymentUI() {
+            let selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+            let cardSection = document.getElementById("cardSection");
+            cardSection.style.display = selectedPayment && selectedPayment.dataset.supportsCards === "true" ? "block" : "none";
+        }
+
+        function formatCardNumber(input) {
+            input.value = input.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().substring(0, 19);
+        }
+
+        function formatExpiryDate(input) {
+            input.value = input.value.replace(/\D/g, "").replace(/(\d{2})(\d{0,2})/, "$1/$2").substring(0, 5);
+        }
+
+        function validateCVV(input) {
+            input.value = input.value.replace(/\D/g, "").substring(0, 3);
+        }
+
+        async function addNewCard() {
+            const cardNumber = document.getElementById("newCardNumber").value;
+            const expiryDate = document.getElementById("newCardExpiry").value;
+            const cvv = document.getElementById("newCardCvv").value;
+
+            const response = await fetch("/pk8000/catalog/payment/add-card", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cardNumber, expiryDate, cvv })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.status === "success") {
+                location.reload();
+            }
+        }
+
+        async function processPayment() {
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+            const selectedCard = document.querySelector('input[name="selectedCard"]:checked');
+
+            if (!selectedPayment) {
+                alert("Выберите платежную систему");
+                return;
+            }
+
+            let paymentData = {
+                paymentMethodId: selectedPayment.value,
+                cardId: selectedCard ? selectedCard.value : null
+            };
+
+            const response = await fetch("/pk8000/catalog/payment/process", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(paymentData)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.status === "success") {
+                window.location.href = "/order-success";
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2>Оплата заказа</h2>
+
+    <h3>Выберите платежную систему:</h3>
+    <div th:each="payment : ${paymentMethods}" class="payment-option">
+        <label>
+            <input type="radio" name="paymentMethod" th:value="${payment.id}"
+                   th:data-supports-cards="${payment.supportsCards}"
+                   onchange="updatePaymentUI()">
+            <span th:text="${payment.name}"></span>
+        </label>
+    </div>
+
+    <div id="cardSection" style="display: none;">
+        <h3>Выберите карту:</h3>
+        <div th:each="card : ${userCards}">
+            <label>
+                <input type="radio" name="selectedCard" th:value="${card.id}">
+                <span th:text="${card.maskedNumber}"></span> (до <span th:text="${card.expiry}"></span>)
+            </label>
+        </div>
+
+        <button type="button" onclick="document.getElementById('newCardForm').style.display='block'">Добавить карту</button>
+
+        <div id="newCardForm" style="display: none;">
+            <h3>Добавить карту</h3>
+            <label>Номер карты: <input type="text" id="newCardNumber" oninput="formatCardNumber(this)"></label><br>
+            <label>Дата истечения: <input type="text" id="newCardExpiry" oninput="formatExpiryDate(this)" placeholder="MM/YY"></label><br>
+            <label>CVV: <input type="text" id="newCardCvv" oninput="validateCVV(this)"></label><br>
+            <button type="button" onclick="addNewCard()">Сохранить</button>
+        </div>
+    </div>
+
+    <button type="button" onclick="processPayment()">Оплатить</button>
+</div>
+</body>
+</html>
