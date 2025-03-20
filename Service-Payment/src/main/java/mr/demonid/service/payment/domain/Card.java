@@ -2,13 +2,15 @@ package mr.demonid.service.payment.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import mr.demonid.service.payment.dto.NewCardRequest;
+import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.payment.utils.CardUtil;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Log4j2
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +24,21 @@ public class Card {
 
     @ManyToOne
     @JoinColumn(name = "user_payment_id")
-    private UserPayment userPayment;
+    private UserEntity userEntity;
 
 
     /*
         Возврат номера карты, частично скрытого маской
      */
-    // TODO: доделай!!!
     public String getSafeCardNumber() {
-        return cardNumber;
+        if (CardUtil.isCardNumberValid(cardNumber)) {
+            String[] s = cardNumber.split(" ");
+            s[0] = s[1] = s[2] = "XXXX";
+            return String.join(" ", s);
+        }
+        return "???? ???? ???? ????";
     }
+
 
     /*
         Обеспечиваем уникальность для каждого объекта.
@@ -56,7 +63,7 @@ public class Card {
                 "cardNumber='" + cardNumber + '\'' +
                 ", expiryDate='" + expiryDate + '\'' +
                 ", cvv='" + cvv + '\'' +
-                ", userPayment=" + (userPayment == null ? "[]" : userPayment.getUserId()) +
+                ", userPayment=" + (userEntity == null ? "[]" : userEntity.getUserId()) +
                 '}';
     }
 }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.payment.dto.CardRequest;
 import mr.demonid.service.payment.dto.NewCardRequest;
-import mr.demonid.service.payment.services.UserPaymentService;
+import mr.demonid.service.payment.services.UserEntityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +19,13 @@ import java.util.UUID;
 @Log4j2
 public class ApiController {
 
-    private UserPaymentService userService;
+    private UserEntityService userEntityService;
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'DEVELOPER')")
     @GetMapping("/get-cards")
     public ResponseEntity<List<CardRequest>> getCards(@RequestParam UUID userId) {
         log.info("get-cards");
-        return ResponseEntity.ok(userService.getCards(userId));
+        return ResponseEntity.ok(userEntityService.getCards(userId));
     }
 
 
@@ -33,7 +33,7 @@ public class ApiController {
     @PostMapping("/add-card")
     public ResponseEntity<?> addCard(@RequestBody NewCardRequest card) {
         log.info("-- controller: Add card");
-        return ResponseEntity.ok(userService.addCard(card));
+        return ResponseEntity.ok(userEntityService.addCard(card));
     }
 
 }

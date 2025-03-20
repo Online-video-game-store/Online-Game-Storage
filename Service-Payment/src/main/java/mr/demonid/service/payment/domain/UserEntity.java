@@ -13,15 +13,15 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPayment {
+public class UserEntity {
     @Id
     private UUID userId;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "userPayment", fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "userEntity", fetch = FetchType.EAGER)
     Set<Card> cards = new HashSet<>();
 
     public void addCard(Card card) {
         cards.add(card);
-        card.setUserPayment(this);
+        card.setUserEntity(this);
     }
 }
