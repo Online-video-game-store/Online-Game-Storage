@@ -1,7 +1,10 @@
 package mr.demonid.web.client.controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.web.client.dto.*;
+import mr.demonid.web.client.dto.payment.CardRequest;
+import mr.demonid.web.client.services.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +15,12 @@ import java.util.Map;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/pk8000/catalog/payment")
 public class PaymentController {
+
+    private PaymentService paymentService;
+
 
     /**
      * Отображает страницу выбора платежной системы
@@ -30,11 +37,13 @@ public class PaymentController {
         );
 
         // карты пользователя
-        List<UserCard> userCards = List.of(
-            new UserCard(101L, "**** **** **** 1234", "12/25"),
-            new UserCard(102L, "**** **** **** 5678", "06/24")
-        );
+        List<CardRequest> userCards = paymentService.getCards();
 
+//        List<UserCard> userCards = List.of(
+//            new UserCard(101L, "**** **** **** 1234", "12/25"),
+//            new UserCard(102L, "**** **** **** 5678", "06/24")
+//        );
+//
         model.addAttribute("paymentMethods", paymentMethods);
         model.addAttribute("userCards", userCards);
 
@@ -52,7 +61,10 @@ public class PaymentController {
         if (request.getCardNumber().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Некорректный номер карты"));
         }
-        return ResponseEntity.ok(Map.of("status", "success", "message", "Карта добавлена!"));
+        if (paymentService.addNewCard(request)) {
+            return ResponseEntity.ok(Map.of("status", "success", "message", "Карта добавлена!"));
+        }
+        return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Ошибка добавления карты. Попробуйте попозже."));
     }
 
 

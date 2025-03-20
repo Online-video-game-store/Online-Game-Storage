@@ -131,8 +131,8 @@
         <h3>Выберите карту:</h3>
         <div th:each="card : ${userCards}">
             <label>
-                <input type="radio" name="selectedCard" th:value="${card.id}">
-                <span th:text="${card.maskedNumber}"></span> (до <span th:text="${card.expiry}"></span>)
+                <input type="radio" name="selectedCard" th:value="${card.cardId}">
+                <span th:text="${card.cardNumber}"></span> (до <span th:text="${card.expiry}"></span>)
             </label>
         </div>
 
