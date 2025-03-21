@@ -31,9 +31,7 @@ public class ApiController {
      */
     @GetMapping("/check")
     public ResponseEntity<Void> check() {
-        log.info("-- check");
         if (IdnUtil.isAuthenticated()) {
-            log.info("  -- authenticated");
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();

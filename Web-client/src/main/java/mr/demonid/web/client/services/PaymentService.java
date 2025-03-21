@@ -3,9 +3,9 @@ package mr.demonid.web.client.services;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.web.client.dto.AddCardRequest;
+import mr.demonid.web.client.dto.NewCardRequest;
+import mr.demonid.web.client.dto.PaymentMethod;
 import mr.demonid.web.client.dto.payment.CardRequest;
-import mr.demonid.web.client.dto.payment.NewCardRequest;
 import mr.demonid.web.client.links.PaymentServiceClient;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,15 @@ public class PaymentService {
     private PaymentServiceClient paymentServiceClient;
 
 
+    public List<PaymentMethod> getPaymentMethods() {
+        try {
+            return paymentServiceClient.getPayments().getBody();
+        } catch (FeignException e) {
+            log.error("PaymentService.getPaymentMethods(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+        }
+        return List.of();
+    }
+
     public List<CardRequest> getCards() {
         try {
             String userId = IdnUtil.getUserId();
@@ -33,12 +42,12 @@ public class PaymentService {
         return List.of();
     }
 
-    public boolean addNewCard(AddCardRequest cardRequest) {
+    public boolean addNewCard(NewCardRequest cardRequest) {
         try {
             String userId = IdnUtil.getUserId();
             if (userId != null) {
                 log.info("-- Adding new card user: {}", userId);
-                paymentServiceClient.addCard(new NewCardRequest(UUID.fromString(userId), cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
+                paymentServiceClient.addCard(new mr.demonid.web.client.dto.payment.NewCardRequest(UUID.fromString(userId), cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
                 return true;
             }
         } catch (FeignException e) {

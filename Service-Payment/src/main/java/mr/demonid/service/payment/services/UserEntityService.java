@@ -6,6 +6,7 @@ import mr.demonid.service.payment.domain.Card;
 import mr.demonid.service.payment.domain.UserEntity;
 import mr.demonid.service.payment.dto.CardRequest;
 import mr.demonid.service.payment.dto.NewCardRequest;
+import mr.demonid.service.payment.exceptions.AddCardException;
 import mr.demonid.service.payment.repository.CardRepository;
 import mr.demonid.service.payment.repository.UserEntityRepository;
 import mr.demonid.service.payment.utils.CardUtil;
@@ -22,6 +23,10 @@ public class UserEntityService {
     private CardRepository cardRepository;
 
 
+    /**
+     * Возвращает список банковских карт пользователя.
+     * Номера карт частично скрыты.
+     */
     public List<CardRequest> getCards(UUID userId) {
         List<CardRequest> cards = new ArrayList<>();
 
@@ -33,26 +38,35 @@ public class UserEntityService {
         return cards;
     }
 
-    // TODO: переделай времянку!!!
-    public boolean addCard(NewCardRequest cardRequest) {
+
+    /**
+     * Привязка банковской карты к пользователю.
+     * В случае ошибки кидает исключение для глобального обработчика.
+     */
+    public void addCard(NewCardRequest cardRequest) {
         UserEntity userEntity;
 
         if (!CardUtil.isCardNumberValid(cardRequest.getCardNumber())
                 || !CardUtil.isExpiryDateValid(cardRequest.getExpiryDate())
                 || !CardUtil.isCvvValid(cardRequest.getCvv())) {
             log.error("Bad card format");
-            return false;
+            throw new AddCardException("Неверный формат данных.");
         }
 
         if (cardRepository.existsByCardNumber(cardRequest.getCardNumber())) {
             log.error("Card number already exists");
-            return false;
+            throw new AddCardException("Карта уже существует.");
         }
-        Optional<UserEntity> userPayment = userEntityRepository.findById(cardRequest.getUserId());
-        userEntity = userPayment.orElseGet(() -> new UserEntity(cardRequest.getUserId(), new HashSet<>()));
-        userEntity.addCard(new Card(null, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv(), userEntity));
-        userEntityRepository.save(userEntity);
-        return true;
+        try {
+            Optional<UserEntity> userPayment = userEntityRepository.findById(cardRequest.getUserId());
+            userEntity = userPayment.orElseGet(() -> new UserEntity(cardRequest.getUserId(), new HashSet<>()));
+            userEntity.addCard(new Card(null, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv(), userEntity));
+            userEntityRepository.save(userEntity);
+        } catch (Exception e) {
+            throw new AddCardException(e.getMessage());
+        }
     }
+
+
 
 }

@@ -1,6 +1,7 @@
 package mr.demonid.web.client.links;
 
 import mr.demonid.web.client.configs.FeignClientConfig;
+import mr.demonid.web.client.dto.PaymentMethod;
 import mr.demonid.web.client.dto.payment.CardRequest;
 import mr.demonid.web.client.dto.payment.NewCardRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,6 +16,9 @@ import java.util.UUID;
 
 @FeignClient(name = "PAYMENT-SERVICE", configuration = FeignClientConfig.class)
 public interface PaymentServiceClient {
+
+    @GetMapping("/pk8000/api/payment/get-payments")
+    ResponseEntity<List<PaymentMethod>> getPayments();
 
     @GetMapping("/pk8000/api/payment/get-cards")
     ResponseEntity<List<CardRequest>> getCards(@RequestParam UUID userId);

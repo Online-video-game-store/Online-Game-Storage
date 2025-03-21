@@ -12,6 +12,7 @@
         <module name="service-cart" />
         <module name="online-store-commons-module" />
         <module name="gateway-server" />
+        <module name="service-order" />
         <module name="eureka-server" />
         <module name="service-payment" />
       </profile>
@@ -33,6 +34,7 @@
       <module name="online-store-commons" options="-parameters" />
       <module name="service-cart" options="-parameters" />
       <module name="service-catalog" options="-parameters" />
+      <module name="service-order" options="-parameters" />
       <module name="service-payment" options="-parameters" />
       <module name="test-service" options="-parameters" />
       <module name="web-client" options="-parameters" />

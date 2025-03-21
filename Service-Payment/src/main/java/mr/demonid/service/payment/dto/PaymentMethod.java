@@ -1,8 +1,8 @@
-package mr.demonid.web.client.dto;
+package mr.demonid.service.payment.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 
 /**
  * Запрос на получение списка доступных способов оплаты.
@@ -14,3 +14,4 @@ public class PaymentMethod {
     private String name;
     private boolean supportsCards;
 }
+

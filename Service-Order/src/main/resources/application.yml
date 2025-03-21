@@ -1,10 +1,9 @@
 server:
-  port: ${PAYMENT_SERVICE_PORT:0}
-
+  port: ${ORDER_SERVICE_PORT:10000}
 
 spring:
   application:
-    name: "PAYMENT-SERVICE"
+    name: "ORDER-SERVICE"
   output.ansi.enabled: ALWAYS
 
   security:
@@ -30,18 +29,23 @@ spring:
           orderCreate-in-0:
             consumer:
               binding-routing-key: 'order.created'
-
+#
 #  cloud:
 #    stream:
 #      default-binder: rabbit
 #      bindings:
-#        orderCreateIn-in-0:     # Канал для Consumer (создастся автоматом)
+#        order-create-out-0:
 #          destination: orders
 #          binder: rabbit
-#          group: payment-group
+#          producer:
+#            required-groups: order-group
+#        order-create-in-0:
+#          destination: orders
+#          binder: rabbit
+#          group: order-group
 #      rabbit:
 #        bindings:
-#          orderCreateIn-in-0:
+#          order-create-in-0:
 #            consumer:
 #              queue-name-group-only: true
   rabbitmq:
@@ -49,10 +53,26 @@ spring:
     port: 5672
 
 
+
+  #    bus:
+#      enabled: true
+#      amqp:
+#        enabled: true
+#        host: localhost
+#        port: 5672
+#        username: guest
+#        password: guest
+#  amqp:
+#    enabled: true
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+
   # H2 database
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./data/payment
+    url: jdbc:h2:file:./data/order
     username: sa
     password:
   hikari:
