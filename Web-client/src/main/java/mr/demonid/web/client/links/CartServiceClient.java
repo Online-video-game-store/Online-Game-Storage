@@ -1,8 +1,7 @@
 package mr.demonid.web.client.links;
 
-import jakarta.servlet.http.HttpServletRequest;
 import mr.demonid.web.client.configs.FeignClientConfig;
-import mr.demonid.web.client.dto.CartItemRequest;
+import mr.demonid.web.client.dto.CartItemResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +14,10 @@ import java.util.List;
 public interface CartServiceClient {
 
     @PostMapping("/pk8000/api/public/cart/add")
-    ResponseEntity<CartItemRequest> addItem(@RequestParam Long productId, @RequestParam Integer quantity);
+    ResponseEntity<CartItemResponse> addItem(@RequestParam Long productId, @RequestParam Integer quantity);
 
     @GetMapping("/pk8000/api/public/cart/read")
-    ResponseEntity<List<CartItemRequest>> getItems();
+    ResponseEntity<List<CartItemResponse>> getItems();
 
     @GetMapping("/pk8000/api/public/cart/count")
     ResponseEntity<Integer> getItemQuantity();

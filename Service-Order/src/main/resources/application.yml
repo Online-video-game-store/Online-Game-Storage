@@ -16,19 +16,28 @@ spring:
   cloud:
     stream:
       bindings:
-        orderCreate-out-0:
-          destination: order.exchange
-        orderCreate-in-0:
-          destination: order.exchange
-          group: paymentGroup
+        orderCreate-out-0:                # канал для отправки сообщений
+          destination: order.exchange     # exchange (обменник)
+          content-type: application/json
+#        orderCreate-in-0:
+#          destination: order.exchange
+#          content-type: application/json
+#          group: orderGroup
+#        orderCancel-out-0:
+#          destination: order.exchange
+#          content-type: application/json
+#        orderCancel-in-0:
+#          destination: order.exchange
+#          content-type: application/json
+#          group: orderGroup
       rabbit:
         bindings:
           orderCreate-out-0:
             producer:
-              routing-key-expression: '''order.created'''
-          orderCreate-in-0:
-            consumer:
-              binding-routing-key: 'order.created'
+              routing-key-expression: 'order.created'   # ключ маршрутизации
+#          orderCreate-in-0:
+#            consumer:
+#              binding-routing-key: 'order.created'
 #
 #  cloud:
 #    stream:

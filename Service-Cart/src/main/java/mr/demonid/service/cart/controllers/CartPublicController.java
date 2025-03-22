@@ -2,7 +2,7 @@ package mr.demonid.service.cart.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 import mr.demonid.service.cart.services.Cart;
 import mr.demonid.service.cart.services.CartFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class CartPublicController {
      * @param request   Запрос, для идентификации пользователя.
      */
     @PostMapping("/add")
-    public ResponseEntity<CartItemRequest> addItem(@RequestParam Long productId, @RequestParam Integer quantity, HttpServletRequest request) {
+    public ResponseEntity<CartItemResponse> addItem(@RequestParam Long productId, @RequestParam Integer quantity, HttpServletRequest request) {
 
         log.info("-- cart add product = {}, quantity = {}", productId, quantity);
         Cart cart = cartFactory.getCart(request);
@@ -43,7 +43,7 @@ public class CartPublicController {
      * Возвращает список товаров в корзине пользователя.
      */
     @GetMapping("/read")
-    public ResponseEntity<List<CartItemRequest>> getItems(HttpServletRequest request) {
+    public ResponseEntity<List<CartItemResponse>> getItems(HttpServletRequest request) {
         Cart cart = cartFactory.getCart(request);
         return ResponseEntity.ok(cart.getItems());
     }

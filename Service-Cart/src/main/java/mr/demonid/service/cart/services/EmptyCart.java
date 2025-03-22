@@ -1,6 +1,6 @@
 package mr.demonid.service.cart.services;
 
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class EmptyCart implements Cart {
     @Override
-    public CartItemRequest addItem(Long productId, int quantity) {
+    public CartItemResponse addItem(Long productId, int quantity) {
         return null;
     }
 
@@ -20,7 +20,7 @@ public class EmptyCart implements Cart {
     }
 
     @Override
-    public List<CartItemRequest> getItems() {
+    public List<CartItemResponse> getItems() {
         return List.of();
     }
 

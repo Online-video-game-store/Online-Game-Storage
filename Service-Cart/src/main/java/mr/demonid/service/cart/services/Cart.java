@@ -1,6 +1,6 @@
 package mr.demonid.service.cart.services;
 
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface Cart {
      * @param productId Идентификатор товара
      * @param quantity  Количество товара
      */
-    CartItemRequest addItem(Long productId, int quantity);
+    CartItemResponse addItem(Long productId, int quantity);
 
     /**
      * Удаление товара из корзины текущего пользователя.
@@ -22,7 +22,7 @@ public interface Cart {
     /**
      * Возвращает полный список товаров в корзине текущего пользователя.
      */
-    List<CartItemRequest> getItems();
+    List<CartItemResponse> getItems();
 
     /**
      * Возвращает количество всех товаров в корзине текущего пользователя.

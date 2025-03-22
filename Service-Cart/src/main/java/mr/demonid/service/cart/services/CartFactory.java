@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,7 +67,7 @@ public class CartFactory {
         AuthCart authCart = authCartProvider.getObject();
         authCart.setUserId(userId);
 
-        List<CartItemRequest> source = anonCart.getItems();
+        List<CartItemResponse> source = anonCart.getItems();
         anonCart.clearCart();
         // отправляем в корзину авторизированного пользователя, т.е. в БД
         if (source != null && !source.isEmpty()) {

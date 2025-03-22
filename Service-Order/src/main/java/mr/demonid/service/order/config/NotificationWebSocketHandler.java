@@ -1,5 +1,6 @@
 package mr.demonid.service.order.config;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -10,33 +11,41 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+
+/**
+ * WebSocketHandler для отправки уведомлений.
+ */
 @Component
+@Log4j2
 public class NotificationWebSocketHandler extends TextWebSocketHandler {
 
     private static final Set<WebSocketSession> sessions = new HashSet<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.add(session);  // Сохраняем сессию при подключении клиента
+        // Сохраняем сессию при подключении клиента
+        sessions.add(session);
     }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Обработка входящих сообщений от клиента (если нужно)
+        // Обработка входящих сообщений от клиента
         System.out.println("Received from client: " + message.getPayload());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        sessions.remove(session);  // Удаляем сессию при отключении клиента
+        // Удаляем сессию при отключении клиента
+        sessions.remove(session);
     }
 
     public void sendMessageToAllClients(String message) {
         for (WebSocketSession session : sessions) {
             try {
-                session.sendMessage(new TextMessage(message));  // Отправка сообщения всем клиентам
+                // Отправка сообщения всем клиентам
+                session.sendMessage(new TextMessage(message));
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("NotificationWebSocketHandler: {}", e.getMessage());
             }
         }
     }

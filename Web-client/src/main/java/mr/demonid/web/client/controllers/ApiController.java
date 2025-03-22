@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.CartAddItemFailed;
 import mr.demonid.web.client.dto.CartItem;
-import mr.demonid.web.client.dto.CartItemRequest;
+import mr.demonid.web.client.dto.CartItemResponse;
 import mr.demonid.web.client.dto.CartAddItemSuccess;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
@@ -42,8 +42,8 @@ public class ApiController {
      * Добавление товара в корзину
      */
     @PostMapping("/add-to-cart")
-    public ResponseEntity<?> addToCart(@RequestBody CartItemRequest request) {
-        CartItemRequest res = cartServices.addItem(request.getProductId(), request.getQuantity());
+    public ResponseEntity<?> addToCart(@RequestBody CartItemResponse request) {
+        CartItemResponse res = cartServices.addItem(request.getProductId(), request.getQuantity());
         if (res != null) {
             ProductDTO product = productServices.getProductById(request.getProductId());
             return ResponseEntity.ok(

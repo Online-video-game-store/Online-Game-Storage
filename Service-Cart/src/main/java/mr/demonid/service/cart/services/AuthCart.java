@@ -2,7 +2,7 @@ package mr.demonid.service.cart.services;
 
 import lombok.Setter;
 import mr.demonid.service.cart.domain.CartItem;
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 import mr.demonid.service.cart.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -25,14 +25,14 @@ public class AuthCart implements Cart {
 
 
     @Override
-    public CartItemRequest addItem(Long productId, int quantity) {
+    public CartItemResponse addItem(Long productId, int quantity) {
         CartItem item = cartRepository.findByUserIdAndProductId(userId, productId);
         if (item == null) {
             item = new CartItem(userId, productId, 0);
         }
         item.setQuantity(item.getQuantity() + quantity);
         item = cartRepository.save(item);
-        return new CartItemRequest(item.getProductId(), item.getQuantity());
+        return new CartItemResponse(item.getProductId(), item.getQuantity());
     }
 
     @Override
@@ -41,9 +41,9 @@ public class AuthCart implements Cart {
     }
 
     @Override
-    public List<CartItemRequest> getItems() {
+    public List<CartItemResponse> getItems() {
         List<CartItem> items = cartRepository.findByUserId(userId);
-        return items.stream().map(item -> new CartItemRequest(item.getProductId(), item.getQuantity())).toList();
+        return items.stream().map(item -> new CartItemResponse(item.getProductId(), item.getQuantity())).toList();
     }
 
 //    @Override
@@ -57,8 +57,8 @@ public class AuthCart implements Cart {
 
     @Override
     public int getQuantity() {
-        List<CartItemRequest> cart = getItems();
-        return cart.stream().mapToInt(CartItemRequest::getQuantity).sum();
+        List<CartItemResponse> cart = getItems();
+        return cart.stream().mapToInt(CartItemResponse::getQuantity).sum();
     }
 
     @Override

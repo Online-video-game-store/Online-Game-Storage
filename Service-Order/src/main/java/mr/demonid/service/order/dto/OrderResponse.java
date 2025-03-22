@@ -3,22 +3,20 @@ package mr.demonid.service.order.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mr.demonid.service.order.domain.OrderStatus;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-/**
- * Сообщение на проведение заказа.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreatedEvent {
+public class OrderResponse {
     private UUID orderId;
     private String userId;
-    private Long paymentId;
     private BigDecimal totalAmount;
-    private List<CartItemResponse> items;
+    private Long paymentId;
+    private LocalDateTime createAt;
+    private OrderStatus status;
 }

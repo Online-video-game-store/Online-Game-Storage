@@ -1,7 +1,7 @@
 package mr.demonid.web.client.services;
 
 import mr.demonid.web.client.dto.CartItem;
-import mr.demonid.web.client.dto.CartItemRequest;
+import mr.demonid.web.client.dto.CartItemResponse;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface CartServices {
     /**
      * Добавление товара в корзину.
      */
-    CartItemRequest addItem(Long productId, Integer quantity);
+    CartItemResponse addItem(Long productId, Integer quantity);
 
     /**
      * Список всех товаров в корзине текущего пользователя.

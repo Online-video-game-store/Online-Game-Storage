@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.CartItem;
-import mr.demonid.web.client.dto.CartItemRequest;
+import mr.demonid.web.client.dto.CartItemResponse;
 import mr.demonid.web.client.links.CartServiceClient;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class CartServiceImpl implements CartServices {
 
 
     @Override
-    public CartItemRequest addItem(Long productId, Integer quantity) {
+    public CartItemResponse addItem(Long productId, Integer quantity) {
         try {
             return cartServiceClient.addItem(productId, quantity).getBody();
         } catch (FeignException e) {
@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartServices {
     public List<CartItem> getItems() {
         List<CartItem> items = new ArrayList<>();
         try {
-            List<CartItemRequest> res = cartServiceClient.getItems().getBody();
+            List<CartItemResponse> res = cartServiceClient.getItems().getBody();
             if (res != null && !res.isEmpty()) {
                 items = res.stream().map(e -> {
                     ProductDTO product = productServiceClient.getProductById(e.getProductId()).getBody();

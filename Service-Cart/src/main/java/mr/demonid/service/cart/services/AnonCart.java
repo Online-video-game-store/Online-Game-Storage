@@ -2,7 +2,7 @@ package mr.demonid.service.cart.services;
 
 import lombok.Setter;
 import mr.demonid.service.cart.domain.CartItem;
-import mr.demonid.service.cart.dto.CartItemRequest;
+import mr.demonid.service.cart.dto.CartItemResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
 
@@ -24,7 +24,7 @@ public class AnonCart implements Cart {
 
 
     @Override
-    public CartItemRequest addItem(Long productId, int quantity) {
+    public CartItemResponse addItem(Long productId, int quantity) {
         List<CartItem> cart = cartItems.computeIfAbsent(userId, k -> new ArrayList<>());
 
         CartItem item = cart.stream().filter(cartItem -> cartItem.getProductId().equals(productId)).findFirst().orElse(null);
@@ -34,7 +34,7 @@ public class AnonCart implements Cart {
             item = new CartItem(userId, productId, quantity);
             cart.add(item);
         }
-        return new CartItemRequest(item.getProductId(), item.getQuantity());
+        return new CartItemResponse(item.getProductId(), item.getQuantity());
     }
 
     @Override
@@ -49,9 +49,9 @@ public class AnonCart implements Cart {
     }
 
     @Override
-    public List<CartItemRequest> getItems() {
+    public List<CartItemResponse> getItems() {
         List<CartItem> items = cartItems.getOrDefault(userId, Collections.emptyList());
-        return items.stream().map(e -> new CartItemRequest(e.getProductId(), e.getQuantity())).collect(Collectors.toList());
+        return items.stream().map(e -> new CartItemResponse(e.getProductId(), e.getQuantity())).collect(Collectors.toList());
     }
 
     @Override

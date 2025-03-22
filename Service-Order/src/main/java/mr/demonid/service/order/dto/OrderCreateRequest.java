@@ -6,17 +6,12 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 
-/**
- * Сообщение на проведение заказа.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreatedEvent {
-    private UUID orderId;
+public class OrderCreateRequest {
     private String userId;
     private Long paymentId;
     private BigDecimal totalAmount;
