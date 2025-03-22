@@ -16,47 +16,29 @@ spring:
   cloud:
     stream:
       bindings:
-        orderCreate-out-0:                # канал для отправки сообщений
+        orderEvents-out-0:                # канал для отправки сообщений
           destination: order.exchange     # exchange (обменник)
           content-type: application/json
-#        orderCreate-in-0:
-#          destination: order.exchange
-#          content-type: application/json
-#          group: orderGroup
-#        orderCancel-out-0:
-#          destination: order.exchange
-#          content-type: application/json
-#        orderCancel-in-0:
-#          destination: order.exchange
-#          content-type: application/json
-#          group: orderGroup
+        orderEvents-in-0:
+          destination: order.exchange
+          content-type: application/json
+          group: groupGroup
+        orderCancel-in-0:
+          destination: order.exchange
+          content-type: application/json
+          group: groupGroup
       rabbit:
         bindings:
-          orderCreate-out-0:
+          orderEvents-out-0:
             producer:
-              routing-key-expression: 'order.created'   # ключ маршрутизации
-#          orderCreate-in-0:
-#            consumer:
-#              binding-routing-key: 'order.created'
-#
-#  cloud:
-#    stream:
-#      default-binder: rabbit
-#      bindings:
-#        order-create-out-0:
-#          destination: orders
-#          binder: rabbit
-#          producer:
-#            required-groups: order-group
-#        order-create-in-0:
-#          destination: orders
-#          binder: rabbit
-#          group: order-group
-#      rabbit:
-#        bindings:
-#          order-create-in-0:
-#            consumer:
-#              queue-name-group-only: true
+              routing-key-expression: '''headers['type']'''   # сами управляем ключом маршрутизации
+          orderEvents-in-0:
+            consumer:
+              binding-routing-key: 'product.good'             # для завершения заказа
+          orderCancel-in-0:
+            consumer:
+              binding-routing-key: 'product.cancel, payment.cancel' # для отмены заказа
+
   rabbitmq:
     host: localhost
     port: 5672

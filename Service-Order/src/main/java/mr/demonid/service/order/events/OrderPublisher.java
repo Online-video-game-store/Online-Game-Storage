@@ -54,10 +54,9 @@ public class OrderPublisher {
         } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
             // Пользователь авторизован через OIDC
             return oidcUser.getIdToken().getTokenValue();
-        } else {
-            // Пользователь не авторизован
-            log.error("-- getToken(): This user is anonymous");
         }
+        // Пользователь не авторизован
+        log.error("-- getToken(): This user is anonymous");
         return null;
     }
 }

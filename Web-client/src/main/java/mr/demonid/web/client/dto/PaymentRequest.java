@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PaymentRequest {
-    private String paymentMethodId;
-    private String cardId;
+    private Long paymentMethodId;
+    private Long cardId;
 
 }

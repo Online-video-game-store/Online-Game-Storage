@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.dto.payment.CardRequest;
+import mr.demonid.web.client.services.OrderService;
 import mr.demonid.web.client.services.PaymentService;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class PaymentController {
 
     private PaymentService paymentService;
+    private OrderService orderService;
 
 
     /**
@@ -64,17 +66,10 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Выберите платежную систему"));
         }
         // Формируем заказ
-        String userid = IdnUtil.getUserId();
-        if (userid == null) {
-
+        if (orderService.createOrder(request)) {
+            return ResponseEntity.ok(Map.of("status", "success", "message", "Оплата успешна!"));
         }
         return ResponseEntity.ok(Map.of("status", "error", "message", "Ошибка оплаты. Попробуйте позже."));
-
-//        boolean success = Math.random() > 0.3; // Симуляция успеха 70%
-//        if (success) {
-//            return ResponseEntity.ok(Map.of("status", "success", "message", "Оплата успешна!"));
-//        } else {
-//            return ResponseEntity.ok(Map.of("status", "error", "message", "Ошибка оплаты"));
-//        }
     }
+
 }
