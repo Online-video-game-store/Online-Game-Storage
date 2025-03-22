@@ -50,6 +50,14 @@ spring:
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
 
+        - id: websocket-route
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/ws/notifications
+          filters:
+            - RemoveRequestHeader=Sec-WebSocket-Protocol
+
+
     loadbalancer:
       retry:
         enabled: true                         # Повторные попытки при сбоях балансировщика

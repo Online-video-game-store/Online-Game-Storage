@@ -148,6 +148,24 @@
         }
     }
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const socket = new WebSocket("ws://localhost:9000/ws/notifications");
+
+        socket.onopen = function () {
+            console.log("WebSocket connection established.");
+        };
+
+        socket.onmessage = function (event) {
+            console.log("Notification received: " + event.data);
+            alert("Уведомление: " + event.data);
+        };
+
+        socket.onclose = function () {
+            console.log("WebSocket connection closed.");
+        };
+    });
+</script>
 
 
 <!-- Всплывающее окно корзины -->
