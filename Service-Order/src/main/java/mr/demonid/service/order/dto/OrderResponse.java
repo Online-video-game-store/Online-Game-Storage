@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderResponse {
     private UUID orderId;
-    private String userId;
+    private UUID userId;
     private BigDecimal totalAmount;
     private Long paymentId;
     private LocalDateTime createAt;

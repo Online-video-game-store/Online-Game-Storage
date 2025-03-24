@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,7 +16,7 @@ public class CartItem {
     private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private UUID userId;
 
     @Column(nullable = false)
     private Long productId;
@@ -29,7 +30,7 @@ public class CartItem {
         this(null,null,0);
     }
 
-    public CartItem(String userId, Long productId, int quantity) {
+    public CartItem(UUID userId, Long productId, int quantity) {
         this.id = null;
         this.userId = userId;
         this.productId = productId;

@@ -6,7 +6,11 @@ import mr.demonid.service.order.domain.Order;
 import mr.demonid.service.order.domain.OrderStatus;
 import mr.demonid.service.order.dto.OrderCreateRequest;
 import mr.demonid.service.order.dto.OrderResponse;
+import mr.demonid.service.order.events.OrderPublisher;
+import mr.demonid.service.order.exceptions.CreateOrderException;
 import mr.demonid.service.order.repository.OrderRepository;
+import mr.demonid.service.order.utils.Converts;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,29 +21,44 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
-
+    private OrderPublisher orderPublisher;
 
     /**
-     * Запись нового заказа.
+     * Открывает новый заказ и запускает процесс его оформления.
+     * Возвращает предварительное состояние операции, не дожидаясь её фактического завершения.
      */
-    @Override
-    public OrderResponse save(OrderCreateRequest order) {
+    public void createOrder(OrderCreateRequest request) {
         try {
-            Order newOrder = Order.builder()
-                    .userId(order.getUserId())
-                    .paymentId(order.getPaymentId())
-                    .cardId(order.getCardId())
-                    .totalAmount(order.getTotalAmount())
+            Order order = Order.builder()
+                    .userId(request.getUserId())
+                    .paymentId(request.getPaymentId())
+                    .cardId(request.getCardId())
+                    .totalAmount(request.getTotalAmount())
                     .status(OrderStatus.Pending)
                     .build();
-            log.info("-- save order: {}", newOrder);
-            Order res = orderRepository.save(newOrder);
-            return OrderUtil.orderToDto(res);
+            Order res = orderRepository.save(order);
+            orderPublisher.sendCreateOrderEvent(Converts.makeOrderCreatedEvent(res.getOrderId(), request));
         } catch (Exception e) {
-            log.error("OrderServiceImpl.save(): {}", e.getMessage());
+            log.error("OrderServiceImpl.createOrder(): {}", e.getMessage());
+            throw new CreateOrderException(e.getMessage());
         }
+    }
+
+    /**
+     * Изменение статуса заказа.
+     */
+    @Override
+    public OrderResponse updateOrder(UUID orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setStatus(status);
+            order = orderRepository.save(order);
+            return OrderUtil.orderToDto(order);
+        }
+        log.warn("OrderServiceImpl.updateOrder(): Order not found: {}", orderId);
         return null;
     }
+
 
     /**
      * Возврат заказа из БД по его Id
@@ -57,20 +76,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(UUID.fromString(orderId));
-    }
-
-    /**
-     * Изменение статуса заказа.
-     */
-    @Override
-    public OrderResponse updateOrder(String orderId, OrderStatus status) {
-        Order order = orderRepository.findById(UUID.fromString(orderId)).orElse(null);
-        if (order != null) {
-            order.setStatus(status);
-            order = orderRepository.save(order);
-            return OrderUtil.orderToDto(order);
-        }
-        return null;
     }
 
 }

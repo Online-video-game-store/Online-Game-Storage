@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class OrderService {
 
     public boolean createOrder(PaymentRequest request) {
         log.info("-- Creating order with payment: {}", request);
-        String userId = IdnUtil.getUserId();
+        UUID userId = IdnUtil.getUserId();
         if (userId != null) {
             // получаем товары из корзины и вычисляем общую сумму покупки
             List<CartItem> items = cartServices.getItems();

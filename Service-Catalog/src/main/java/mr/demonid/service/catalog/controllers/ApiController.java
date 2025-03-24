@@ -18,28 +18,7 @@ import java.util.UUID;
 @Log4j2
 public class ApiController {
 
-    ReservedService reservedService;
-
-    /**
-     * Резервирование товара.
-     * @param request Параметры запроса (код товара, кто резервирует, сколько)
-     */
-    @PostMapping("/reserve")
-    public ResponseEntity<String> reserveCatalog(@RequestBody ProductReservationRequest request) {
-        log.info("-- reserve request: {}", request.toString());
-        reservedService.reserve(request);
-        return ResponseEntity.ok("Товар зарезервирован.");
-    }
-
-    /**
-     * Отмена резерва.
-     */
-    @PostMapping("/cancel")
-    public ResponseEntity<Void> unblock(@RequestBody UUID orderId) {
-        log.info("-- unblock request: {}", orderId.toString());
-        reservedService.cancelReserved(orderId);
-        return ResponseEntity.ok().build();
-    }
+    private ReservedService reservedService;
 
     /**
      * Завершение заказа, списываем его из резерва.

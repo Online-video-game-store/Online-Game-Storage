@@ -1,7 +1,7 @@
 package mr.demonid.service.order.utils;
 
 import mr.demonid.service.order.dto.OrderCreateRequest;
-import mr.demonid.service.order.dto.OrderCreatedEvent;
+import mr.demonid.service.order.dto.events.OrderCreatedEvent;
 
 import java.util.UUID;
 

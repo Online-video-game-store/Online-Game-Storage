@@ -5,15 +5,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.cart.dto.CartItemResponse;
+import mr.demonid.service.cart.utils.TokenTools;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Фабрика корзин.
@@ -28,13 +31,14 @@ public class CartFactory {
     private final ObjectProvider<AnonCart> anonCartProvider;
     private final ObjectProvider<AuthCart> authCartProvider;
     private final EmptyCart emptyCart;
+    private TokenTools tokenTools;
 
     /**
      * Возвращает корзину текущего пользователя.
      */
     public Cart getCart(HttpServletRequest request) {
-        if (isAnonymous()) {
-            String id = getAnonymousId(request);
+        if (tokenTools.isAnonymous()) {
+            UUID id = tokenTools.getAnonymousId(request);
             log.info("-- Anon with ID = {}", id);
             if (id != null) {
                 // создаем новый экземпляр корзины
@@ -44,7 +48,7 @@ public class CartFactory {
             }
             return emptyCart;   // кто-то без идентификатора
         }
-        String id = getUserId();
+        UUID id = tokenTools.getUserIdFromToken();
         if (id != null) {
             log.info("-- User with ID = {}", id);
             // создаем новый экземпляр корзины для аутентифицированного пользователя
@@ -60,7 +64,7 @@ public class CartFactory {
      * товары с анонимной корзины в БД.
      * @param anonId Идентификатор до авторизации
      */
-    public void registerUser(String anonId, String userId) {
+    public void registerUser(UUID anonId, UUID userId) {
         // инициализируем объекты
         AnonCart anonCart = anonCartProvider.getObject();
         anonCart.setUserId(anonId);
@@ -69,47 +73,10 @@ public class CartFactory {
 
         List<CartItemResponse> source = anonCart.getItems();
         anonCart.clearCart();
-        // отправляем в корзину авторизированного пользователя, т.е. в БД
+        // Отправляем в корзину авторизированного пользователя, т.е. в БД
         if (source != null && !source.isEmpty()) {
             source.forEach(e -> authCart.addItem(e.getProductId(), e.getQuantity()));
         }
     }
 
-
-    /**
-     * Проверяет, является ли текущий пользователь анонимом.
-     */
-    private static boolean isAnonymous() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-    }
-
-    /**
-     * Возвращает ID пользователя из поля "sub" Jwt-Токена.
-     */
-    private static String getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            log.info("  -- user name = {}", authentication.getName());
-            Jwt jwt = (Jwt) authentication.getPrincipal();
-            return jwt.getClaim("sub");
-        }
-        log.info("  -- user name = null");
-        return null;
-    }
-
-    /**
-     * Возвращает ID пользователя из поля "anon_id" куков
-     */
-    private static String getAnonymousId(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            return Arrays.stream(cookies)
-                    .filter(cookie -> "ANON_ID".equals(cookie.getName()))
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
-    }
 }

@@ -32,9 +32,9 @@ public class PaymentService {
 
     public List<CardRequest> getCards() {
         try {
-            String userId = IdnUtil.getUserId();
+            UUID userId = IdnUtil.getUserId();
             if (userId != null) {
-                return paymentServiceClient.getCards(UUID.fromString(userId)).getBody();
+                return paymentServiceClient.getCards(userId).getBody();
             }
         } catch (FeignException e) {
             log.error("PaymentService.getCards(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
@@ -44,10 +44,10 @@ public class PaymentService {
 
     public boolean addNewCard(NewCardRequest cardRequest) {
         try {
-            String userId = IdnUtil.getUserId();
+            UUID userId = IdnUtil.getUserId();
             if (userId != null) {
                 log.info("-- Adding new card user: {}", userId);
-                paymentServiceClient.addCard(new mr.demonid.web.client.dto.payment.NewCardRequest(UUID.fromString(userId), cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
+                paymentServiceClient.addCard(new mr.demonid.web.client.dto.payment.NewCardRequest(userId, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
                 return true;
             }
         } catch (FeignException e) {

@@ -4,6 +4,7 @@ import mr.demonid.web.client.dto.CartItem;
 import mr.demonid.web.client.dto.CartItemResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CartServices {
 
@@ -35,6 +36,6 @@ public interface CartServices {
     /**
      * Аутентификация. Перевод из анонима в юзера.
      */
-    boolean authUser(String anonId, String userId);
+    boolean authUser(UUID anonId, UUID userId);
 
 }

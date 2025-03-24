@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Контроллер корзины.
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/pk8000/api/public/cart")
-public class CartPublicController {
+public class CartController {
 
     @Autowired
     private CartFactory cartFactory;
@@ -83,7 +84,7 @@ public class CartPublicController {
      * @param userId Текущий идентификатор пользователя.
      */
     @PostMapping("/register-user")
-    public ResponseEntity<Void> registerUser(@RequestParam String anonId, @RequestParam String userId) {
+    public ResponseEntity<Void> registerUser(@RequestParam UUID anonId, @RequestParam UUID userId) {
         log.info("-- Registering anon {} to user with id {}", anonId, userId);
         cartFactory.registerUser(anonId, userId);
         return ResponseEntity.ok().build();

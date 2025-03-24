@@ -22,7 +22,7 @@ public class Order {
     private UUID orderId;
 
     @Column(nullable = false)
-    private String userId;
+    private UUID userId;
 
     @Column(nullable = false)
     private BigDecimal totalAmount;
@@ -58,7 +58,7 @@ public class Order {
             return this;
         }
 
-        public Builder userId(String userId) {
+        public Builder userId(UUID userId) {
             order.userId = userId;
             return this;
         }

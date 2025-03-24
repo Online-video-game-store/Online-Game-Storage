@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Корзина авторизированного пользователя.
+ * Для каждого пользователя свой экземпляр, поскольку в нем хранится userId.
  */
 @Component
 @Scope("prototype")
@@ -21,7 +23,7 @@ public class AuthCart implements Cart {
     private CartRepository cartRepository;      // внедряем БД
 
     @Setter
-    private String userId;
+    private UUID userId;
 
 
     @Override
@@ -45,15 +47,6 @@ public class AuthCart implements Cart {
         List<CartItem> items = cartRepository.findByUserId(userId);
         return items.stream().map(item -> new CartItemResponse(item.getProductId(), item.getQuantity())).toList();
     }
-
-//    @Override
-//    public int getQuantity(String productId) {
-//        List<CartItem> cart = getItems();
-//        return cart.stream()
-//                .filter(cartItem -> cartItem.getProductId().equals(productId))
-//                .findFirst()
-//                .orElse(new CartItem()).getQuantity();
-//    }
 
     @Override
     public int getQuantity() {

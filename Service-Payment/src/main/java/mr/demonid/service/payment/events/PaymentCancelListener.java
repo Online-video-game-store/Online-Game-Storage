@@ -7,6 +7,7 @@ import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,24 +23,29 @@ import java.util.function.Consumer;
 @Log4j2
 public class PaymentCancelListener {
 
-    private JwtValidatorService jwtValidatorService;
+    private JwtService jwtService;
     private TokenTool tokenTool;
 
 
     @Bean
     public Consumer<Message<String>> channelOrderCancel() {
         return message -> {
-            String jwtToken = tokenTool.getToken(message);
-            if (jwtToken != null && jwtValidatorService.validateJwt(jwtToken)) {
-                String eventType = (String) message.getHeaders().get("type");
+            try {
+                String jwtToken = tokenTool.getToken(message);
+                if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
+                    String eventType = (String) message.getHeaders().get("type");
 
-                if (Objects.requireNonNull(eventType).equals("order.stop")) {
-                    handlePaymentCancel(message.getPayload());
+                    if (Objects.requireNonNull(eventType).equals("order.stop")) {
+                        handlePaymentCancel(message.getPayload());
+                    } else {
+                        log.warn("Неизвестный тип события: {}", eventType);
+                    }
                 } else {
-                    log.warn("Неизвестный тип события: {}", eventType);
+                    log.error("Недействительный Jwt-токен");
                 }
-            } else {
-                log.error("Недействительный Jwt-токен");
+            } finally {
+                log.info("-- Clear security context --");
+                SecurityContextHolder.clearContext();
             }
         };
     }

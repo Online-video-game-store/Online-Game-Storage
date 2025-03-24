@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 public class AnonCart implements Cart {
 
-    private static final Map<String, List<CartItem>> cartItems = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<CartItem>> cartItems = new ConcurrentHashMap<>();
     @Setter
-    private String userId;
+    private UUID userId;
 
 
     @Override

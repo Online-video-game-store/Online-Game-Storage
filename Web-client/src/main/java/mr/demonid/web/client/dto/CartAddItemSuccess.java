@@ -2,6 +2,7 @@ package mr.demonid.web.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -10,11 +11,12 @@ import java.math.BigDecimal;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class CartAddItemSuccess {
-    boolean success;
-    String productName;
-    int quantity;
-    BigDecimal totalPrice;
-    int cartTotalItems;
+    private boolean success;
+    private String productName;
+    private int quantity;
+    private BigDecimal totalPrice;
+    private int cartTotalItems;
 }
 

@@ -1,4 +1,4 @@
-package mr.demonid.service.catalog.events;
+package mr.demonid.service.payment.events;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

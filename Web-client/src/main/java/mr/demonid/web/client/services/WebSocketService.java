@@ -1,4 +1,4 @@
-package mr.demonid.service.order.services;
+package mr.demonid.web.client.services;
 
 public interface WebSocketService {
 

@@ -4,15 +4,19 @@ package mr.demonid.service.order.events;
 import com.rabbitmq.client.LongString;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.order.domain.OrderStatus;
+import mr.demonid.service.order.services.OrderService;
 import mr.demonid.service.order.utils.TokenTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.token.TokenService;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 
@@ -26,35 +30,45 @@ import java.util.function.Consumer;
 @Log4j2
 public class OrderCancelListener {
 
-    private JwtValidatorService jwtValidatorService;
+    private JwtService jwtService;
     private TokenTool tokenTool;
+    private OrderService orderService;
+    private OrderPublisher orderPublisher;
 
 
     @Bean
-    public Consumer<Message<String>> channelOrderCancel() {
+    public Consumer<Message<UUID>> channelOrderCancel() {
         return message -> {
-            String jwtToken = tokenTool.getToken(message);
-            if (jwtToken != null && jwtValidatorService.validateJwt(jwtToken)) {
-                String eventType = (String) message.getHeaders().get("type");
-                switch (Objects.requireNonNull(eventType)) {
-                    case "product.cancel":
-                    case "payment.cancel":
-                        orderCancel(message.getPayload());
-                        break;
-                    default:
-                        log.warn("Неизвестный тип события: {}", eventType);
+            try {
+                String jwtToken = tokenTool.getToken(message);
+                if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
+                    String eventType = (String) message.getHeaders().get("type");
+                    switch (Objects.requireNonNull(eventType)) {
+                        case "product.cancel":
+                        case "payment.cancel":
+                            orderCancel(message.getPayload());
+                            break;
+                        default:
+                            log.warn("Неизвестный тип события: {}", eventType);
+                    }
+                } else {
+                    log.error("Недействительный Jwt-токен");
                 }
-            } else {
-                log.error("Недействительный Jwt-токен");
+
+            } finally {
+                log.info("-- Clean security context --");
+                SecurityContextHolder.clearContext();
             }
         };
     }
 
-
     /*
     Заказ завершился ошибкой.
      */
-    private void orderCancel(String message) {
-        log.info("-- order cancel with message: {}", message);
+    private void orderCancel(UUID orderId) {
+        log.info("-- order {} cancelled", orderId);
+        orderService.updateOrder(orderId, OrderStatus.Cancelled);
+        orderPublisher.sendFailOrderEvent(orderId);
     }
+
 }

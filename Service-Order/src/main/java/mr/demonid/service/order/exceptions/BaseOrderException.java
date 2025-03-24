@@ -8,8 +8,8 @@ public abstract class BaseOrderException extends RuntimeException {
 
     private final String title;
 
-    public BaseOrderException(String message) {
+    public BaseOrderException(String title, String message) {
         super(message);
-        this.title = message;
+        this.title = title;
     }
 }

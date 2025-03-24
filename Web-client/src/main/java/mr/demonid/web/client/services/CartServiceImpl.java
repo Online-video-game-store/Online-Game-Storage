@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -91,7 +92,7 @@ public class CartServiceImpl implements CartServices {
     }
 
     @Override
-    public boolean authUser(String anonId, String userId) {
+    public boolean authUser(UUID anonId, UUID userId) {
         try {
             cartServiceClient.registerUser(anonId, userId);
             return true;
@@ -100,4 +101,5 @@ public class CartServiceImpl implements CartServices {
             return false;
         }
     }
+
 }

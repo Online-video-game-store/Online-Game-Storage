@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "CART-SERVICE", configuration = FeignClientConfig.class)      // имя сервиса, под которым он зарегистрирован в Eureka
 public interface CartServiceClient {
@@ -29,5 +30,5 @@ public interface CartServiceClient {
     ResponseEntity<Void> removeItem(@RequestParam Long productId);
 
     @PostMapping("/pk8000/api/public/cart/register-user")
-    ResponseEntity<Void> registerUser(@RequestParam String anonId, @RequestParam String userId);
+    ResponseEntity<Void> registerUser(@RequestParam UUID anonId, @RequestParam UUID userId);
 }

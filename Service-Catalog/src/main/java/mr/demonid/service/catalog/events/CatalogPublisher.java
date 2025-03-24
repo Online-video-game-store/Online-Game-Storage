@@ -2,15 +2,12 @@ package mr.demonid.service.catalog.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.catalog.dto.OrderPaymentEvent;
+import mr.demonid.service.catalog.dto.events.OrderCancelEvent;
+import mr.demonid.service.catalog.dto.events.OrderPaymentEvent;
+import mr.demonid.service.catalog.dto.events.OrderTransferredEvent;
 import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 
@@ -31,7 +28,7 @@ public class CatalogPublisher {
      * Отправка сообщения об успешном резервировании товара.
      */
     public void sendProductReserved(OrderPaymentEvent event) {
-        String jwtToken = tokenTool.getToken();
+        String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
             streamBridge.send("orderEvents-out-0",
                     MessageBuilder.withPayload(event)
@@ -45,8 +42,8 @@ public class CatalogPublisher {
     /**
      * Отправка сообщения о списания резерва в службу набора и доставки товара.
      */
-    public void sendProductTransferred(String message) {
-        String jwtToken = tokenTool.getToken();
+    public void sendProductTransferred(OrderTransferredEvent message) {
+        String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
             streamBridge.send("orderEvents-out-0",
                     MessageBuilder.withPayload(message)
@@ -61,15 +58,15 @@ public class CatalogPublisher {
     /**
      * Отправка сообщения о невозможности зарезервировать товар.
      */
-    public void sendProductCancel(String errorMessage) {
-        String jwtToken = tokenTool.getToken();
+    public void sendProductCancel(OrderCancelEvent event) {
+        String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
             streamBridge.send("orderCancel-out-0",
-                    MessageBuilder.withPayload(errorMessage)
+                    MessageBuilder.withPayload(event)
                             .setHeader("type", "product.cancel")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
-            log.warn("Отправлено событие product.cancel: {}", errorMessage);
+            log.warn("Отправлено событие product.cancel: {}", event);
         }
     }
 

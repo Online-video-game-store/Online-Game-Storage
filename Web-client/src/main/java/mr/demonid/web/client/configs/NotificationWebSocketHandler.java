@@ -1,11 +1,11 @@
-package mr.demonid.service.order.config;
+package mr.demonid.web.client.configs;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashSet;

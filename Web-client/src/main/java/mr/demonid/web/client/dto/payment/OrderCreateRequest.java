@@ -7,13 +7,14 @@ import mr.demonid.web.client.dto.CartItemResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderCreateRequest {
-    private String userId;
+    private UUID userId;
     private Long paymentId;
     private Long cardId;
     private BigDecimal totalAmount;

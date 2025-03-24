@@ -1,18 +1,23 @@
-package mr.demonid.service.order.dto;
+package mr.demonid.service.order.dto.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mr.demonid.service.order.dto.CartItemResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 
+/**
+ * Сообщение на проведение заказа.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreateRequest {
+public class OrderCreatedEvent {
+    private UUID orderId;
     private UUID userId;
     private Long paymentId;
     private Long cardId;

@@ -1,8 +1,8 @@
-package mr.demonid.service.order.services;
+package mr.demonid.web.client.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.order.config.NotificationWebSocketHandler;
+import mr.demonid.web.client.configs.NotificationWebSocketHandler;
 import org.springframework.stereotype.Service;
 
 

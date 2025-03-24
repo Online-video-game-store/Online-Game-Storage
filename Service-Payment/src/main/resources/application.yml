@@ -44,12 +44,12 @@ spring:
           orderEvents-out-0:
             producer:
               routing-key-expression: "headers['type']"   # сами управляем ключом маршрутизации
-          orderCancel-out-0:
-            producer:
-              routing-key-expression: "headers['type']"
           orderEvents-in-0:
             consumer:
               binding-routing-key: 'product.reserved'
+          orderCancel-out-0:
+            producer:
+              routing-key-expression: "headers['type']"
           orderCancel-in-0:
             consumer:
               binding-routing-key: 'order.stop'

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class TokenTool {
 
+
     /**
      * Извлекает из заголовка Message токен.
      */
@@ -39,7 +40,7 @@ public class TokenTool {
      * Возвращает токен текущего пользователя.
      * null - если пользователь не аутентифицирован.
      */
-    public String getToken() {
+    public String getCurrentToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
@@ -51,7 +52,7 @@ public class TokenTool {
             return oidcUser.getIdToken().getTokenValue();
         }
         // Пользователь не авторизован
-        log.error("TokenTool.getToken(): This user is anonymous");
+        log.error("TokenTool.getCurrentToken(): This user is anonymous");
         return null;
     }
 

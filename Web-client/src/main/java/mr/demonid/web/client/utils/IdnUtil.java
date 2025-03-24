@@ -25,12 +25,12 @@ public class IdnUtil {
     /**
      * Возвращает идентификатор авторизированного пользователя.
      */
-    public static String getUserId() {
+    public static UUID getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
-            return jwtToken.getToken().getClaimAsString("sub");
+            return UUID.fromString(jwtToken.getToken().getClaimAsString("sub"));
         } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
-            return oidcUser.getIdToken().getClaimAsString("sub");
+            return UUID.fromString(oidcUser.getIdToken().getClaimAsString("sub"));
         }
         return null;
     }

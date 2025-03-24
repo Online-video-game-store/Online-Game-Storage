@@ -6,6 +6,7 @@ import mr.demonid.service.payment.domain.Card;
 import mr.demonid.service.payment.domain.UserEntity;
 import mr.demonid.service.payment.dto.CardRequest;
 import mr.demonid.service.payment.dto.NewCardRequest;
+import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
 import mr.demonid.service.payment.exceptions.AddCardException;
 import mr.demonid.service.payment.repository.CardRepository;
 import mr.demonid.service.payment.repository.UserEntityRepository;
@@ -67,6 +68,18 @@ public class UserEntityService {
         }
     }
 
+
+    /**
+     * Оплата заказа.
+     * В случае неудачи бросает исключение.
+     *
+     * @param order
+     */
+    public boolean payment(OrderPaymentEvent order) {
+        log.info("-- Payment started: {}", order);
+        // TODO: добавь оплату
+        return true;
+    }
 
 
 }

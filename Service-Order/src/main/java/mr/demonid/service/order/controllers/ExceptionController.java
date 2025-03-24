@@ -1,6 +1,7 @@
 package mr.demonid.service.order.controllers;
 
 import mr.demonid.service.order.exceptions.BaseOrderException;
+import mr.demonid.service.order.exceptions.CreateOrderException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,6 +12,14 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ExceptionController {
 
+
+//    @ExceptionHandler(CreateOrderException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public String handleCreateOrderException(CreateOrderException e) {
+//        return "[" + LocalDateTime.now() + "] " + e.getTitle() + ": " + e.getMessage();
+//    }
+//
+//
     @ExceptionHandler(BaseOrderException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBaseOrderException(BaseOrderException e) {

@@ -1,4 +1,4 @@
-package mr.demonid.service.order.config;
+package mr.demonid.web.client.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
