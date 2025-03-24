@@ -3,6 +3,7 @@ package mr.demonid.service.catalog.events;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.OrderPaymentEvent;
+import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.Authentication;
@@ -23,13 +24,14 @@ import org.springframework.stereotype.Service;
 public class CatalogPublisher {
 
     private StreamBridge streamBridge;
+    private TokenTool tokenTool;
 
 
     /**
-     * Отправка сообщения 'product.reserved'
+     * Отправка сообщения об успешном резервировании товара.
      */
     public void sendProductReserved(OrderPaymentEvent event) {
-        String jwtToken = getToken();
+        String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
             streamBridge.send("orderEvents-out-0",
                     MessageBuilder.withPayload(event)
@@ -41,16 +43,17 @@ public class CatalogPublisher {
     }
 
     /**
-     * Отправка сообщения 'product.good'
+     * Отправка сообщения о списания резерва в службу набора и доставки товара.
      */
-    public void sendProductGood(String message) {
-        String jwtToken = getToken();
+    public void sendProductTransferred(String message) {
+        String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
             streamBridge.send("orderEvents-out-0",
                     MessageBuilder.withPayload(message)
-                            .setHeader("type", "product.good")
+                            .setHeader("type", "product.transferred")
+                            .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
-            log.info("-- Отправлено событие product.good: {}", message);
+            log.info("-- Отправлено событие product.transferred: {}", message);
         }
     }
 
@@ -58,35 +61,17 @@ public class CatalogPublisher {
     /**
      * Отправка сообщения о невозможности зарезервировать товар.
      */
-    public void sendError(String errorMessage) {
-        String jwtToken = getToken();
+    public void sendProductCancel(String errorMessage) {
+        String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
             streamBridge.send("orderCancel-out-0",
                     MessageBuilder.withPayload(errorMessage)
-                            .setHeader("error.type", "processing.error")
+                            .setHeader("type", "product.cancel")
+                            .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
-            System.out.println("Отправлено сообщение об ошибке: " + errorMessage);
+            log.warn("Отправлено событие product.cancel: {}", errorMessage);
         }
     }
 
-
-    /*
-    Получение Jwt-токена из текущего контекста SecurityContext
-     */
-    private String getToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication instanceof JwtAuthenticationToken jwtToken) {
-            // Пользователь авторизован через Jwt
-            Jwt jwt = jwtToken.getToken();
-            return jwt.getTokenValue();
-        } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
-            // Пользователь авторизован через OIDC
-            return oidcUser.getIdToken().getTokenValue();
-        }
-        // Пользователь не авторизован
-        log.error("-- getToken(): This user is anonymous");
-        return null;
-    }
 
 }

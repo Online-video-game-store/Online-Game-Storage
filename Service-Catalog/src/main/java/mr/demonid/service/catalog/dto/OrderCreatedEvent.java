@@ -19,6 +19,7 @@ public class OrderCreatedEvent {
     private UUID orderId;
     private String userId;
     private Long paymentId;
+    private Long cardId;
     private BigDecimal totalAmount;
     private List<CartItemResponse> items;
 }

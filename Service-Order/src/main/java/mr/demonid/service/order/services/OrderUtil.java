@@ -21,7 +21,7 @@ public class OrderUtil {
         return Order.builder()
                 .orderId(dto.getOrderId())
                 .userId(dto.getUserId())
-                .paymentMethod(dto.getPaymentId())
+                .paymentId(dto.getPaymentId())
                 .createAt(dto.getCreateAt())
                 .totalAmount(dto.getTotalAmount())
                 .status(dto.getStatus())

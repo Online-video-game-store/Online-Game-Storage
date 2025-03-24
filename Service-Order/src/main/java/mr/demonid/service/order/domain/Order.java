@@ -1,7 +1,6 @@
 package mr.demonid.service.order.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +29,7 @@ public class Order {
 
     @Column(nullable = false)
     private Long paymentId;
+    private Long cardId;
 
     private LocalDateTime createAt;
 
@@ -71,12 +71,17 @@ public class Order {
             return this;
         }
 
-        public Builder paymentMethod(Long paymentId) {
+        public Builder paymentId(Long paymentId) {
             // дальше проверится
             if (paymentId == null || paymentId == 0L) {
                 throw new IllegalArgumentException("Неверный метод оплаты");
             }
             order.paymentId = paymentId;
+            return this;
+        }
+
+        public Builder cardId(Long cardId) {
+            order.cardId = cardId;
             return this;
         }
 

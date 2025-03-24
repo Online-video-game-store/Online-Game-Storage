@@ -15,23 +15,18 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class JwtValidatorService {
 
-
-    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-    private String issuerUri;
-
     private final JwtDecoder jwtDecoder;
 
 
-    public JwtValidatorService() {
-        log.info("-- issuerUri: {}", issuerUri);
+    public JwtValidatorService(@Value("${spring.security.oauth2.resourceserver.uri-base}") String issuerUri) {
         this.jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
     }
 
     // Метод для валидации токена
     public boolean validateJwt(String token) {
         try {
-            Jwt decodedJwt = jwtDecoder.decode(token.replace("Bearer ", ""));
-            log.info("-- Jwt-token is valid. Subject: {}", decodedJwt.getSubject());
+            jwtDecoder.decode(token.replace("Bearer ", ""));
+            log.info("-- Jwt-token is valid");
             return true;
         } catch (JwtException e) {
             log.error("Invalid Jwt-token: {}", e.getMessage());

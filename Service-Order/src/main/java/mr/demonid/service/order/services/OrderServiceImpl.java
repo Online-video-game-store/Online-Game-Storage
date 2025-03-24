@@ -8,14 +8,12 @@ import mr.demonid.service.order.dto.OrderCreateRequest;
 import mr.demonid.service.order.dto.OrderResponse;
 import mr.demonid.service.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 @Log4j2
-@Transactional
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
@@ -29,10 +27,12 @@ public class OrderServiceImpl implements OrderService {
         try {
             Order newOrder = Order.builder()
                     .userId(order.getUserId())
-                    .paymentMethod(order.getPaymentId())
+                    .paymentId(order.getPaymentId())
+                    .cardId(order.getCardId())
                     .totalAmount(order.getTotalAmount())
                     .status(OrderStatus.Pending)
                     .build();
+            log.info("-- save order: {}", newOrder);
             Order res = orderRepository.save(newOrder);
             return OrderUtil.orderToDto(res);
         } catch (Exception e) {

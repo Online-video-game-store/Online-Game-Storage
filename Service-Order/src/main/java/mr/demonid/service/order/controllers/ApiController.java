@@ -26,7 +26,7 @@ public class ApiController {
      */
     @PostMapping("/create-order")
     public ResponseEntity<Boolean> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
-        log.info("-- begin crete order");
+        log.info("-- begin crete order: {}", orderCreateRequest);
         OrderResponse order = orderService.save(orderCreateRequest);
         log.info("Order created: {}", order);
         if (order != null) {

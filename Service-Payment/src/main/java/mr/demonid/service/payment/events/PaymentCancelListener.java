@@ -1,16 +1,12 @@
-package mr.demonid.service.order.events;
+package mr.demonid.service.payment.events;
 
 
-import com.rabbitmq.client.LongString;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.order.utils.TokenTool;
-import org.springframework.beans.factory.annotation.Autowired;
+import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.security.core.token.TokenService;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -24,7 +20,7 @@ import java.util.function.Consumer;
 @Configuration
 @AllArgsConstructor
 @Log4j2
-public class OrderCancelListener {
+public class PaymentCancelListener {
 
     private JwtValidatorService jwtValidatorService;
     private TokenTool tokenTool;
@@ -36,13 +32,11 @@ public class OrderCancelListener {
             String jwtToken = tokenTool.getToken(message);
             if (jwtToken != null && jwtValidatorService.validateJwt(jwtToken)) {
                 String eventType = (String) message.getHeaders().get("type");
-                switch (Objects.requireNonNull(eventType)) {
-                    case "product.cancel":
-                    case "payment.cancel":
-                        orderCancel(message.getPayload());
-                        break;
-                    default:
-                        log.warn("Неизвестный тип события: {}", eventType);
+
+                if (Objects.requireNonNull(eventType).equals("order.stop")) {
+                    handlePaymentCancel(message.getPayload());
+                } else {
+                    log.warn("Неизвестный тип события: {}", eventType);
                 }
             } else {
                 log.error("Недействительный Jwt-токен");
@@ -50,11 +44,12 @@ public class OrderCancelListener {
         };
     }
 
-
     /*
-    Заказ завершился ошибкой.
+     * Оплата не прошла, отменяем резерв.
      */
-    private void orderCancel(String message) {
-        log.info("-- order cancel with message: {}", message);
+    private void handlePaymentCancel(String message) {
+        // отменяем отплату
+        log.info("-- cancel payment with message: {}", message);
     }
+
 }

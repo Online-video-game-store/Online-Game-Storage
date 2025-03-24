@@ -1,5 +1,5 @@
 server:
-  port: ${ORDER_SERVICE_PORT:10000}
+  port: ${ORDER_SERVICE_PORT:0}
 
 spring:
   application:
@@ -11,10 +11,18 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
+        # путь до Keycloack
+        uri-base: http://localhost:8080/realms/online-store-realm   # /.well-known/openid-configuration
 
   # Cloud Bus + RabbitMQ
   cloud:
+    function:
+      definition: channelOrderEvents;channelOrderCancel
     stream:
+      function:
+        bindings:
+          channelOrderEvents-in-0: orderEvents-in-0
+          channelOrderCancel-in-0: orderCancel-in-0
       bindings:
         orderEvents-out-0:                # канал для отправки сообщений
           destination: order.exchange     # exchange (обменник)
@@ -23,6 +31,9 @@ spring:
           destination: order.exchange
           content-type: application/json
           group: groupGroup
+        orderCancel-out-0:                # канал для уведомления ошибки резервирования товара
+          destination: order.exchange
+          content-type: application/json
         orderCancel-in-0:
           destination: order.exchange
           content-type: application/json
@@ -31,18 +42,19 @@ spring:
         bindings:
           orderEvents-out-0:
             producer:
-              routing-key-expression: '''headers['type']'''   # сами управляем ключом маршрутизации
+              routing-key-expression: "headers['type']"   # сами управляем ключом маршрутизации
+          orderCancel-out-0:
+            producer:
+              routing-key-expression: "headers['type']"
           orderEvents-in-0:
             consumer:
-              binding-routing-key: 'product.good'             # для завершения заказа
+              binding-routing-key: 'product.transferred'  # заказ передан в набор
           orderCancel-in-0:
             consumer:
-              binding-routing-key: 'product.cancel, payment.cancel' # для отмены заказа
-
+              binding-routing-key: 'product.cancel, payment.cancel'   # ошибка оформления заказа
   rabbitmq:
     host: localhost
     port: 5672
-
 
 
   #    bus:
@@ -75,7 +87,7 @@ spring:
       hibernate:
         hbm2ddl:
           auto: update
-        show_sql: false
+        show_sql: true
         format_sql: true
         highlight_sql: true
 

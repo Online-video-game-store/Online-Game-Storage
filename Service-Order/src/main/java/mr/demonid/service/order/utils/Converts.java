@@ -12,6 +12,7 @@ public class Converts {
                 orderId,
                 request.getUserId(),
                 request.getPaymentId(),
+                request.getCardId(),
                 request.getTotalAmount(),
                 request.getItems().stream().map(e -> e).toList()
         );
