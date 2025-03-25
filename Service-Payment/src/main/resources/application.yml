@@ -20,42 +20,58 @@ spring:
     function:
       definition: channelOrderEvents;channelOrderCancel
     stream:
+      default-binder: rabbit
       function:
         bindings:
-          channelOrderEvents-in-0: orderEvents-in-0
-          channelOrderCancel-in-0: orderCancel-in-0
+          channelOrderEvents-in-0: ch-pk8000-order-in
+          channelOrderCancel-in-0: ch-pk8000-cancel-in
       bindings:
-        orderEvents-out-0:                # канал для отправки сообщений о успешном завершении операции
-          destination: order.exchange     # exchange (обменник)
+        # Выходные каналы
+        ch-pk8000-order-out:
+          destination: pk8000.order.exchange  # exchange (обменник)
           content-type: application/json
-        orderEvents-in-0:                 # канал для приема сообщений об успешных этапах операций
-          destination: order.exchange
+        ch-pk8000-cancel-out:
+          destination: pk8000.cancel.exchange
           content-type: application/json
-          group: paymentGroup
-        orderCancel-out-0:                # канал для уведомления об ошибке резервирования товара
-          destination: order.exchange
+        # Входные каналы
+        ch-pk8000-order-in:
+          destination: pk8000.order.exchange
+          group: ${spring.application.name}-orders-group
           content-type: application/json
-        orderCancel-in-0:                 # прием сообщений об ошибках и откатах операций
-          destination: order.exchange
+        ch-pk8000-cancel-in:
+          destination: pk8000.cancel.exchange
+          group: ${spring.application.name}-orders-group
           content-type: application/json
-          group: paymentGroup
       rabbit:
         bindings:
-          orderEvents-out-0:
+          ch-pk8000-order-out:
             producer:
-              routing-key-expression: "headers['type']"   # сами управляем ключом маршрутизации
-          orderEvents-in-0:
-            consumer:
-              binding-routing-key: 'product.reserved'
-          orderCancel-out-0:
+              exchange-type: direct
+              declare-exchange: true
+              routing-key-expression: "headers['routingKey']"
+          ch-pk8000-cancel-out:
             producer:
-              routing-key-expression: "headers['type']"
-          orderCancel-in-0:
+              exchange-type: direct
+              declare-exchange: true
+              routing-key-expression: "headers['routingKey']"
+          # Входные каналы
+          ch-pk8000-order-in:
             consumer:
-              binding-routing-key: 'order.stop'
+              exchange-type: direct
+              declare-exchange: true
+              auto-bind-dlq: true
+              binding-routing-key: "product.reserved"
+          ch-pk8000-cancel-in:
+            consumer:
+              exchange-type: direct
+              declare-exchange: true
+              auto-bind-dlq: true
+              binding-routing-key: "order.stop"
   rabbitmq:
     host: localhost
     port: 5672
+    username: guest
+    password: guest
 
 
   # H2 database

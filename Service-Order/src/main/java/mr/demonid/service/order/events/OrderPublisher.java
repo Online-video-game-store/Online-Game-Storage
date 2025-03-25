@@ -35,13 +35,10 @@ public class OrderPublisher {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
             Message<OrderCreatedEvent> message = MessageBuilder.withPayload(order)
-                    .setHeader("type", "order.created")
+                    .setHeader("routingKey", "order.created")
                     .setHeader("Authorization", "Bearer " + jwtToken)
                     .build();
-
-            streamBridge.send("orderEvents-out-0", message);
-            log.info("-- message: {}", message);
-            log.info("-- Routing Key: {}", message.getHeaders().get("type"));
+            streamBridge.send("ch-pk8000-order-out", message);
             log.info("-- Отправлено событие order.created: {}", order);
         }
     }
@@ -53,9 +50,9 @@ public class OrderPublisher {
     public void sendFinishOrderEvent(UUID orderId) {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
-            streamBridge.send("orderEvents-out-0",
+            streamBridge.send("ch-pk8000-order-out",
                     MessageBuilder.withPayload(orderId)
-                            .setHeader("type", "order.done")
+                            .setHeader("routingKey", "order.done")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.info("-- Отправлено событие order.done: {}", orderId);
@@ -68,9 +65,9 @@ public class OrderPublisher {
     public void sendFailOrderEvent(UUID orderId) {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
-            streamBridge.send("orderEvents-out-0",
+            streamBridge.send("ch-pk8000-order-out",
                     MessageBuilder.withPayload(orderId)
-                            .setHeader("type", "order.fail")
+                            .setHeader("routingKey", "order.fail")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.info("-- Отправлено событие order.fail: {}", orderId);
@@ -85,9 +82,9 @@ public class OrderPublisher {
     public void sendStopOrderEvent(Long orderId) {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
-            streamBridge.send("orderCancel-out-0",
+            streamBridge.send("ch-pk8000-cancel-out",
                     MessageBuilder.withPayload(orderId)
-                            .setHeader("type", "order.stop")
+                            .setHeader("routingKey", "order.stop")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.warn("Отправлено событие order.stop: {}", orderId);

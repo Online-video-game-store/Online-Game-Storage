@@ -14,6 +14,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.token.TokenService;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
  * Все сообщения должны содержать в заголовке Jwt-токен,
  * который проверяется на сервере-аутентификации.
  */
-@Configuration
+@Component
 @AllArgsConstructor
 @Log4j2
 public class OrderCancelListener {
@@ -42,7 +43,7 @@ public class OrderCancelListener {
             try {
                 String jwtToken = tokenTool.getToken(message);
                 if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("type");
+                    String eventType = (String) message.getHeaders().get("routingKey");
                     switch (Objects.requireNonNull(eventType)) {
                         case "product.cancel":
                         case "payment.cancel":

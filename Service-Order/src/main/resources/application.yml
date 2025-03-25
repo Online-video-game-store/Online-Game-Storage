@@ -19,64 +19,61 @@ spring:
     function:
       definition: channelOrderEvents;channelOrderCancel
     stream:
+      default-binder: rabbit
       function:
         bindings:
-          channelOrderEvents-in-0: orderEvents-in-0
-          channelOrderCancel-in-0: orderCancel-in-0
+          channelOrderEvents-in-0: ch-pk8000-order-in
+          channelOrderCancel-in-0: ch-pk8000-cancel-in
       bindings:
-        orderEvents-out-0:                # канал для отправки сообщений
-          destination: order.exchange     # exchange (обменник)
+        # Выходные каналы
+        ch-pk8000-order-out:
+          destination: pk8000.order.exchange  # exchange (обменник)
           content-type: application/json
-          binder: rabbit
-        orderEvents-in-0:
-          destination: order.exchange
+        ch-pk8000-cancel-out:
+          destination: pk8000.cancel.exchange
           content-type: application/json
-          group: orderGroup
-        orderCancel-out-0:                # канал для уведомления ошибки резервирования товара
-          destination: order.exchange
+        # Входные каналы
+        ch-pk8000-order-in:
+          destination: pk8000.order.exchange
+          group: ${spring.application.name}-orders-group
           content-type: application/json
-          binder: rabbit
-        orderCancel-in-0:
-          destination: order.exchange
+        ch-pk8000-cancel-in:
+          destination: pk8000.cancel.exchange
+          group: ${spring.application.name}-orders-group
           content-type: application/json
-          group: orderGroup
       rabbit:
         bindings:
-          orderEvents-out-0:
+          ch-pk8000-order-out:
             producer:
-              routing-key-expression: "headers['type']"   # сами управляем ключом маршрутизации
-              exchange-type: topic
-          orderEvents-in-0:
-            consumer:
-              binding-routing-key: 'product.transferred'  # заказ передан в набор
-          orderCancel-out-0:
+              exchange-type: direct
+              declare-exchange: true
+              routing-key-expression: "headers['routingKey']"
+          ch-pk8000-cancel-out:
             producer:
-              routing-key-expression: "headers['type']"
-              exchange-type: topic
-          orderCancel-in-0:
+              exchange-type: direct
+              declare-exchange: true
+              routing-key-expression: "headers['routingKey']"
+          # Входные каналы
+          ch-pk8000-order-in:
             consumer:
-              binding-routing-key: 'product.cancel, payment.cancel'   # ошибка оформления заказа
+              exchange-type: direct
+              declare-exchange: true
+              auto-bind-dlq: true
+              binding-routing-key: "product.transferred"
+          ch-pk8000-cancel-in:
+            consumer:
+              exchange-type: direct
+              declare-exchange: true
+              auto-bind-dlq: true
+              binding-routing-key-delimiter: ","
+              binding-routing-key: "product.cancel,payment.cancel"
   rabbitmq:
     host: localhost
     port: 5672
-logging:
-  level:
-    org.springframework.cloud.stream.binder.rabbit: DEBUG
+    username: guest
+    password: guest
 
-  #    bus:
-#      enabled: true
-#      amqp:
-#        enabled: true
-#        host: localhost
-#        port: 5672
-#        username: guest
-#        password: guest
-#  amqp:
-#    enabled: true
-#    host: localhost
-#    port: 5672
-#    username: guest
-#    password: guest
+
 
   # H2 database
   datasource:
@@ -121,3 +118,9 @@ eureka:
     prefer-ip-address: false                  # Использовать IP-адрес вместо имени хоста
     lease-renewal-interval-in-seconds: 10     # Интервал отправки heartbeats
     lease-expiration-duration-in-seconds: 30  # Таймаут для истечения lease (сердцебиений)
+
+
+#logging:
+#  level:
+#    org.springframework.cloud.stream: DEBUG
+#    org.springframework.amqp: DEBUG

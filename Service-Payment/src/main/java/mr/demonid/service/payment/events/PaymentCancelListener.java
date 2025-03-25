@@ -4,10 +4,12 @@ package mr.demonid.service.payment.events;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.payment.utils.TokenTool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -18,7 +20,7 @@ import java.util.function.Consumer;
  * Все сообщения должны содержать в заголовке Jwt-токен,
  * который проверяется на сервере-аутентификации.
  */
-@Configuration
+@Component
 @AllArgsConstructor
 @Log4j2
 public class PaymentCancelListener {
@@ -33,9 +35,9 @@ public class PaymentCancelListener {
             try {
                 String jwtToken = tokenTool.getToken(message);
                 if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("type");
+                    String eventType = (String) message.getHeaders().get("routingKey");
 
-                    if (Objects.requireNonNull(eventType).equals("order.stop")) {
+                    if ("order.stop".equals(eventType)) {
                         handlePaymentCancel(message.getPayload());
                     } else {
                         log.warn("Неизвестный тип события: {}", eventType);

@@ -10,6 +10,8 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 
 /**
  * Отправка сообщений через Spring Cloud Bus.
@@ -30,9 +32,9 @@ public class CatalogPublisher {
     public void sendProductReserved(OrderPaymentEvent event) {
         String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
-            streamBridge.send("orderEvents-out-0",
+            streamBridge.send("ch-pk8000-order-out",
                     MessageBuilder.withPayload(event)
-                            .setHeader("type", "product.reserved")  // Задаем routing-key
+                            .setHeader("routingKey", "product.reserved")  // Задаем routing-key
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.info("-- Отправлено событие product.reserved: {}", event);
@@ -42,15 +44,15 @@ public class CatalogPublisher {
     /**
      * Отправка сообщения о списания резерва в службу набора и доставки товара.
      */
-    public void sendProductTransferred(OrderTransferredEvent message) {
+    public void sendProductTransferred(UUID orderId) {
         String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
-            streamBridge.send("orderEvents-out-0",
-                    MessageBuilder.withPayload(message)
-                            .setHeader("type", "product.transferred")
+            streamBridge.send("ch-pk8000-order-out",
+                    MessageBuilder.withPayload(orderId)
+                            .setHeader("routingKey", "product.transferred")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
-            log.info("-- Отправлено событие product.transferred: {}", message);
+            log.info("-- Отправлено событие product.transferred по заказу: {}", orderId);
         }
     }
 
@@ -61,9 +63,9 @@ public class CatalogPublisher {
     public void sendProductCancel(OrderCancelEvent event) {
         String jwtToken = tokenTool.getCurrentToken();
         if (jwtToken != null) {
-            streamBridge.send("orderCancel-out-0",
+            streamBridge.send("ch-pk8000-cancel-out",
                     MessageBuilder.withPayload(event)
-                            .setHeader("type", "product.cancel")
+                            .setHeader("routingKey", "product.cancel")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.warn("Отправлено событие product.cancel: {}", event);

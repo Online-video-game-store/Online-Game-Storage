@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Random;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
  * Все сообщения должны содержать в заголовке Jwt-токен,
  * который проверяется на сервере-аутентификации.
  */
-@Configuration
+@Component
 @AllArgsConstructor
 @Log4j2
 public class PaymentEventsListener {
@@ -40,7 +41,7 @@ public class PaymentEventsListener {
             try {
                 String jwtToken = tokenTool.getToken(message);
                 if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("type");
+                    String eventType = (String) message.getHeaders().get("routingKey");
                     log.info("-- eventType: {}", eventType);
 
                     if ("product.reserved".equals(eventType)) {

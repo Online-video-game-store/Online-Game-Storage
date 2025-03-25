@@ -14,8 +14,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 
@@ -24,7 +26,7 @@ import java.util.function.Consumer;
  * Все сообщения должны содержать в заголовке Jwt-токен,
  * который проверяется на сервере-аутентификации.
  */
-@Configuration
+@Component
 @AllArgsConstructor
 @Log4j2
 public class CatalogEventsListener {
@@ -42,26 +44,23 @@ public class CatalogEventsListener {
             try {
                 String jwtToken = tokenTool.getToken(message);
                 if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("type");
+                    String eventType = (String) message.getHeaders().get("routingKey");
                     log.info("-- eventType: {}", eventType);
-                    if (eventType != null) {
-                        switch (eventType) {
-                            case "order.created":
-                                OrderCreatedEvent createdEvent = messageMapper.map(message, OrderCreatedEvent.class);
-                                if (createdEvent != null) {
-                                    handleOrderCreated(createdEvent);
-                                }
-                                break;
-                            case "payment.paid":
-                                OrderPaidEvent paidEvent = messageMapper.map(message, OrderPaidEvent.class);
-                                if (paidEvent != null) {
-                                    handleOrderPaid(paidEvent);
-                                }
-                                break;
-                            default:
-                                log.warn("Неизвестный тип события: {}", eventType);
+
+                    if ("order.created".equals(eventType)) {
+                        OrderCreatedEvent createdEvent = messageMapper.map(message, OrderCreatedEvent.class);
+                        if (createdEvent != null) {
+                            handleOrderCreated(createdEvent);
                         }
+                    } else if ("payment.paid".equals(eventType)) {
+                        OrderPaidEvent paidEvent = messageMapper.map(message, OrderPaidEvent.class);
+                        if (paidEvent != null) {
+                            handleOrderPaid(paidEvent.getOrderId());
+                        }
+                    } else {
+                        log.warn("Неизвестный тип события: {}", eventType);
                     }
+
                 } else {
                     log.error("Недействительный Jwt-токен");
                 }
@@ -91,10 +90,10 @@ public class CatalogEventsListener {
     /*
      * Перевод товара из резерва в службу комплектования и доставки.
      */
-    private void handleOrderPaid(OrderPaidEvent event) {
-        log.info("-- Обрабатываем событие payment.paid: {}", event);
-        reservedService.approvedReservation(event.getOrderId());
-        catalogPublisher.sendProductTransferred(new OrderTransferredEvent(event.getOrderId(), "Заказ передан в службу комплектации и доставки"));
+    private void handleOrderPaid(UUID orderId) {
+        log.info("-- Обрабатываем событие payment.paid: {}", orderId);
+        reservedService.approvedReservation(orderId);
+        catalogPublisher.sendProductTransferred(orderId);
     }
 
 }

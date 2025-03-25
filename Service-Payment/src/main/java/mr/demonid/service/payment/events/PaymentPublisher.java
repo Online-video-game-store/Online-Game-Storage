@@ -31,9 +31,9 @@ public class PaymentPublisher {
     public void sendPaymentPaid(OrderPaidEvent event) {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
-            streamBridge.send("orderEvents-out-0",
+            streamBridge.send("ch-pk8000-order-out",
                     MessageBuilder.withPayload(event)
-                            .setHeader("type", "payment.paid")  // Задаем routing-key
+                            .setHeader("routingKey", "payment.paid")  // Задаем routing-key
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.info("-- Отправлено событие payment.paid: {}", event);
@@ -46,9 +46,9 @@ public class PaymentPublisher {
     public void sendPaymentCancel(UUID orderId) {
         String jwtToken = tokenTool.getToken();
         if (jwtToken != null) {
-            streamBridge.send("orderCancel-out-0",
+            streamBridge.send("ch-pk8000-cancel-out",
                     MessageBuilder.withPayload(orderId)
-                            .setHeader("type", "payment.cancel")
+                            .setHeader("routingKey", "payment.cancel")
                             .setHeader("Authorization", "Bearer " + jwtToken)
                             .build());
             log.warn("Отправлено событие payment.cancel: {}", orderId);
