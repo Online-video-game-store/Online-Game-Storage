@@ -61,6 +61,9 @@ spring:
               exchange-type: direct
               declare-exchange: true
               auto-bind-dlq: true
+#              republish-to-dlq: true
+#              dlq-ttl: 86400000                # 24 часа
+#              dead-letter-exchange: dlx.orders
               binding-routing-key-delimiter: ","
               binding-routing-key: "order.created,payment.paid"
           ch-pk8000-cancel-in:
@@ -68,6 +71,9 @@ spring:
               exchange-type: direct
               declare-exchange: true
               auto-bind-dlq: true
+#              republish-to-dlq: true
+#              dlq-ttl: 86400000                 # 24 часа
+#              dead-letter-exchange: dlx.orders
               binding-routing-key-delimiter: ","
               binding-routing-key: "payment.cancel,order.stop"
   rabbitmq:

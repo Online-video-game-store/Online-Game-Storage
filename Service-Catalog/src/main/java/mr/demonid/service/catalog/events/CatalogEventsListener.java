@@ -13,6 +13,7 @@ import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +32,7 @@ import java.util.function.Consumer;
 @Log4j2
 public class CatalogEventsListener {
 
-    private JwtService jwtService;
     private MessageMapper messageMapper;
-    private TokenTool tokenTool;
     private ReservedService reservedService;
     private CatalogPublisher catalogPublisher;
 
@@ -41,35 +40,31 @@ public class CatalogEventsListener {
     @Bean
     public Consumer<Message<Object>> channelOrderEvents() {
         return message -> {
-            try {
-                String jwtToken = tokenTool.getToken(message);
-                if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("routingKey");
-                    log.info("-- eventType: {}", eventType);
+            if (isAuthenticated()) {
+                String eventType = (String) message.getHeaders().get("routingKey");
+                log.info("-- receive eventType: {}", eventType);
 
-                    if ("order.created".equals(eventType)) {
-                        OrderCreatedEvent createdEvent = messageMapper.map(message, OrderCreatedEvent.class);
-                        if (createdEvent != null) {
-                            handleOrderCreated(createdEvent);
-                        }
-                    } else if ("payment.paid".equals(eventType)) {
-                        OrderPaidEvent paidEvent = messageMapper.map(message, OrderPaidEvent.class);
-                        if (paidEvent != null) {
-                            handleOrderPaid(paidEvent.getOrderId());
-                        }
-                    } else {
-                        log.warn("Неизвестный тип события: {}", eventType);
+                if ("order.created".equals(eventType)) {
+                    OrderCreatedEvent createdEvent = messageMapper.map(message, OrderCreatedEvent.class);
+                    if (createdEvent != null) {
+                        handleOrderCreated(createdEvent);
                     }
-
+                } else if ("payment.paid".equals(eventType)) {
+                    OrderPaidEvent paidEvent = messageMapper.map(message, OrderPaidEvent.class);
+                    if (paidEvent != null) {
+                        handleOrderPaid(paidEvent.getOrderId());
+                    }
                 } else {
-                    log.error("Недействительный Jwt-токен");
+                    log.warn("Неизвестный тип события: {}", eventType);
                 }
-
-            } finally {
-                log.info("-- Clean security context --");
-                SecurityContextHolder.clearContext();
+            } else {
+                log.error("Anonimous!");
             }
         };
+    }
+    public boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal());
     }
 
     /*
