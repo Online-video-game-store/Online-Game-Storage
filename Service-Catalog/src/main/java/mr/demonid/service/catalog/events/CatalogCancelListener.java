@@ -7,6 +7,7 @@ import mr.demonid.service.catalog.dto.events.OrderCancelEvent;
 import mr.demonid.service.catalog.services.ReservedService;
 import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

@@ -24,8 +24,8 @@ public class JwtService {
 
 
     public JwtService(@Value("${spring.security.oauth2.resourceserver.uri-base}") String issuerUri) {
-        this.jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
 //        this.jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
+        this.jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
     }
 
     /**
