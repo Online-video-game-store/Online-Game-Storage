@@ -5,18 +5,15 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.events.OrderCancelEvent;
 import mr.demonid.service.catalog.dto.events.OrderCreatedEvent;
 import mr.demonid.service.catalog.dto.events.OrderPaidEvent;
-import mr.demonid.service.catalog.dto.events.OrderTransferredEvent;
 import mr.demonid.service.catalog.exceptions.CatalogException;
 import mr.demonid.service.catalog.services.ReservedService;
 import mr.demonid.service.catalog.utils.Converts;
 import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 

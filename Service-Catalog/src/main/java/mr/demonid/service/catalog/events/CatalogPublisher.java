@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.events.OrderCancelEvent;
 import mr.demonid.service.catalog.dto.events.OrderPaymentEvent;
-import mr.demonid.service.catalog.dto.events.OrderTransferredEvent;
 import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
