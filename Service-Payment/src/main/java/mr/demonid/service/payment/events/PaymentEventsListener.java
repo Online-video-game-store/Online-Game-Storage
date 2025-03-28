@@ -2,19 +2,16 @@ package mr.demonid.service.payment.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.payment.dto.EmptyRequest;
 import mr.demonid.service.payment.dto.events.OrderPaidEvent;
 import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
-import mr.demonid.service.payment.services.UserEntityService;
+import mr.demonid.service.payment.services.CardService;
+import mr.demonid.service.payment.services.PaymentService;
 import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-import java.util.Random;
 import java.util.function.Consumer;
 
 
@@ -32,7 +29,7 @@ public class PaymentEventsListener {
     private TokenTool tokenTool;
     private MessageMapper messageMapper;
     private PaymentPublisher paymentPublisher;
-    private UserEntityService userService;
+    private PaymentService paymentService;
 
 
     @Bean
@@ -67,7 +64,7 @@ public class PaymentEventsListener {
      * Проведение оплаты заказа.
      */
     private void handlePaymentEvent(OrderPaymentEvent event) {
-        if (userService.payment(event)) {
+        if (paymentService.payment(event)) {
             paymentPublisher.sendPaymentPaid(new OrderPaidEvent(event.getOrderId(), "Оплата прошла успешно"));
         } else {
             paymentPublisher.sendPaymentCancel(event.getOrderId());

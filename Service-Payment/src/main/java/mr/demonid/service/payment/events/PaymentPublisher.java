@@ -2,7 +2,6 @@ package mr.demonid.service.payment.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.payment.dto.EmptyRequest;
 import mr.demonid.service.payment.dto.events.OrderPaidEvent;
 import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;

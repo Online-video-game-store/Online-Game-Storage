@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class PaymentMethod {
+public class PaymentMethodResponse {
     private long id;
     private String name;
     private boolean supportsCards;

@@ -17,12 +17,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Payment {
+public class PaymentLog {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private UUID orderId;
     private UUID userId;
     private Long paymentMethodId;
-    private Long cardId;
+    private String cardNumber;
     private BigDecimal amount;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
