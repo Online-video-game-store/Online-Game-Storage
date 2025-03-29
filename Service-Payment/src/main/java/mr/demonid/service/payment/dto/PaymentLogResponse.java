@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import mr.demonid.service.payment.domain.PaymentStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -21,5 +21,5 @@ public class PaymentLogResponse {
     private String cardNumber;
     private BigDecimal amount;
     private PaymentStatus status;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 }

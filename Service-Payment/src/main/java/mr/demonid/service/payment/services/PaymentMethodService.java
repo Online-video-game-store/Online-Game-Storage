@@ -16,6 +16,7 @@ import java.util.Optional;
 public class PaymentMethodService {
 
     private PaymentMethodRepository paymentMethodRepository;
+    private Converts converts;
 
 
     /**
@@ -24,7 +25,7 @@ public class PaymentMethodService {
     public List<PaymentMethodResponse> getAllMethods() {
         List<PaymentMethod> list = paymentMethodRepository.findAll();
         if (!list.isEmpty()) {
-            return list.stream().map(Converts::paymentMethodToResponse).toList();
+            return list.stream().map(converts::paymentMethodToResponse).toList();
         }
         return List.of();
     }
@@ -36,7 +37,7 @@ public class PaymentMethodService {
         Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
         if (paymentMethod.isPresent()) {
             PaymentMethod method = paymentMethod.get();
-            return Converts.paymentMethodToResponse(method);
+            return converts.paymentMethodToResponse(method);
         }
         return null;
     }
@@ -47,7 +48,7 @@ public class PaymentMethodService {
     public PaymentMethodResponse createPaymentMethod(PaymentMethodResponse paymentMethod) {
         PaymentMethod method = new PaymentMethod(null, paymentMethod.getName(), paymentMethod.isSupportsCards());
         PaymentMethod res = paymentMethodRepository.save(method);
-        return Converts.paymentMethodToResponse(res);
+        return converts.paymentMethodToResponse(res);
     }
 
 

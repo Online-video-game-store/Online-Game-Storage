@@ -3,11 +3,14 @@ package mr.demonid.service.payment.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.payment.domain.PaymentLog;
+import mr.demonid.service.payment.domain.PaymentStatus;
 import mr.demonid.service.payment.dto.events.OrderPaidEvent;
 import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
 import mr.demonid.service.payment.services.tools.JwtService;
 import mr.demonid.service.payment.services.tools.MessageMapper;
 import mr.demonid.service.payment.events.PaymentPublisher;
+import mr.demonid.service.payment.utils.Converts;
 import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +31,9 @@ public class PaymentService {
     private JwtService jwtService;
     private TokenTool tokenTool;
     private MessageMapper messageMapper;
+
+    private Converts converts;
+    private PaymentLogService paymentLogService;
 
 
     /**
@@ -76,21 +82,26 @@ public class PaymentService {
      * Оплата не прошла, отменяем резерв.
      */
     private void handlePaymentCancel(UUID orderId) {
-        // отменяем отплату
-        paymentPublisher.sendPaymentCancel(orderId);
         log.info("-- cancel payment with order: {}", orderId);
+        // отменяем отплату
     }
 
 
     /**
      * Оплата заказа.
-     * В случае неудачи бросает исключение.
-     *
-     * @param order
      */
     private boolean payment(OrderPaymentEvent order) {
         log.info("-- Payment started: {}", order);
+        PaymentLog log = converts.orderToPaymentLog(order);
+        log.setStatus(PaymentStatus.REQUESTED);
+        log = paymentLogService.save(log);
+        // проводим оплату
+
         // TODO: добавь оплату
+
+        // если всё успешно, то меняем статус
+        log.setStatus(PaymentStatus.APPROVED);
+        paymentLogService.save(log);
         return true;
     }
 

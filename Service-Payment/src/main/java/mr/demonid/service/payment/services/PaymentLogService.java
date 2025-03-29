@@ -20,10 +20,12 @@ import java.util.UUID;
 public class PaymentLogService {
 
     private PaymentLogRepository paymentLogRepository;
+    private CardService cardService;
+    private Converts converts;
 
 
-    public void save(PaymentLog paymentLog) {
-        paymentLogRepository.save(paymentLog);
+    public PaymentLog save(PaymentLog paymentLog) {
+        return paymentLogRepository.save(paymentLog);
     }
 
 
@@ -32,7 +34,7 @@ public class PaymentLogService {
      */
     public PageDTO<PaymentLogResponse> findAll(Pageable pageable) {
         Page<PaymentLog> items = paymentLogRepository.findAll(pageable);
-        return new PageDTO<>(items.map(Converts::logToPaymentLogResponse));
+        return new PageDTO<>(items.map(e -> converts.logToPaymentLogResponse(e, cardService.getCardNumber(e.getCardNumber()))));
     }
 
 
@@ -41,7 +43,7 @@ public class PaymentLogService {
      */
     public PageDTO<PaymentLogResponse> findById(UUID userId, Pageable pageable) {
         Page<PaymentLog> items = paymentLogRepository.findAll(LogSpecification.filter(userId), pageable);
-        return new PageDTO<>(items.map(Converts::logToPaymentLogResponse));
+        return new PageDTO<>(items.map(e -> converts.logToPaymentLogResponse(e, cardService.getCardNumber(e.getCardNumber()))));
     }
 
 
@@ -50,8 +52,7 @@ public class PaymentLogService {
      */
     public PaymentLogResponse findByOrderId(UUID orderId) {
         PaymentLog item = paymentLogRepository.findByOrderId(orderId);
-        return Converts.logToPaymentLogResponse(item);
+        return converts.logToPaymentLogResponse(item, cardService.getCardNumber(item.getCardNumber()));
     }
-
 
 }

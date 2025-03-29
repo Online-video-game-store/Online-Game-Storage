@@ -1,40 +1,61 @@
 package mr.demonid.service.payment.utils;
 
-import mr.demonid.service.payment.domain.Card;
-import mr.demonid.service.payment.domain.PaymentLog;
-import mr.demonid.service.payment.domain.PaymentMethod;
-import mr.demonid.service.payment.domain.UserEntity;
+import lombok.AllArgsConstructor;
+import mr.demonid.service.payment.domain.*;
 import mr.demonid.service.payment.dto.CardResponse;
 import mr.demonid.service.payment.dto.NewCardRequest;
 import mr.demonid.service.payment.dto.PaymentLogResponse;
 import mr.demonid.service.payment.dto.PaymentMethodResponse;
+import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
+import mr.demonid.service.payment.services.CardService;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 
+@Service
+@AllArgsConstructor
 public class Converts {
 
-    public static CardResponse cardToCardRequest(Card card) {
+
+    public CardResponse cardToCardResponse(Card card) {
         return new CardResponse(card.getId(), card.getSafeCardNumber(), card.getExpiryDate());
     }
 
-    public static Card newCardRequestToCard(NewCardRequest cardRequest, UserEntity userEntity) {
+    public Card newCardRequestToCard(NewCardRequest cardRequest, UserEntity userEntity) {
         return new Card(null, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv(), true, userEntity);
     }
 
-    public static PaymentLogResponse logToPaymentLogResponse(PaymentLog paymentLog) {
+    public PaymentLogResponse logToPaymentLogResponse(PaymentLog paymentLog, String cardNumber) {
         return new PaymentLogResponse(
                 paymentLog.getOrderId(),
                 paymentLog.getUserId(),
                 paymentLog.getPaymentMethodId(),
-                paymentLog.getCardNumber(),
+                cardNumber,
                 paymentLog.getAmount(),
                 paymentLog.getStatus(),
                 paymentLog.getCreatedAt()
         );
     }
 
-    public static PaymentMethodResponse paymentMethodToResponse(PaymentMethod method) {
+    public PaymentMethodResponse paymentMethodToResponse(PaymentMethod method) {
         return new PaymentMethodResponse(method.getId(), method.getName(), method.isSupportsCards());
     }
 
+    /*
+    OrderPaymentEvent -> PaymentLog
+     */
+    public PaymentLog orderToPaymentLog(OrderPaymentEvent order) {
+        return new PaymentLog(
+                null,
+                order.getOrderId(),
+                order.getUserId(),
+                order.getPaymentId(),
+                order.getCardId(),
+                order.getTotalAmount(),
+                PaymentStatus.REQUESTED,
+                LocalDateTime.now()
+        );
+    }
 
 }

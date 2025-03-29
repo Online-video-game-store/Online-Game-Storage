@@ -22,6 +22,7 @@ public class CardService {
 
     private UserEntityRepository userEntityRepository;
     private CardRepository cardRepository;
+    private Converts converts;
 
 
     /**
@@ -37,9 +38,22 @@ public class CardService {
         UserEntity userEntity = userEntityRepository.findById(userId).orElse(null);
         if (userEntity != null) {
             Set<Card> c = userEntity.getCards();
-            cards = c.stream().filter(Card::isUsed).map(Converts::cardToCardRequest).toList();
+            cards = c.stream().filter(Card::isUsed).map(converts::cardToCardResponse).toList();
         }
         return cards;
+    }
+
+
+    /**
+     * Возвращает номер карты по её ID.
+     * Номер частично скрыт маской.
+     */
+    public String getCardNumber(Long cardId) {
+        Card c = null;
+        if (cardId != null) {
+            c = cardRepository.findById(cardId).orElse(null);
+        }
+        return c == null ? "" : c.getSafeCardNumber();
     }
 
 
@@ -64,7 +78,7 @@ public class CardService {
         try {
             Optional<UserEntity> userPayment = userEntityRepository.findById(cardRequest.getUserId());
             userEntity = userPayment.orElseGet(() -> new UserEntity(cardRequest.getUserId(), new HashSet<>()));
-            userEntity.addCard(Converts.newCardRequestToCard(cardRequest, userEntity));
+            userEntity.addCard(converts.newCardRequestToCard(cardRequest, userEntity));
             userEntityRepository.save(userEntity);
         } catch (Exception e) {
             throw new AddCardException(e.getMessage());
