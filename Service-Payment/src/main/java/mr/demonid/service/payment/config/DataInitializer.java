@@ -18,10 +18,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.out.println("-- Make payment methods --");
-        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "Visa/MasterCard", true));
-        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "PayPal", false));
-        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "SberPay", false));
+//        System.out.println("-- Make payment methods --");
+//        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "Visa/MasterCard", true));
+//        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "PayPal", false));
+//        paymentMethodService.createPaymentMethod(new PaymentMethodResponse(0, "SberPay", false));
     }
 
 }

@@ -25,51 +25,12 @@ import java.util.function.Consumer;
 @Log4j2
 public class PaymentEventsListener {
 
-    private JwtService jwtService;
-    private TokenTool tokenTool;
-    private MessageMapper messageMapper;
-    private PaymentPublisher paymentPublisher;
     private PaymentService paymentService;
 
 
     @Bean
     public Consumer<Message<Object>> channelOrderEvents() {
-        return message -> {
-            try {
-                String jwtToken = tokenTool.getToken(message);
-                if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("routingKey");
-                    log.info("-- eventType: {}", eventType);
-
-                    if ("product.reserved".equals(eventType)) {
-                        OrderPaymentEvent event = messageMapper.map(message, OrderPaymentEvent.class);
-                        if (event != null) {
-                            handlePaymentEvent(event);
-                        }
-                    } else {
-                        log.warn("Неизвестный тип события: {}", eventType);
-                    }
-                } else {
-                    log.error("Недействительный Jwt-токен");
-                }
-
-            } finally {
-                log.info("-- Clean context security --");
-                SecurityContextHolder.clearContext();
-            }
-        };
+        return message -> paymentService.doOrderEvent(message);
     }
-
-    /*
-     * Проведение оплаты заказа.
-     */
-    private void handlePaymentEvent(OrderPaymentEvent event) {
-        if (paymentService.payment(event)) {
-            paymentPublisher.sendPaymentPaid(new OrderPaidEvent(event.getOrderId(), "Оплата прошла успешно"));
-        } else {
-            paymentPublisher.sendPaymentCancel(event.getOrderId());
-        }
-    }
-
 
 }

@@ -22,6 +22,8 @@ public class Card {
     private String expiryDate;
     private String cvv;
 
+    private boolean used;
+
     @ManyToOne
     @JoinColumn(name = "user_payment_id")
     private UserEntity userEntity;

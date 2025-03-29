@@ -27,6 +27,9 @@ public class CardService {
     /**
      * Возвращает список банковских карт пользователя.
      * Номера карт частично скрыты.
+     *
+     * Прим. Поскольку карт у пользователя не может быть много, выбираем из БД все
+     * существующие и затем просто отфильтровываем недействительные.
      */
     public List<CardResponse> getCards(UUID userId) {
         List<CardResponse> cards = new ArrayList<>();
@@ -34,7 +37,7 @@ public class CardService {
         UserEntity userEntity = userEntityRepository.findById(userId).orElse(null);
         if (userEntity != null) {
             Set<Card> c = userEntity.getCards();
-            cards = c.stream().map(Converts::cardToCardRequest).toList();
+            cards = c.stream().filter(Card::isUsed).map(Converts::cardToCardRequest).toList();
         }
         return cards;
     }
@@ -68,4 +71,23 @@ public class CardService {
         }
     }
 
+
+    /**
+     * Переводит карту в разряд недействительных.
+     */
+    public void blockCard(UUID userId, Long cardId) {
+        Optional<Card> opt = cardRepository.findById(cardId);
+        if (opt.isPresent()) {
+            Card card = opt.get();
+            if (card.getUserEntity().getUserId().equals(userId)) {
+                card.setUsed(false);
+                cardRepository.save(card);
+                log.info("Card {} blocked", cardId);
+            } else {
+                log.error("The card {} has a different owner", cardId);
+            }
+        } else {
+            log.error("Card {} not found", cardId);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package mr.demonid.service.payment.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.payment.services.PaymentService;
 import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,39 +26,12 @@ import java.util.function.Consumer;
 @Log4j2
 public class PaymentCancelListener {
 
-    private JwtService jwtService;
-    private TokenTool tokenTool;
+    private PaymentService paymentService;
 
 
     @Bean
-    public Consumer<Message<String>> channelOrderCancel() {
-        return message -> {
-            try {
-                String jwtToken = tokenTool.getToken(message);
-                if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
-                    String eventType = (String) message.getHeaders().get("routingKey");
-
-                    if ("order.stop".equals(eventType)) {
-                        handlePaymentCancel(message.getPayload());
-                    } else {
-                        log.warn("Неизвестный тип события: {}", eventType);
-                    }
-                } else {
-                    log.error("Недействительный Jwt-токен");
-                }
-            } finally {
-                log.info("-- Clear security context --");
-                SecurityContextHolder.clearContext();
-            }
-        };
-    }
-
-    /*
-     * Оплата не прошла, отменяем резерв.
-     */
-    private void handlePaymentCancel(String message) {
-        // отменяем отплату
-        log.info("-- cancel payment with message: {}", message);
+    public Consumer<Message<Object>> channelOrderCancel() {
+        return message -> paymentService.doOrderEvent(message);
     }
 
 }

@@ -17,7 +17,7 @@ public class Converts {
     }
 
     public static Card newCardRequestToCard(NewCardRequest cardRequest, UserEntity userEntity) {
-        return new Card(null, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv(), userEntity);
+        return new Card(null, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv(), true, userEntity);
     }
 
     public static PaymentLogResponse logToPaymentLogResponse(PaymentLog paymentLog) {
