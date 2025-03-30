@@ -27,7 +27,6 @@ public class ProductController {
      */
     @GetMapping("/get-all")
     public ResponseEntity<PageDTO<ProductDTO>> getAllProducts(@RequestParam(required = false) Long categoryId, Pageable pageable) {
-        log.info("-- getAllProducts categoryId: {} pageable: {}", categoryId, pageable);
         return ResponseEntity.ok(new PageDTO<>(productService.getProducts(categoryId, pageable)));
     }
 // http://localhost:9100/pk8000/api/catalog/get-all?&page=0&size=10&sort=name,asc
@@ -37,7 +36,6 @@ public class ProductController {
      */
     @GetMapping("/get-product/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        log.info("-- getProductById: {}", id);
         ProductDTO dto = productService.getProductById(id);
         return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
@@ -48,7 +46,6 @@ public class ProductController {
      */
     @GetMapping("/get-categories")
     public ResponseEntity<List<ProductCategoryDTO>> getAllCategories() {
-        log.info("-- getCategories");
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 

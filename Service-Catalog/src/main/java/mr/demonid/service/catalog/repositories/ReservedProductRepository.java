@@ -1,6 +1,6 @@
 package mr.demonid.service.catalog.repositories;
 
-import mr.demonid.service.catalog.domain.BlockedProductEntity;
+import mr.demonid.service.catalog.domain.ReservedProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,6 @@ import java.util.UUID;
  * Резервирование товаров.
  */
 @Repository
-public interface BlockedProductRepository extends JpaRepository<BlockedProductEntity, UUID> {
+public interface ReservedProductRepository extends JpaRepository<ReservedProductEntity, UUID> {
 
 }

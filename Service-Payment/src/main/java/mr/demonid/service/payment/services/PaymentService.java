@@ -42,7 +42,7 @@ public class PaymentService {
      */
     public void doOrderEvent(Message<Object> message) {
         try {
-            String jwtToken = tokenTool.getToken(message);
+            String jwtToken = tokenTool.getCurrentToken(message);
             if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
                 String eventType = (String) message.getHeaders().get("routingKey");
 

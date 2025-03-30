@@ -10,7 +10,6 @@ import mr.demonid.service.order.events.OrderPublisher;
 import mr.demonid.service.order.exceptions.CreateOrderException;
 import mr.demonid.service.order.repository.OrderRepository;
 import mr.demonid.service.order.utils.Converts;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
                     .status(OrderStatus.Pending)
                     .build();
             Order res = orderRepository.save(order);
-            orderPublisher.sendCreateOrderEvent(Converts.makeOrderCreatedEvent(res.getOrderId(), request));
+            orderPublisher.sendCreateOrderEvent(mr.demonid.service.order.utils.Converts.makeOrderCreatedEvent(res.getOrderId(), request));
         } catch (Exception e) {
             log.error("OrderServiceImpl.createOrder(): {}", e.getMessage());
             throw new CreateOrderException(e.getMessage());
@@ -53,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
         if (order != null) {
             order.setStatus(status);
             order = orderRepository.save(order);
-            return OrderUtil.orderToDto(order);
+            return Converts.orderToDto(order);
         }
         log.warn("OrderServiceImpl.updateOrder(): Order not found: {}", orderId);
         return null;
@@ -67,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrder(String orderId) {
         Order order = orderRepository.findById(UUID.fromString(orderId)).orElse(null);
         if (order != null) {
-            return OrderUtil.orderToDto(order);
+            return Converts.orderToDto(order);
         }
         return null;
     }

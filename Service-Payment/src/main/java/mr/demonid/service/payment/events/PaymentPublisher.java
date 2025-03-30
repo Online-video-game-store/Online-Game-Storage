@@ -28,31 +28,29 @@ public class PaymentPublisher {
      * Отправка сообщения об успешном списании средств со счета пользователя.
      */
     public void sendPaymentPaid(OrderPaidEvent event) {
-        String jwtToken = tokenTool.getToken();
-        if (jwtToken != null) {
-            streamBridge.send("ch-pk8000-order-out",
-                    MessageBuilder.withPayload(event)
-                            .setHeader("routingKey", "payment.paid")  // Задаем routing-key
-                            .setHeader("Authorization", "Bearer " + jwtToken)
-                            .build());
-            log.info("-- Отправлено событие payment.paid: {}", event);
-        }
+        send("ch-pk8000-order-out", "payment.paid", event);
     }
 
     /**
      * Отправка сообщения о невозможности списания средств со счета пользователя.
      */
     public void sendPaymentCancel(UUID orderId) {
-        String jwtToken = tokenTool.getToken();
-        if (jwtToken != null) {
-            streamBridge.send("ch-pk8000-cancel-out",
-                    MessageBuilder.withPayload(orderId)
-                            .setHeader("routingKey", "payment.cancel")
-                            .setHeader("Authorization", "Bearer " + jwtToken)
-                            .build());
-            log.warn("Отправлено событие payment.cancel: {}", orderId);
-        }
+        send("ch-pk8000-cancel-out", "payment.cancel", orderId);
     }
 
 
+    /*
+     * Непосредственно отправка сообщения на заданный канал и с заданным ключом маршрутизации.
+     */
+    private void send(String channel, String routingKey, Object obj) {
+        String jwtToken = tokenTool.getCurrentToken();
+        if (jwtToken != null) {
+            streamBridge.send(channel,
+                    MessageBuilder.withPayload(obj)
+                            .setHeader("routingKey", routingKey)
+                            .setHeader("Authorization", "Bearer " + jwtToken)
+                            .build());
+            log.info("-- Отправлено событие {}: {}", routingKey, obj.toString());
+        }
+    }
 }

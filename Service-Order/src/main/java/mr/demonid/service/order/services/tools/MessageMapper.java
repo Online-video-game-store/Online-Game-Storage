@@ -1,4 +1,4 @@
-package mr.demonid.service.catalog.events;
+package mr.demonid.service.order.services.tools;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

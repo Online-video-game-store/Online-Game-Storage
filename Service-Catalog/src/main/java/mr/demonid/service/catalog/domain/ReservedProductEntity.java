@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "blocked_products")
-public class BlockedProductEntity {
+public class ReservedProductEntity {
     @Id
     private UUID orderId;
 

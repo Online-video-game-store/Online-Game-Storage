@@ -30,30 +30,14 @@ public class CatalogPublisher {
      * Отправка сообщения об успешном резервировании товара.
      */
     public void sendProductReserved(OrderPaymentEvent event) {
-        String jwtToken = tokenTool.getCurrentToken();
-        if (jwtToken != null) {
-            streamBridge.send("ch-pk8000-order-out",
-                    MessageBuilder.withPayload(event)
-                            .setHeader("routingKey", "product.reserved")  // Задаем routing-key
-                            .setHeader("Authorization", "Bearer " + jwtToken)
-                            .build());
-            log.info("-- Отправлено событие product.reserved: {}", event);
-        }
+        send("ch-pk8000-order-out", "product.reserved", event);
     }
 
     /**
      * Отправка сообщения о списания резерва в службу набора и доставки товара.
      */
     public void sendProductTransferred(UUID orderId) {
-        String jwtToken = tokenTool.getCurrentToken();
-        if (jwtToken != null) {
-            streamBridge.send("ch-pk8000-order-out",
-                    MessageBuilder.withPayload(orderId)
-                            .setHeader("routingKey", "product.transferred")
-                            .setHeader("Authorization", "Bearer " + jwtToken)
-                            .build());
-            log.info("-- Отправлено событие product.transferred по заказу: {}", orderId);
-        }
+        send("ch-pk8000-order-out", "product.transferred", orderId);
     }
 
 
@@ -61,16 +45,23 @@ public class CatalogPublisher {
      * Отправка сообщения о невозможности зарезервировать товар.
      */
     public void sendProductCancel(OrderCancelEvent event) {
-        String jwtToken = tokenTool.getCurrentToken();
-        if (jwtToken != null) {
-            streamBridge.send("ch-pk8000-cancel-out",
-                    MessageBuilder.withPayload(event)
-                            .setHeader("routingKey", "product.cancel")
-                            .setHeader("Authorization", "Bearer " + jwtToken)
-                            .build());
-            log.warn("Отправлено событие product.cancel: {}", event);
-        }
+        send("ch-pk8000-cancel-out", "product.cancel", event);
     }
 
+
+    /*
+     * Непосредственно отправка сообщения на заданный канал и с заданным ключом маршрутизации.
+     */
+    private void send(String channel, String routingKey, Object obj) {
+        String jwtToken = tokenTool.getCurrentToken();
+        if (jwtToken != null) {
+            streamBridge.send(channel,
+                    MessageBuilder.withPayload(obj)
+                            .setHeader("routingKey", routingKey)
+                            .setHeader("Authorization", "Bearer " + jwtToken)
+                            .build());
+            log.info("-- Отправлено событие {}: {}", routingKey, obj.toString());
+        }
+    }
 
 }

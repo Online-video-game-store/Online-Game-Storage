@@ -20,7 +20,7 @@ public class TokenTool {
     /**
      * Извлекает из заголовка Message токен.
      */
-    public String getToken(Message<?> message) {
+    public String getCurrentToken(Message<?> message) {
         MessageHeaders headers = message.getHeaders();
         Object headerValue = headers.get("Authorization");
 
@@ -39,7 +39,7 @@ public class TokenTool {
      * Возвращает токен текущего пользователя.
      * null - если пользователь не аутентифицирован.
      */
-    public String getToken() {
+    public String getCurrentToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
