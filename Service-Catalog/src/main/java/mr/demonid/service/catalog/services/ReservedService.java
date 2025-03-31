@@ -46,8 +46,8 @@ public class ReservedService {
                 throw new NotAvailableException();
             }
             // резервируем товар
+            log.info("-- reserved: {}", productEntity);
             productEntity.setStock(productEntity.getStock() - item.getQuantity());
-            log.info("-- Зарезервирован товар: {}", productEntity);
             productRepository.save(productEntity);
             reservedRepository.save(new ReservedProductEntity(orderId, productEntity.getId(), item.getQuantity()));
         });

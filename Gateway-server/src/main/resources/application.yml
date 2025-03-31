@@ -43,20 +43,19 @@ spring:
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
 
+        - id: websocket-route
+          uri: lb://WEB-CLIENT
+          predicates:
+            - Path=/ws/notifications
+          filters:
+            - RemoveRequestHeader=Sec-WebSocket-Protocol
+
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/pk8000/api/catalog/**
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
-
-        - id: websocket-route
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/ws/notifications
-          filters:
-            - RemoveRequestHeader=Sec-WebSocket-Protocol
-
 
     loadbalancer:
       retry:

@@ -67,8 +67,10 @@ public class PaymentController {
         }
         // Формируем заказ
         if (orderService.createOrder(request)) {
+            log.info("-- order proceed...");
             return ResponseEntity.ok(Map.of("status", "success", "message", "Оплата успешна!"));
         }
+        log.error("-- order can't proceed");
         return ResponseEntity.ok(Map.of("status", "error", "message", "Ошибка оплаты. Попробуйте позже."));
     }
 

@@ -2,6 +2,7 @@ package mr.demonid.service.order.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.order.dto.events.CatalogFailEvent;
 import mr.demonid.service.order.dto.events.OrderCreatedEvent;
 import mr.demonid.service.order.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -41,8 +42,8 @@ public class OrderPublisher {
     /**
      * Отправка сообщения о неудаче оформления заказа
      */
-    public void sendFailOrderEvent(UUID orderId) {
-        send("ch-pk8000-order-out", "order.fail", orderId);
+    public void sendFailOrderEvent(CatalogFailEvent event) {
+        send("ch-pk8000-cancel-out", "order.fail", event);
     }
 
     /**

@@ -106,9 +106,10 @@
             });
 
             const result = await response.json();
-            alert(result.message);
             if (result.status === "success") {
-                window.location.href = "/order-success";
+                window.location.href = "/pk8000/catalog/index";
+            } else {
+                alert(result.message);
             }
         }
     </script>
@@ -163,9 +164,19 @@
             alert("Уведомление: " + event.data);
         };
 
-        socket.onclose = function () {
-            console.log("WebSocket connection closed.");
+        socket.onerror = function(error) {
+            console.error("WebSocket Error: ", error);
         };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket connection closed.", event);
+            if (event.wasClean) {
+                console.log(`Closed cleanly, code=<span class="math-inline">\{event\.code\} reason\=</span>{event.reason}`);
+            } else {
+                console.error('Connection died');
+            }
+        };
+
     });
 </script>
 

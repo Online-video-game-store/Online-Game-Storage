@@ -72,6 +72,12 @@ public class PaymentService {
      */
     private void handlePaymentEvent(OrderPaymentEvent event) {
         if (payment(event)) {
+            // Эмулируем задержку
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             paymentPublisher.sendPaymentPaid(new OrderPaidEvent(event.getOrderId(), "Оплата прошла успешно"));
         } else {
             paymentPublisher.sendPaymentCancel(event.getOrderId());

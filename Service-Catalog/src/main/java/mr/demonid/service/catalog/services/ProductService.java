@@ -59,7 +59,6 @@ public class ProductService {
             // ClassPathResource строит путь из src/main/resource, независимо от того, упакован файл в JAR, или выполняется из IDEA.
             ClassPathResource imgFile = new ClassPathResource("pics/" + fileName);
             Path imagePath = imgFile.getFile().toPath();
-            System.out.println("load: " + imagePath);
             // Читаем байты и кодируем в Base64
             byte[] imageBytes = Files.readAllBytes(imagePath);
             return Base64.getEncoder().encodeToString(imageBytes);

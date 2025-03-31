@@ -1,14 +1,13 @@
-package mr.demonid.service.order.services;
+package mr.demonid.web.client.services;
 
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.order.domain.OrderStatus;
-import mr.demonid.service.order.dto.events.CatalogFailEvent;
-import mr.demonid.service.order.events.OrderPublisher;
-import mr.demonid.service.order.services.tools.JwtService;
-import mr.demonid.service.order.services.tools.MessageMapper;
-import mr.demonid.service.order.utils.TokenTool;
+import mr.demonid.web.client.dto.events.CatalogFailEvent;
+import mr.demonid.web.client.services.tools.JwtService;
+import mr.demonid.web.client.services.tools.MessageMapper;
+import mr.demonid.web.client.utils.IdnUtil;
+import mr.demonid.web.client.utils.TokenTool;
 import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,9 @@ public class EventsService {
     private JwtService jwtService;
     private TokenTool tokenTool;
     private OrderService orderService;
-    private OrderPublisher orderPublisher;
     private MessageMapper messageMapper;
+
+    private WebSocketService webSocketService;
 
 
     public void doProcess(Message<Object> message) {
@@ -33,12 +33,12 @@ public class EventsService {
             if (jwtToken != null && jwtService.createSecurityContextFromJwt(jwtToken)) {
                 String eventType = (String) message.getHeaders().get("routingKey");
 
-                if ("product.transferred".equals(eventType)) {
+                if ("order.done".equals(eventType)) {
                     UUID orderId = messageMapper.map(message, UUID.class);
                     finishOrder(orderId);
-                } else if ("product.cancel".equals(eventType) || "payment.cancel".equals(eventType)) {
+                } else if ("order.fail".equals(eventType)) {
                     CatalogFailEvent event = messageMapper.map(message, CatalogFailEvent.class);
-                    orderCancel(event);
+                    failOrder(event);
 
                 } else {
                     log.warn("Неизвестный тип события: {}", eventType);
@@ -59,18 +59,17 @@ public class EventsService {
     private void finishOrder(UUID orderId)
     {
         log.info("-- finish order: {}", orderId);
-        orderService.updateOrder(orderId, OrderStatus.Approved);
-        // Извещаем веб-сервис об успешном оформлении заказа
-        orderPublisher.sendFinishOrderEvent(orderId);
+        UUID userId = IdnUtil.getUserId();
+        webSocketService.sendMessage(userId, "Заказ передан в службу комплектации и доставки.");
     }
 
     /*
     Заказ завершился ошибкой.
     */
-    private void orderCancel(CatalogFailEvent event) {
+    private void failOrder(CatalogFailEvent event) {
         log.error("-- order {} cancelled", event);
-        orderService.updateOrder(event.getOrderId(), OrderStatus.Cancelled);
-        orderPublisher.sendFailOrderEvent(event);
+        UUID userId = IdnUtil.getUserId();
+        webSocketService.sendMessage(userId, "Ошибка формирования заказа: " + event.getMessage());
     }
 
 }

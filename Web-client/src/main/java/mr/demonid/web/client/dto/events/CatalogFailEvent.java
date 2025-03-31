@@ -1,4 +1,4 @@
-package mr.demonid.service.catalog.dto.events;
+package mr.demonid.web.client.dto.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 /**
- * Сообщение об ошибке.
+ * Сообщение об ошибке резервирования товара.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCancelEvent {
+public class CatalogFailEvent {
     UUID orderId;
     String message;
 }

@@ -5,6 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.configs.NotificationWebSocketHandler;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 
 @Service
 @AllArgsConstructor
@@ -19,8 +21,9 @@ public class WebSocketServiceImpl implements WebSocketService {
      * Самый удобный способ известить frontend о чем-то.
      */
     @Override
-    public void sendMessage(String message) {
-        webSocketHandler.sendMessageToAllClients(message);
+    public void sendMessage(UUID userId, String message) {
+        log.info(message);
+        webSocketHandler.sendMessageToUser(userId, message);
     }
 
 }

@@ -1,6 +1,6 @@
 package mr.demonid.service.catalog.services;
 
-import mr.demonid.service.catalog.dto.events.OrderCancelEvent;
+import mr.demonid.service.catalog.dto.events.CatalogFailEvent;
 import mr.demonid.service.catalog.dto.events.OrderCreatedEvent;
 import mr.demonid.service.catalog.dto.events.OrderPaidEvent;
 import mr.demonid.service.catalog.events.CatalogPublisher;
@@ -50,7 +50,7 @@ public class ProcessService {
                         handleOrderPaid(paidEvent.getOrderId());
                     }
                 } else if ("payment.cancel".equals(eventType) || "order.stop".equals(eventType)) {
-                    OrderCancelEvent order = messageMapper.map(message, OrderCancelEvent.class);
+                    CatalogFailEvent order = messageMapper.map(message, CatalogFailEvent.class);
                     handleProcessCancel(order);
 
                 } else {
@@ -77,7 +77,7 @@ public class ProcessService {
             catalogPublisher.sendProductReserved(Converts.createdToPayment(event));
         } catch (CatalogException e) {
             // сообщаем о неудаче
-            catalogPublisher.sendProductCancel(new OrderCancelEvent(event.getOrderId(), e.getMessage()));
+            catalogPublisher.sendProductCancel(new CatalogFailEvent(event.getOrderId(), e.getMessage()));
         }
     }
 
@@ -93,7 +93,7 @@ public class ProcessService {
     /*
      * Оплата не прошла, отменяем резерв.
      */
-    private void handleProcessCancel(OrderCancelEvent event) {
+    private void handleProcessCancel(CatalogFailEvent event) {
         log.warn("-- отмена резерва товара: {}", event);
         reservedService.cancelReserved(event.getOrderId());
     }

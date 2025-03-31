@@ -26,9 +26,9 @@ public class AnonymousCookieFilter extends OncePerRequestFilter {
         // Проверяем наличие cookie и если его нет, то создаем.
         if (IdnUtil.getAnonymousId(request) == null) {
             Cookie cookie = IdnUtil.setAnonymousCookie(request, response);
-            log.info("-- Cookie created: {}", cookie.getValue());
-        } else {
-            log.info("-- Cookie already exists: {}", IdnUtil.getAnonymousId(request));
+//            log.info("-- Cookie created: {}", cookie.getValue());
+//        } else {
+//            log.info("-- Cookie already exists: {}", IdnUtil.getAnonymousId(request));
         }
 
         filterChain.doFilter(request, response);
