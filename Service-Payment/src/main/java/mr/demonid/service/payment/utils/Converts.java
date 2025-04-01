@@ -6,8 +6,7 @@ import mr.demonid.service.payment.dto.CardResponse;
 import mr.demonid.service.payment.dto.NewCardRequest;
 import mr.demonid.service.payment.dto.PaymentLogResponse;
 import mr.demonid.service.payment.dto.PaymentMethodResponse;
-import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
-import mr.demonid.service.payment.services.CardService;
+import mr.demonid.service.payment.dto.events.PaymentRequestEvent;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,7 +44,7 @@ public class Converts {
     /*
     OrderPaymentEvent -> PaymentLog
      */
-    public PaymentLog orderToPaymentLog(OrderPaymentEvent order) {
+    public PaymentLog orderToPaymentLog(PaymentRequestEvent order) {
         return new PaymentLog(
                 null,
                 order.getOrderId(),

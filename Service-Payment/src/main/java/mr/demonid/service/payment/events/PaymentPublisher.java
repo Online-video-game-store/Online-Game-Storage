@@ -2,13 +2,12 @@ package mr.demonid.service.payment.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.payment.dto.events.OrderPaidEvent;
+import mr.demonid.service.payment.dto.events.PaymentPaidEvent;
+import mr.demonid.service.payment.dto.events.PaymentFailEvent;
 import mr.demonid.service.payment.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 
 /**
@@ -27,15 +26,15 @@ public class PaymentPublisher {
     /**
      * Отправка сообщения об успешном списании средств со счета пользователя.
      */
-    public void sendPaymentPaid(OrderPaidEvent event) {
+    public void sendPaymentPaid(PaymentPaidEvent event) {
         send("ch-pk8000-order-out", "payment.paid", event);
     }
 
     /**
      * Отправка сообщения о невозможности списания средств со счета пользователя.
      */
-    public void sendPaymentCancel(UUID orderId) {
-        send("ch-pk8000-cancel-out", "payment.cancel", orderId);
+    public void sendPaymentCancel(PaymentFailEvent event) {
+        send("ch-pk8000-cancel-out", "payment.cancel", event);
     }
 
 

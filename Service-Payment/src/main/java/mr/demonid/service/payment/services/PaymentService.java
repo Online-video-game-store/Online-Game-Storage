@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.payment.domain.PaymentLog;
 import mr.demonid.service.payment.domain.PaymentStatus;
-import mr.demonid.service.payment.dto.events.OrderPaidEvent;
-import mr.demonid.service.payment.dto.events.OrderPaymentEvent;
+import mr.demonid.service.payment.dto.events.PaymentPaidEvent;
+import mr.demonid.service.payment.dto.events.PaymentRequestEvent;
+import mr.demonid.service.payment.dto.events.PaymentFailEvent;
 import mr.demonid.service.payment.services.tools.JwtService;
 import mr.demonid.service.payment.services.tools.MessageMapper;
 import mr.demonid.service.payment.events.PaymentPublisher;
@@ -47,7 +48,7 @@ public class PaymentService {
                 String eventType = (String) message.getHeaders().get("routingKey");
 
                 if ("product.reserved".equals(eventType)) {
-                    OrderPaymentEvent event = messageMapper.map(message, OrderPaymentEvent.class);
+                    PaymentRequestEvent event = messageMapper.map(message, PaymentRequestEvent.class);
                     if (event != null) {
                         handlePaymentEvent(event);
                     }
@@ -70,7 +71,7 @@ public class PaymentService {
     /*
      * Проведение оплаты заказа.
      */
-    private void handlePaymentEvent(OrderPaymentEvent event) {
+    private void handlePaymentEvent(PaymentRequestEvent event) {
         if (payment(event)) {
             // Эмулируем задержку
             try {
@@ -78,9 +79,9 @@ public class PaymentService {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            paymentPublisher.sendPaymentPaid(new OrderPaidEvent(event.getOrderId(), "Оплата прошла успешно"));
+            paymentPublisher.sendPaymentPaid(new PaymentPaidEvent(event.getOrderId(), "Оплата прошла успешно."));
         } else {
-            paymentPublisher.sendPaymentCancel(event.getOrderId());
+            paymentPublisher.sendPaymentCancel(new PaymentFailEvent(event.getOrderId(), "Недостаточно средств."));
         }
     }
 
@@ -96,7 +97,7 @@ public class PaymentService {
     /**
      * Оплата заказа.
      */
-    private boolean payment(OrderPaymentEvent order) {
+    private boolean payment(PaymentRequestEvent order) {
         log.info("-- Payment started: {}", order);
         PaymentLog log = converts.orderToPaymentLog(order);
         log.setStatus(PaymentStatus.REQUESTED);

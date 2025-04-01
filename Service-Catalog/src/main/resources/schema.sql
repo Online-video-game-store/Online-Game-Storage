@@ -21,9 +21,10 @@ create table if not exists products (
 );
 
 create table if not exists blocked_products (
+    id bigint generated always as identity,
     order_id VARCHAR(36),
     product_id bigint not null,
     quantity int not null,
-    primary key (order_id)
+    primary key (id)
 );
 

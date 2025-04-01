@@ -1,4 +1,4 @@
-package mr.demonid.service.catalog.dto.events;
+package mr.demonid.service.payment.dto.events;
 
 
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderPaymentEvent {
+public class PaymentRequestEvent {
     private UUID orderId;
     private UUID userId;
     private Long paymentId;

@@ -1,19 +1,22 @@
-package mr.demonid.service.payment.dto.events;
+package mr.demonid.web.client.dto.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
+
 /**
- * Сообщение о том, что заказ успешно оплачен
+ * Сообщение об успешно проведённом заказе.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderPaidEvent {
+public class OrderDoneEvent {
     private UUID orderId;
     private String message;
+    private List<ProductTransferred> products;
 }
 

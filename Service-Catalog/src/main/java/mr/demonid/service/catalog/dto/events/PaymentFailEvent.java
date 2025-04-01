@@ -1,5 +1,6 @@
 package mr.demonid.service.catalog.dto.events;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,12 +9,12 @@ import java.util.UUID;
 
 
 /**
- * Сообщение об отправке купленного товара в службу комплектации и доставки.
+ * Сообщение о не прошедшей оплате.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderTransferredEvent {
+public class PaymentFailEvent {
     private UUID orderId;
     private String message;
 }

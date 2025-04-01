@@ -1,18 +1,18 @@
 package mr.demonid.service.catalog.dto.events;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
 
 /**
- * Сообщение об ошибке резервирования товара.
+ * Товар, ушедший с резерва в комплектацию
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CatalogFailEvent {
-    private UUID orderId;
-    private String message;
+public class ProductTransferred {
+    private Long productId;
+    private int quantity;
 }

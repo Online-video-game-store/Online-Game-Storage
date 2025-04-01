@@ -4,16 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
+
 /**
- * Сообщение о том, что заказ успешно оплачен
+ * Сообщение об успешной передаче товаров из резерва в службу комплектации и доставки.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderPaidEvent {
+public class CatalogTransferredEvent {
     private UUID orderId;
     private String message;
+    private List<ProductTransferred> products;
 }
-

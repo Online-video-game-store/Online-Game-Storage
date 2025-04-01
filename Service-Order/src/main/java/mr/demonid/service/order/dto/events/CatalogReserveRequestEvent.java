@@ -11,12 +11,12 @@ import java.util.UUID;
 
 
 /**
- * Сообщение на проведение заказа.
+ * Сообщение на резервирование товаров заказа.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreatedEvent {
+public class CatalogReserveRequestEvent {
     private UUID orderId;
     private UUID userId;
     private Long paymentId;

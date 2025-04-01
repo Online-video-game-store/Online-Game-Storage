@@ -17,7 +17,7 @@ public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<Gra
 
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
-        log.info("-- token = {}", jwt.getTokenValue());
+//        log.info("-- token = {}", jwt.getTokenValue());
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         // извлекаем права
         grantedAuthoritiesConverter.setAuthorityPrefix("SCOPE_");

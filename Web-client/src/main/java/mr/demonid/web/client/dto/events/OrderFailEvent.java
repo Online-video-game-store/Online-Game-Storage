@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+
 /**
- * Сообщение об ошибке резервирования товара.
+ * Сообщение о неудачном проведении заказа.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CatalogFailEvent {
-    UUID orderId;
-    String message;
+public class OrderFailEvent {
+    private UUID orderId;
+    private String message;
 }

@@ -3,7 +3,8 @@ package mr.demonid.web.client.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.web.client.dto.events.CatalogFailEvent;
+import mr.demonid.web.client.dto.events.OrderDoneEvent;
+import mr.demonid.web.client.dto.events.OrderFailEvent;
 import mr.demonid.web.client.services.tools.JwtService;
 import mr.demonid.web.client.services.tools.MessageMapper;
 import mr.demonid.web.client.utils.IdnUtil;
@@ -21,10 +22,10 @@ public class EventsService {
 
     private JwtService jwtService;
     private TokenTool tokenTool;
-    private OrderService orderService;
     private MessageMapper messageMapper;
 
     private WebSocketService webSocketService;
+    private CartServices cartServices;
 
 
     public void doProcess(Message<Object> message) {
@@ -34,10 +35,10 @@ public class EventsService {
                 String eventType = (String) message.getHeaders().get("routingKey");
 
                 if ("order.done".equals(eventType)) {
-                    UUID orderId = messageMapper.map(message, UUID.class);
-                    finishOrder(orderId);
+                    OrderDoneEvent event = messageMapper.map(message, OrderDoneEvent.class);
+                    finishOrder(event);
                 } else if ("order.fail".equals(eventType)) {
-                    CatalogFailEvent event = messageMapper.map(message, CatalogFailEvent.class);
+                    OrderFailEvent event = messageMapper.map(message, OrderFailEvent.class);
                     failOrder(event);
 
                 } else {
@@ -56,17 +57,19 @@ public class EventsService {
     /*
      * Успешное завершение заказа.
      */
-    private void finishOrder(UUID orderId)
+    private void finishOrder(OrderDoneEvent event)
     {
-        log.info("-- finish order: {}", orderId);
+        // удаляем товары из корзины
+        event.getProducts().forEach(product -> cartServices.removeItem(product.getProductId()));
+        // информируем юзера
         UUID userId = IdnUtil.getUserId();
-        webSocketService.sendMessage(userId, "Заказ передан в службу комплектации и доставки.");
+        webSocketService.sendMessage(userId, event.getMessage());
     }
 
     /*
     Заказ завершился ошибкой.
     */
-    private void failOrder(CatalogFailEvent event) {
+    private void failOrder(OrderFailEvent event) {
         log.error("-- order {} cancelled", event);
         UUID userId = IdnUtil.getUserId();
         webSocketService.sendMessage(userId, "Ошибка формирования заказа: " + event.getMessage());

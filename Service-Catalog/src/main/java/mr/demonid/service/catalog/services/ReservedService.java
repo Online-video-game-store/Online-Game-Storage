@@ -5,6 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.domain.ReservedProductEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.CartItemResponse;
+import mr.demonid.service.catalog.dto.CartNeededResponse;
+import mr.demonid.service.catalog.dto.events.ProductTransferred;
 import mr.demonid.service.catalog.exceptions.CatalogException;
 import mr.demonid.service.catalog.exceptions.NotAvailableException;
 import mr.demonid.service.catalog.exceptions.NotFoundException;
@@ -13,6 +15,7 @@ import mr.demonid.service.catalog.repositories.ReservedProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,22 +38,33 @@ public class ReservedService {
      */
     @Transactional
     public void reserve(UUID orderId, List<CartItemResponse> items) throws CatalogException {
+        List<CartNeededResponse> products = new ArrayList<>();
+
         items.forEach(item -> {
             ProductEntity productEntity = productRepository.findByIdWithCategory(item.getProductId()).orElse(null);
             if (productEntity == null) {
+                products.add(new CartNeededResponse(
+                        item.getProductId(), "",
+                        item.getQuantity(),
+                        0));
                 log.error("Product with id {} not found", item.getProductId());
-                throw new NotFoundException();
-            }
-            if (productEntity.getStock() < item.getQuantity()) {
+            } else if (productEntity.getStock() < item.getQuantity()) {
+                products.add(new CartNeededResponse(
+                        item.getProductId(),
+                        productEntity.getName(),
+                        item.getQuantity(),
+                        productEntity.getStock()));
                 log.error("Not enough stock! Request = {}, in stock = {}", item.getQuantity(), productEntity.getStock());
-                throw new NotAvailableException();
+            } else {
+                // резервируем товар
+                productEntity.setStock(productEntity.getStock() - item.getQuantity());
+                productRepository.save(productEntity);
+                reservedRepository.save(new ReservedProductEntity(null, orderId, productEntity.getId(), item.getQuantity()));
             }
-            // резервируем товар
-            log.info("-- reserved: {}", productEntity);
-            productEntity.setStock(productEntity.getStock() - item.getQuantity());
-            productRepository.save(productEntity);
-            reservedRepository.save(new ReservedProductEntity(orderId, productEntity.getId(), item.getQuantity()));
         });
+        if (!products.isEmpty()) {
+            throw new NotAvailableException(products);  // отменяем транзакцию.
+        }
     }
 
 
@@ -59,25 +73,31 @@ public class ReservedService {
      */
     @Transactional
     public void cancelReserved(UUID orderId) {
-        ReservedProductEntity reservedProductEntity = proofOfPurchaseOrder(orderId);
+        List<ReservedProductEntity> reservedProductEntity = proofOfPurchaseOrder(orderId);
         if (reservedProductEntity != null) {
-            ProductEntity productEntity = productRepository.findByIdWithCategory(reservedProductEntity.getProductId()).orElse(null);
-            if (productEntity != null) {
-                // возвращаем товар на место
-                productEntity.setStock(productEntity.getStock() + reservedProductEntity.getQuantity());
-                productRepository.save(productEntity);
+            for (ReservedProductEntity item : reservedProductEntity) {
+                ProductEntity productEntity = productRepository.findByIdWithCategory(item.getProductId()).orElse(null);
+                if (productEntity != null) {
+                    // возвращаем товар на место
+                    productEntity.setStock(productEntity.getStock() + item.getQuantity());
+                    productRepository.save(productEntity);
+                }
             }
         }
     }
 
     /**
      * Списание товара из резерва.
+     * Возвращает список этих товаров.
      */
-    public void approvedReservation(UUID orderId) {
-        ReservedProductEntity reservedProductEntity = proofOfPurchaseOrder(orderId);
+    public List<ProductTransferred> approvedReservation(UUID orderId) {
+        List<ReservedProductEntity> reservedProductEntity = proofOfPurchaseOrder(orderId);
         if (reservedProductEntity != null) {
             // да собственно больше ничего и не нужно делать, разве что в историю отправить.
+
+            return reservedProductEntity.stream().map(e -> new ProductTransferred(e.getProductId(), e.getQuantity())).toList();
         }
+        return List.of();
     }
 
 
@@ -85,10 +105,12 @@ public class ReservedService {
     /*
         Подтверждение покупки.
      */
-    private ReservedProductEntity proofOfPurchaseOrder(UUID orderId) {
-        ReservedProductEntity reservedProductEntity = reservedRepository.findById(orderId).orElse(null);
+    private List<ReservedProductEntity> proofOfPurchaseOrder(UUID orderId) {
+        List<ReservedProductEntity> reservedProductEntity = reservedRepository.findAllByOrderId(orderId);
         if (reservedProductEntity != null) {
-            reservedRepository.deleteById(orderId);
+            for (ReservedProductEntity item : reservedProductEntity) {
+                reservedRepository.deleteById(item.getId());
+            }
         }
         return reservedProductEntity;
     }

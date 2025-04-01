@@ -3,14 +3,14 @@ package mr.demonid.service.order.utils;
 import mr.demonid.service.order.domain.Order;
 import mr.demonid.service.order.dto.OrderCreateRequest;
 import mr.demonid.service.order.dto.OrderResponse;
-import mr.demonid.service.order.dto.events.OrderCreatedEvent;
+import mr.demonid.service.order.dto.events.CatalogReserveRequestEvent;
 
 import java.util.UUID;
 
 public class Converts {
 
-    public static OrderCreatedEvent makeOrderCreatedEvent(UUID orderId, OrderCreateRequest request) {
-        return new OrderCreatedEvent(
+    public static CatalogReserveRequestEvent makeOrderCreatedEvent(UUID orderId, OrderCreateRequest request) {
+        return new CatalogReserveRequestEvent(
                 orderId,
                 request.getUserId(),
                 request.getPaymentId(),

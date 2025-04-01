@@ -159,6 +159,7 @@
         socket.onmessage = function (event) {
             console.log("Notification received: " + event.data);
             alert("Уведомление: " + event.data);
+            window.location.reload();
         };
 
         socket.onerror = function(error) {

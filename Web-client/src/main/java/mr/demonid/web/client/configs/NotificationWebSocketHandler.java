@@ -77,14 +77,15 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         if (session != null && session.isOpen()) {
             try {
                 log.info("  ++ sending message: {}", message);
-                session.sendMessage(new TextMessage(message));
+                String msg = message.replaceAll("&", "\n");
+                session.sendMessage(new TextMessage(msg));
                 return;
             } catch (IOException e) {
                 log.error("Ошибка отправки сообщения: {}", e.getMessage());
             }
         }
         // Не получилось отправить, помещаем в очередь отложенных
-        log.warn("  ++ pending messages: {}", message);
+        log.warn("  ++ moved to pending: {}", message);
         pendingMessages.computeIfAbsent(userId, k -> new ConcurrentLinkedQueue<>()).add(message);
     }
 

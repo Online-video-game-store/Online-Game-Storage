@@ -19,7 +19,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        log.info("start security filter chain");
         http
                 .cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())

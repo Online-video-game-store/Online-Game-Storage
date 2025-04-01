@@ -3,13 +3,12 @@ package mr.demonid.service.catalog.events;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.events.CatalogFailEvent;
-import mr.demonid.service.catalog.dto.events.OrderPaymentEvent;
+import mr.demonid.service.catalog.dto.events.PaymentRequestEvent;
+import mr.demonid.service.catalog.dto.events.CatalogTransferredEvent;
 import mr.demonid.service.catalog.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 
 /**
@@ -28,15 +27,15 @@ public class CatalogPublisher {
     /**
      * Отправка сообщения об успешном резервировании товара.
      */
-    public void sendProductReserved(OrderPaymentEvent event) {
+    public void sendProductReserved(PaymentRequestEvent event) {
         send("ch-pk8000-order-out", "product.reserved", event);
     }
 
     /**
      * Отправка сообщения о списания резерва в службу набора и доставки товара.
      */
-    public void sendProductTransferred(UUID orderId) {
-        send("ch-pk8000-order-out", "product.transferred", orderId);
+    public void sendProductTransferred(CatalogTransferredEvent event) {
+        send("ch-pk8000-order-out", "product.transferred", event);
     }
 
 

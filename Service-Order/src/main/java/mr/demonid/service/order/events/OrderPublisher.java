@@ -2,14 +2,11 @@ package mr.demonid.service.order.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.service.order.dto.events.CatalogFailEvent;
-import mr.demonid.service.order.dto.events.OrderCreatedEvent;
+import mr.demonid.service.order.dto.events.*;
 import mr.demonid.service.order.utils.TokenTool;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 
 /**
@@ -28,21 +25,21 @@ public class OrderPublisher {
     /**
      * Отправка сообщения о создании заказа.
      */
-    public void sendCreateOrderEvent(OrderCreatedEvent order) {
+    public void sendCreateOrderEvent(CatalogReserveRequestEvent order) {
         send("ch-pk8000-order-out", "order.created", order);
     }
 
     /**
      * Отправка сообщения об успешном завершении заказа.
      */
-    public void sendFinishOrderEvent(UUID orderId) {
-        send("ch-pk8000-order-out", "order.done", orderId);
+    public void sendFinishOrderEvent(OrderDoneEvent event) {
+        send("ch-pk8000-order-out", "order.done", event);
     }
 
     /**
      * Отправка сообщения о неудаче оформления заказа
      */
-    public void sendFailOrderEvent(CatalogFailEvent event) {
+    public void sendFailOrderEvent(OrderFailEvent event) {
         send("ch-pk8000-cancel-out", "order.fail", event);
     }
 
