@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 
+/**
+ * Запрос на открытие заказа.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

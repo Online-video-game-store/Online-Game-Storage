@@ -47,8 +47,16 @@
                 <span th:text="${category.name}"></span>
             </div>
         </div>
-    </div>
 
+        <!-- Фильтр товаров -->
+        <div class="filter">
+            <h3>Фильтр товаров</h3>
+            <input type="text" th:value="${productName}" id="productName" placeholder="Имя товара" class="filter-input">
+            <input type="number" th:value="${minPrice}" id="minPrice" placeholder="Мин. цена" min="0" class="filter-input">
+            <input type="number" th:value="${maxPrice}" id="maxPrice" placeholder="Макс. цена" min="0" class="filter-input">
+            <button onclick="redirectToCategory()" class="filter-button">Применить</button>
+        </div>
+    </div>
     <!-- Контент товаров -->
     <main class="content">
         <div class="product-grid">
@@ -57,7 +65,7 @@
                 <img th:src="'data:image/jpeg;base64,' + ${product.imageBase64}" class="product-image" />
                 <div class="product-description" th:text="${product.description}">Product description...</div>
                 <div class="product-price" th:text="'$' + ${product.price}">Price</div>
-                <div class="product-stock" th:data-stock="${product.stock}" th:text="'In stock: ' + ${product.stock}">Stock</div>
+<!--                <div class="product-stock" th:data-stock="${product.stock}" th:text="'In stock: ' + ${product.stock}">Stock</div>-->
                 <form>
                     <input type="hidden" name="productId" th:value="${product.id}" />
                     <div class="quantity-controls">
@@ -74,11 +82,6 @@
 
 
 <div class="pagination-container">
-    <!-- Кнопка "Back" -->
-<!--    <div class="back-button-container">-->
-<!--        <a href="/pk8000/catalog/index" class="button">Назад</a>-->
-<!--    </div>-->
-
     <!-- Пагинатор. Для отправки данных тек. страницы и фильтра, применяем скрытые поля форм -->
     <div class="pagination" th:with="startPage=${currentPage > 5 ? currentPage - 5 : 0},
                                      endPage=${totalPages > currentPage + 5 ? currentPage + 5 : totalPages - 1}">
@@ -123,12 +126,25 @@
 
 
 <script>
-    function redirectToCategory(element) {
-        const categoryId = element.getAttribute("data-category-id");
+    function redirectToCategory(element = null) {
+        const selectedCategory = element ? element : document.querySelector('.category-button.active-category');
+        const categoryId = selectedCategory ? selectedCategory.getAttribute("data-category-id") : '';
+
+        const productName = document.getElementById("productName").value;
+        const minPrice = document.getElementById("minPrice").value;
+        const maxPrice = document.getElementById("maxPrice").value;
         const elemsOfPage = 8;
         const pageNo = 0;
 
-        window.location.href = `/pk8000/catalog/index?categoryId=${categoryId}&elemsOfPage=${elemsOfPage}&pageNo=${pageNo}`;
+        const queryParams = new URLSearchParams({
+            categoryId,
+            elemsOfPage,
+            pageNo,
+            productName,
+            minPrice,
+            maxPrice
+        });
+        window.location.href = `/pk8000/catalog/index?${queryParams.toString()}`;
     }
 
     function increaseQuantity(button) {

@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
+import mr.demonid.web.client.dto.ProduceFilter;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,10 @@ public class ProductServiceImpl implements ProductServices {
 
 
     @Override
-    public PageDTO<ProductDTO> getAllProducts(Long categoryId, Pageable pageable) {
-        log.info("getAllProducts: categoryId: {}, pageable: {}", categoryId, pageable);
+    public PageDTO<ProductDTO> getAllProducts(ProduceFilter filter, Pageable pageable) {
+        log.info("getAllProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
-            return productServiceClient.getAllProducts(categoryId, pageable).getBody();
+            return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
         } catch (FeignException e) {
             log.error("ProductServiceImpl.getAllProducts(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
             return PageDTO.empty();

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.NewCardRequest;
 import mr.demonid.web.client.dto.PaymentMethod;
-import mr.demonid.web.client.dto.payment.CardRequest;
+import mr.demonid.web.client.dto.payment.CardResponse;
 import mr.demonid.web.client.links.PaymentServiceClient;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class PaymentService {
         return List.of();
     }
 
-    public List<CardRequest> getCards() {
+    public List<CardResponse> getCards() {
         try {
             UUID userId = IdnUtil.getUserId();
             if (userId != null) {

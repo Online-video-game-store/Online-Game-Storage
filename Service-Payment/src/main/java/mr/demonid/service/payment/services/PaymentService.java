@@ -17,7 +17,10 @@ import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
 import java.util.UUID;
+
+import static java.lang.Math.random;
 
 
 /**
@@ -105,11 +108,16 @@ public class PaymentService {
         // проводим оплату
 
         // TODO: добавь оплату
+        if (random() > 0.4) {
+            // если всё успешно, то меняем статус
+            log.setStatus(PaymentStatus.APPROVED);
+            paymentLogService.save(log);
+            return true;
+        }
 
-        // если всё успешно, то меняем статус
-        log.setStatus(PaymentStatus.APPROVED);
+        log.setStatus(PaymentStatus.REJECTED);
         paymentLogService.save(log);
-        return true;
+        return false;
     }
 
 }

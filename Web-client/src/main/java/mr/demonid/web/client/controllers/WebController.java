@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
+import mr.demonid.web.client.dto.ProduceFilter;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,8 +36,14 @@ public class WebController {
         @RequestParam(name = "elemsOfPage", defaultValue = "8") int pageSize,
         @RequestParam(name = "pageNo", defaultValue = "0") int currentPage,
         @RequestParam(name = "categoryId", defaultValue = "0") Long categoryId,
+        @RequestParam(name = "productName", defaultValue = "") String productName,
+        @RequestParam(name = "minPrice", defaultValue = "0") BigDecimal minPrice,
+        @RequestParam(name = "maxPrice", defaultValue = "0") BigDecimal maxPrice,
         Model model) {
-        log.info("index. Current page = {}, categoryId = {}", currentPage, categoryId);
+
+        minPrice = normalizePrice(minPrice);
+        maxPrice = normalizePrice(maxPrice);
+        productName = normalizeProductName(productName);
 
         boolean isAuthenticated = IdnUtil.isAuthenticated();
         model.addAttribute("isAuthenticated", isAuthenticated);
@@ -57,7 +65,7 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductDTO> page = productServices.getAllProducts(categoryId, pageable);
+        PageDTO<ProductDTO> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
@@ -65,10 +73,27 @@ public class WebController {
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("elemsOfPage", pageSize);
         model.addAttribute("categoryId", categoryId);
+        model.addAttribute("productName", productName);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
 
         model.addAttribute("cartItemCount", cartServices.getCountItems());
 
         return "home";
+    }
+
+    private BigDecimal normalizePrice(BigDecimal n) {
+        if (n == null || n.compareTo(BigDecimal.ZERO) <= 0) {
+            return null;
+        }
+        return n;
+    }
+
+    private String normalizeProductName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        return name;
     }
 
 }

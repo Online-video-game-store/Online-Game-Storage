@@ -2,6 +2,7 @@ package mr.demonid.service.catalog.services;
 
 import lombok.AllArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductEntity;
+import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
 import mr.demonid.store.commons.dto.ProductDTO;
@@ -31,8 +32,8 @@ public class ProductService {
      * Возвращает постраничный список товаров.
      */
     @Transactional(readOnly = true)
-    public Page<ProductDTO> getProducts(Long categoryId, Pageable pageable) {
-        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(categoryId), pageable);
+    public Page<ProductDTO> getProducts(ProduceFilter produceFilter, boolean isIncludeEmpty, Pageable pageable) {
+        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, isIncludeEmpty), pageable);
         return items.map(e -> new ProductDTO(e.getId(), e.getName(), e.getPrice(), e.getCategory().getId(), e.getStock(), e.getDescription(), encodeImageToBase64(e.getImageFile())));
     }
 
@@ -54,7 +55,7 @@ public class ProductService {
     /**
      * Конвертирует файл в строку Base64.
      */
-    public String encodeImageToBase64(String fileName) {
+    private String encodeImageToBase64(String fileName) {
         try {
             // ClassPathResource строит путь из src/main/resource, независимо от того, упакован файл в JAR, или выполняется из IDEA.
             ClassPathResource imgFile = new ClassPathResource("pics/" + fileName);

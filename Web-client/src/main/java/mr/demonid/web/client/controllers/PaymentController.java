@@ -3,10 +3,9 @@ package mr.demonid.web.client.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.web.client.dto.*;
-import mr.demonid.web.client.dto.payment.CardRequest;
+import mr.demonid.web.client.dto.payment.CardResponse;
 import mr.demonid.web.client.services.OrderService;
 import mr.demonid.web.client.services.PaymentService;
-import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +30,7 @@ public class PaymentController {
     @GetMapping
     public String showPaymentPage(Model model) {
         List<PaymentMethod> paymentMethods = paymentService.getPaymentMethods();
-        List<CardRequest> userCards = paymentService.getCards();
+        List<CardResponse> userCards = paymentService.getCards();
         model.addAttribute("paymentMethods", paymentMethods);
         model.addAttribute("userCards", userCards);
         return "/payment";

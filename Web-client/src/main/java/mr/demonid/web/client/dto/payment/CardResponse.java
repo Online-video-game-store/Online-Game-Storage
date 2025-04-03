@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class CardRequest {
+public class CardResponse {
     private Long cardId;
     private String cardNumber;
     private String expiry;
