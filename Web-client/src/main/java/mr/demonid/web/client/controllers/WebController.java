@@ -12,6 +12,10 @@ import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +49,13 @@ public class WebController {
         maxPrice = normalizePrice(maxPrice);
         productName = normalizeProductName(productName);
 
+        List<String> scopes = IdnUtil.getCurrentUserAuthorities();
+        System.out.println("Scopes: " + scopes);
         boolean isAuthenticated = IdnUtil.isAuthenticated();
+
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("username", isAuthenticated ? IdnUtil.getUserName() : null);
+        model.addAttribute("isAdmin", scopes.contains("ROLE_ADMIN") || scopes.contains("ROLE_DEVELOPER"));
 
         List<ProductCategoryDTO> categories = productServices.getAllCategories();
         categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));

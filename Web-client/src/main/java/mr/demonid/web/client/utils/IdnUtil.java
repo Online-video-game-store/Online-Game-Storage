@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class IdnUtil {
 
@@ -100,18 +102,14 @@ public class IdnUtil {
 
     /**
      * Возвращает список прав текущего пользователя.
-     * @return null - при ошибке, или если пользователь не авторизирован.
      */
-    public static List<String> extractScopesFromToken() {
-        try {
-            String token = getCurrentUserToken();
-            if (token != null) {
-                SignedJWT signedJWT = SignedJWT.parse(token);
-                return signedJWT.getJWTClaimsSet().getStringListClaim("scope");
-            }
-        } catch (Exception ignored) {}
-        return Collections.emptyList();
+    public static List<String> getCurrentUserAuthorities() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return List.of();
+        }
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
-
-
 }

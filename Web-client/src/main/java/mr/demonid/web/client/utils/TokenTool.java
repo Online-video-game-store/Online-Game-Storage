@@ -34,24 +34,4 @@ public class TokenTool {
         }
     }
 
-    /**
-     * Возвращает токен текущего пользователя.
-     * null - если пользователь не аутентифицирован.
-     */
-    public String getCurrentToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication instanceof JwtAuthenticationToken jwtToken) {
-            // Пользователь авторизован через Jwt
-            Jwt jwt = jwtToken.getToken();
-            return jwt.getTokenValue();
-        } else if (authentication.getPrincipal() instanceof DefaultOidcUser oidcUser) {
-            // Пользователь авторизован через OIDC
-            return oidcUser.getIdToken().getTokenValue();
-        }
-        // Пользователь не авторизован
-        log.error("TokenTool.getToken(): This user is anonymous");
-        return null;
-    }
-
 }
