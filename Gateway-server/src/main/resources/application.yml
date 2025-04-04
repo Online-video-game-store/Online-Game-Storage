@@ -53,7 +53,7 @@ spring:
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
-            - Path=/pk8000/api/catalog/**
+            - Path=/pk8000/api/catalog/**, /pk8000/api/catalog-edit/**
           filters:
             - Retry=3         # Повторить запрос до 3 раз при сбое
 

@@ -123,3 +123,23 @@
     gap: 10px;
 }
 
+
+/* Таблица товаров в админке */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table th, .product-table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+}
+
+.product-table input, .product-table textarea {
+    box-sizing: border-box;
+}
+
+.product-table textarea {
+    resize: vertical;
+}

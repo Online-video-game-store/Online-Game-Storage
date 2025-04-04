@@ -6,19 +6,18 @@ import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.ProduceFilter;
+import mr.demonid.web.client.dto.ProductTableResponse;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -73,7 +72,7 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductDTO> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        PageDTO<ProductDTO> page = productServices.getProductsWithoutEmpty(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
@@ -90,7 +89,57 @@ public class WebController {
         return "home";
     }
 
-    private BigDecimal normalizePrice(BigDecimal n) {
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @GetMapping("/index/setup")
+    public String setup(
+            @RequestParam(name = "elemsOfPage", defaultValue = "8") int pageSize,
+            @RequestParam(name = "pageNo", defaultValue = "0") int currentPage,
+            @RequestParam(name = "categoryId", defaultValue = "0") Long categoryId,
+            @RequestParam(name = "productName", defaultValue = "") String productName,
+            @RequestParam(name = "minPrice", defaultValue = "0") BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", defaultValue = "0") BigDecimal maxPrice,
+            Model model) {
+
+        minPrice = normalizePrice(minPrice);
+        maxPrice = normalizePrice(maxPrice);
+        productName = normalizeProductName(productName);
+
+
+        List<ProductCategoryDTO> categories = productServices.getAllCategories();
+        categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
+        if (categoryId != null) {
+            ProductCategoryDTO curCat = categories.stream().filter(e -> Objects.equals(e.getId(), categoryId)).findFirst().orElse(null);
+            if (curCat != null) {
+                model.addAttribute("currentCategory", curCat.getName());
+            } else {
+                model.addAttribute("currentCategory", "All");
+            }
+        } else {
+            model.addAttribute("currentCategory", "All");
+        }
+        model.addAttribute("categories", categories);
+
+        // Создаем выборку очередной страницы
+        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
+        PageDTO<ProductTableResponse> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        model.addAttribute("products", page.getContent());
+
+        // корректируем данные о страницах
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("currentPage", page.getNumber());
+        model.addAttribute("elemsOfPage", pageSize);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("productName", productName);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+
+        return "manager";
+    }
+
+
+
+        private BigDecimal normalizePrice(BigDecimal n) {
         if (n == null || n.compareTo(BigDecimal.ZERO) <= 0) {
             return null;
         }

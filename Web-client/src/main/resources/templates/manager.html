@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products</title>
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/heder.css}">
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/left-panel.css}">
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/product.css}">
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/pagination.css}">
+</head>
+
+<body>
+
+<div class="header">
+    <div class="page-title">Игры для ПК8000</div>
+    <div class="user-info">
+        <div>
+            <span th:text="'Привет, ' + ${username} + '!'">Привет, Гость!</span>
+            <a th:href="@{/logout}" class="logout-button">Выход</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Боковая панель с категориями -->
+    <div class="sidebar">
+        <div class="categories">
+            <div th:each="category : ${categories}"
+                 class="category-button"
+                 th:classappend="${category.name == currentCategory} ? 'active-category' : ''"
+                 th:data-category-id="${category.id}"
+                 onclick="redirectToCategory(this)">
+                <span th:text="${category.name}"></span>
+            </div>
+        </div>
+
+        <!-- Фильтр товаров -->
+        <div class="filter">
+            <h3>Фильтр товаров</h3>
+            <input type="text" th:value="${productName}" id="productName" placeholder="Имя товара" class="filter-input">
+            <input type="number" th:value="${minPrice}" id="minPrice" placeholder="Мин. цена" min="0" class="filter-input">
+            <input type="number" th:value="${maxPrice}" id="maxPrice" placeholder="Макс. цена" min="0" class="filter-input">
+            <button onclick="redirectToCategory()" class="filter-button">Применить</button>
+        </div>
+    </div>
+
+    <!-- Контент товаров -->
+    <main class="content">
+        <table class="product-table">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th style="width: 100px;">Цена</th>
+                <th style="width: 80px;">Категория</th>
+                <th style="width: 80px;">В наличии</th>
+                <th style="width: 30%;">Описание</th>
+                <th style="width: 180px;">Изображение</th>
+                <th>Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td><input type="text" th:name="'name_' + ${product.id}" th:value="${product.name}" id="name_${product.id}" /></td>
+                <td><input type="number" th:name="'price_' + ${product.id}" step="0.01" th:value="${product.price}" id="price_${product.id}" style="width: 90px;" /></td>
+                <td><input type="number" th:name="'category_' + ${product.id}" th:value="${product.category}" id="category_${product.id}" style="width: 70px;" /></td>
+                <td><input type="number" th:name="'stock_' + ${product.id}" th:value="${product.stock}" id="stock_${product.id}" style="width: 70px;" /></td>
+                <td><textarea th:name="'description_' + ${product.id}" th:text="${product.description}" id="description_${product.id}" style="width: 100%; height: 60px;"></textarea></td>
+                <td>
+                    <!-- Отображаем имя файла (или текущее имя файла, если оно есть) -->
+                    <span th:id="'fileName_' + ${product.id}"
+                          th:text="${product.imageFileName != null ? product.imageFileName : 'Не выбрано'}"
+                          style="cursor: pointer; color: blue; text-decoration: underline;"
+                          th:onclick="'openFileDialog(' + ${product.id} + ')'" />
+<!--                    </span>-->
+
+                    <!-- Скрытый input для выбора файла -->
+                    <input type="file"
+                           th:id="'fileInput_' + ${product.id}"
+                           name="file_${product.id}"
+                           style="display: none;"
+                           th:onchange="'handleFileChange(event, ' + ${product.id} + ')'"/>
+                    <!-- Hidden field с текущим именем файла для отправки на сервер -->
+                    <input type="hidden"
+                           th:id="'fileHidden_' + ${product.id}"
+                           name="fileName"
+                           th:value="${product.imageFileName}"/>
+                </td>
+                <td>
+                    <!-- Кнопка сохранения, при нажатии будет сохранять данные через JS -->
+                    <button type="button" th:onclick="'saveProduct(' + ${product.id} + ')'" >Сохранить</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+
+<div class="pagination-container">
+    <!-- Пагинатор. Для отправки данных тек. страницы и фильтра, применяем скрытые поля форм -->
+    <div class="pagination" th:with="startPage=${currentPage > 5 ? currentPage - 5 : 0},
+                                     endPage=${totalPages > currentPage + 5 ? currentPage + 5 : totalPages - 1}">
+        <ul>
+            <!-- Кнопка "Previous" -->
+            <li th:if="${currentPage > 0}">
+                <form th:action="@{/pk8000/catalog/index/setup}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${currentPage - 1}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit" class="pagination-button">Previous</button>
+                </form>
+            </li>
+
+            <!-- Номера страниц -->
+            <li th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                <form th:action="@{/pk8000/catalog/index/setup}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${i}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit"
+                            class="pagination-button"
+                            th:classappend="${currentPage == i} ? 'active' : ''"
+                            th:text="${i + 1}">
+                    </button>
+                </form>
+            </li>
+
+            <!-- Кнопка "Next" -->
+            <li th:if="${currentPage < totalPages - 1}">
+                <form th:action="@{/pk8000/catalog/index/setup}" method="get" style="display: inline;">
+                    <input type="hidden" name="elemsOfPage" th:value="${elemsOfPage}">
+                    <input type="hidden" name="pageNo" th:value="${currentPage + 1}">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <button type="submit" class="pagination-button">Next</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+
+<script>
+    function redirectToCategory(element = null) {
+        const selectedCategory = element ? element : document.querySelector('.category-button.active-category');
+        const categoryId = selectedCategory ? selectedCategory.getAttribute("data-category-id") : '';
+
+        const productName = document.getElementById("productName").value;
+        const minPrice = document.getElementById("minPrice").value;
+        const maxPrice = document.getElementById("maxPrice").value;
+        const elemsOfPage = 8;
+        const pageNo = 0;
+
+        const queryParams = new URLSearchParams({
+            categoryId,
+            elemsOfPage,
+            pageNo,
+            productName,
+            minPrice,
+            maxPrice
+        });
+        window.location.href = `/pk8000/catalog/index/setup?${queryParams.toString()}`;
+    }
+</script>
+
+<script>
+    function openFileDialog(productId) {
+        const fileInput = document.getElementById('fileInput_' + productId);
+        if (fileInput) {
+            fileInput.click();
+        } else {
+            console.error("File input element not found for product ID", productId);
+        }
+    }
+
+    function handleFileChange(event, productId) {
+        const input = event.target;
+        const fileNameSpan = document.getElementById('fileName_' + productId);
+        // const hiddenInput = document.getElementById('fileHidden_' + productId);
+
+        if (input.files && input.files.length > 0) {
+            const fileName = input.files[0].name;
+
+            if (fileNameSpan) {
+                fileNameSpan.innerText = fileName;  // Обновляем имя файла, видимое пользователю
+            } else {
+                console.error("fileName span not found for product ID", productId);
+            }
+
+            // if (hiddenInput) {
+            //     hiddenInput.value = fileName;  // Обновляем hidden поле для последующей отправки
+            // } else {
+            //     console.error("Hidden input not found for product ID", productId);
+            // }
+
+            console.log(`Выбран файл "${fileName}" для продукта ${productId}`);
+        } else {
+            console.log(`Файл не выбран для продукта ${productId}`);
+        }
+    }
+
+    function saveProduct(productId) {
+        console.log("Сохраняем продукт ID:", productId);
+
+        const formData = new FormData();
+
+        // Получаем элементы
+        const nameInput = document.querySelector(`input[name="name_${productId}"]`);
+        const priceInput = document.querySelector(`input[name="price_${productId}"]`);
+        const categoryInput = document.querySelector(`input[name="category_${productId}"]`);
+        const stockInput = document.querySelector(`input[name="stock_${productId}"]`);
+        const descriptionInput = document.querySelector(`textarea[name="description_${productId}"]`);
+        const fileInput = document.getElementById(`fileInput_${productId}`);
+        const hiddenFileNameInput = document.getElementById(`fileHidden_${productId}`);
+
+        // Добавляем поля
+        formData.append("productId", productId);
+        if (nameInput) formData.append("name", nameInput.value);
+        if (priceInput) formData.append("price", priceInput.value);
+        if (categoryInput) formData.append("category", categoryInput.value);
+        if (stockInput) formData.append("stock", stockInput.value);
+        if (descriptionInput) formData.append("description", descriptionInput.value);
+        if (hiddenFileNameInput) formData.append("imageFileName", hiddenFileNameInput.value);
+        // Если был выбран файл — добавим его
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append("file", fileInput.files[0]);
+        }
+
+        // Отправляем на сервер
+        fetch("/pk8000/catalog/api/save", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Продукт успешно сохранен!");
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            })
+            .catch(error => {
+                console.error("Ошибка при сохранении продукта:", error);
+                alert("Ошибка при сохранении: " + error.message);
+            });
+    }
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

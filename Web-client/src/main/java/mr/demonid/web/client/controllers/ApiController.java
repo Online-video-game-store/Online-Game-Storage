@@ -3,18 +3,26 @@ package mr.demonid.web.client.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.ProductDTO;
-import mr.demonid.web.client.dto.CartAddItemFailed;
-import mr.demonid.web.client.dto.CartItem;
-import mr.demonid.web.client.dto.CartItemResponse;
-import mr.demonid.web.client.dto.CartAddItemSuccess;
+import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -79,4 +87,22 @@ public class ApiController {
         cartServices.removeItem(itemId);
         return ResponseEntity.ok().build();
     }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveProduct(@ModelAttribute ProductTableRequest product) throws IOException {
+        System.out.println("save(): " + product);
+
+        if (product.getFile() != null && !product.getFile().isEmpty()) {
+            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
+            productServices.updateImage(product.getFile());
+        }
+        System.out.println("original file: " + product.getImageFileName());
+
+
+        return ResponseEntity.ok().build();
+    }
+
+
 }
+

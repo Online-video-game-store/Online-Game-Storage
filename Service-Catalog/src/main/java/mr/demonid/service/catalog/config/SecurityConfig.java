@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)                      // Отключаем CSRF для запросов API
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/pk8000/api/catalog/**").permitAll()
-                                .requestMatchers("/pk8000/api/catalog-edit/**").hasAnyRole("ADMIN")
+                                .requestMatchers("/pk8000/api/catalog-edit/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .anyRequest().authenticated()              // Остальные требуют аутентификации
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

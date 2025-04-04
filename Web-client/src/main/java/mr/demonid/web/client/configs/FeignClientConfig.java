@@ -2,9 +2,13 @@ package mr.demonid.web.client.configs;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import feign.form.spring.SpringFormEncoder;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
@@ -14,6 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import feign.codec.Encoder;
 
 import java.util.Set;
 
@@ -22,6 +27,11 @@ import java.util.Set;
 public class FeignClientConfig {
 
     private static final Set<String> TARGET_COOKIES = Set.of("ANON_ID");    // потом добавим еще куков
+
+    @Bean
+    public Encoder feignFormEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {
+        return new SpringFormEncoder(new SpringEncoder(messageConverters));
+    }
 
     /**
      * Вставляем в Feign-запрос Jwt-Токен и куки, поскольку сам Feign этого делать не умеет.

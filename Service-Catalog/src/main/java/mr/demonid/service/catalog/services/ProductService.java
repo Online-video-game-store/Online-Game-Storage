@@ -3,6 +3,7 @@ package mr.demonid.service.catalog.services;
 import lombok.AllArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductTableResponse;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
 import mr.demonid.store.commons.dto.ProductDTO;
@@ -32,9 +33,18 @@ public class ProductService {
      * Возвращает постраничный список товаров.
      */
     @Transactional(readOnly = true)
-    public Page<ProductDTO> getProducts(ProduceFilter produceFilter, boolean isIncludeEmpty, Pageable pageable) {
-        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, isIncludeEmpty), pageable);
+    public Page<ProductDTO> getProductsWithoutEmpty(ProduceFilter produceFilter, Pageable pageable) {
+        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, false), pageable);
         return items.map(e -> new ProductDTO(e.getId(), e.getName(), e.getPrice(), e.getCategory().getId(), e.getStock(), e.getDescription(), encodeImageToBase64(e.getImageFile())));
+    }
+
+    /**
+     * Возвращает постраничный список товаров для админки.
+     */
+    @Transactional(readOnly = true)
+    public Page<ProductTableResponse> getAllProducts(ProduceFilter produceFilter, Pageable pageable) {
+        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, true), pageable);
+        return items.map(e -> new ProductTableResponse(e.getId(), e.getName(), e.getPrice(), e.getCategory().getId(), e.getStock(), e.getDescription(), e.getImageFile()));
     }
 
     /**

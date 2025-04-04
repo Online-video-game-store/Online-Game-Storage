@@ -3,6 +3,7 @@ package mr.demonid.service.catalog.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductTableResponse;
 import mr.demonid.service.catalog.services.CategoryService;
 import mr.demonid.service.catalog.services.ProductService;
 import mr.demonid.store.commons.dto.PageDTO;
@@ -30,13 +31,13 @@ public class ProductController {
      */
     @PostMapping("/get-all-without-empty")
     public ResponseEntity<PageDTO<ProductDTO>> getAllProductsWithoutEmpty(@RequestBody ProduceFilter filter, Pageable pageable) {
-        return ResponseEntity.ok(new PageDTO<>(productService.getProducts(filter, false, pageable)));
+        return ResponseEntity.ok(new PageDTO<>(productService.getProductsWithoutEmpty(filter, pageable)));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/get-all")
-    public ResponseEntity<PageDTO<ProductDTO>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
-        return ResponseEntity.ok(new PageDTO<>(productService.getProducts(filter, true, pageable)));
+    public ResponseEntity<PageDTO<ProductTableResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
+        return ResponseEntity.ok(new PageDTO<>(productService.getAllProducts(filter, pageable)));
     }
 // http://localhost:9100/pk8000/api/catalog/get-all?&page=0&size=10&sort=name,asc
 
