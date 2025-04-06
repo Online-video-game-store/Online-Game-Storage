@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
-import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.ProduceFilter;
-import mr.demonid.web.client.dto.ProductTableResponse;
+import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
@@ -17,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -72,7 +70,8 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductDTO> page = productServices.getProductsWithoutEmpty(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        PageDTO<ProductResponse> page = productServices.getProductsWithoutEmpty(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        System.out.println("products: " + page.getContent());
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
@@ -105,7 +104,6 @@ public class WebController {
         maxPrice = normalizePrice(maxPrice);
         productName = normalizeProductName(productName);
 
-
         List<ProductCategoryDTO> categories = productServices.getAllCategories();
         categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
         if (categoryId != null) {
@@ -122,7 +120,7 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductTableResponse> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        PageDTO<ProductResponse> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах

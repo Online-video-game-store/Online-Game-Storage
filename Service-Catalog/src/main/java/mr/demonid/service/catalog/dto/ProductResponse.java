@@ -18,5 +18,5 @@ public class ProductResponse {
     private Long category;
     private int stock;
     private String description;
-    private List<String> imageBase64;
+    private List<String> imageUrls;
 }

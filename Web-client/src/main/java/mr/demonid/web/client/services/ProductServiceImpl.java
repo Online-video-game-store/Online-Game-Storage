@@ -5,9 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
-import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.ProduceFilter;
-import mr.demonid.web.client.dto.ProductTableResponse;
+import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class ProductServiceImpl implements ProductServices {
 
 
     @Override
-    public PageDTO<ProductDTO> getProductsWithoutEmpty(ProduceFilter filter, Pageable pageable) {
+    public PageDTO<ProductResponse> getProductsWithoutEmpty(ProduceFilter filter, Pageable pageable) {
         log.info("getProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
@@ -38,7 +37,7 @@ public class ProductServiceImpl implements ProductServices {
     }
 
     @Override
-    public PageDTO<ProductTableResponse> getAllProducts(ProduceFilter filter, Pageable pageable) {
+    public PageDTO<ProductResponse> getAllProducts(ProduceFilter filter, Pageable pageable) {
         log.info("getAllProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProducts(filter, pageable).getBody();
@@ -48,16 +47,15 @@ public class ProductServiceImpl implements ProductServices {
         }
     }
 
-
-//    @Override
-//    public ProductDTO getProductById(Long id) {
-//        try {
-//            return productServiceClient.getProductById(id).getBody();
-//        } catch (FeignException e) {
-//            log.error("ProductServiceImpl.getProductById(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
-//            return new ProductDTO();
-//        }
-//    }
+    @Override
+    public ProductResponse getProductById(Long id) {
+        try {
+            return productServiceClient.getProductById(id).getBody();
+        } catch (FeignException e) {
+            log.error("ProductServiceImpl.getProductById(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            return null;
+        }
+    }
 
 
     @Override

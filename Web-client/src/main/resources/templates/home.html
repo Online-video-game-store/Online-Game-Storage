@@ -65,10 +65,12 @@
         <div class="product-grid">
             <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}">
                 <div class="product-title" th:text="${product.name}">Product Name</div>
-                <img th:src="'data:image/jpeg;base64,' + ${product.imageBase64}" class="product-image" />
+<!--                <img th:src="@{${product.imageUrl}}" class="product-image" alt="Product image" />-->
+                <img th:src="${product.imageUrls != null and !product.imageUrls.isEmpty()} ? @{${product.imageUrls[0]}} : @{/images/no-image.png}"
+                     class="product-image"
+                     alt="Product image" />
                 <div class="product-description" th:text="${product.description}">Product description...</div>
                 <div class="product-price" th:text="'$' + ${product.price}">Price</div>
-<!--                <div class="product-stock" th:data-stock="${product.stock}" th:text="'In stock: ' + ${product.stock}">Stock</div>-->
                 <form>
                     <input type="hidden" name="productId" th:value="${product.id}" />
                     <div class="quantity-controls">

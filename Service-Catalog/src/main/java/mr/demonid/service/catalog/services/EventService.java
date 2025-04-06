@@ -30,6 +30,7 @@ public class EventService {
     private TokenTool tokenTool;
     private ReservedService reservedService;
     private CatalogPublisher catalogPublisher;
+    private Converts converts;
 
 
     public void doProcess(Message<Object> message) {
@@ -73,7 +74,7 @@ public class EventService {
         try {
             reservedService.reserve(event.getOrderId(), event.getItems());
             // товар успешно зарезервирован, переходим на следующий шаг.
-            catalogPublisher.sendProductReserved(Converts.createdToPayment(event));
+            catalogPublisher.sendProductReserved(converts.createdToPayment(event));
         } catch (CatalogException e) {
             // сообщаем о неудаче
             catalogPublisher.sendProductCancel(new CatalogFailEvent(event.getOrderId(), e.getMessage()));

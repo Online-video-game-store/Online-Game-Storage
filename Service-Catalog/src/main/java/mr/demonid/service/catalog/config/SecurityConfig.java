@@ -3,6 +3,7 @@ package mr.demonid.service.catalog.config;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,8 +29,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Разрешаем CORS
                 .csrf(AbstractHttpConfigurer::disable)                      // Отключаем CSRF для запросов API
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/pk8000/api/catalog/**").permitAll()
-                                .requestMatchers("/pk8000/api/catalog-edit/**").hasAnyRole("ADMIN", "DEVELOPER")
+                        .requestMatchers(HttpMethod.GET, "/pk8000/api/catalog/images/**").permitAll()
+                        .requestMatchers("/pk8000/api/catalog/products/**").permitAll()
+                        .requestMatchers("/pk8000/api/catalog-edit/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .anyRequest().authenticated()              // Остальные требуют аутентификации
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

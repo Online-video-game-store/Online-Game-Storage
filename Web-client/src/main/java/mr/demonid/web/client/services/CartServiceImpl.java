@@ -3,7 +3,6 @@ package mr.demonid.web.client.services;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.CartItem;
 import mr.demonid.web.client.dto.CartItemResponse;
 import mr.demonid.web.client.dto.ProductResponse;

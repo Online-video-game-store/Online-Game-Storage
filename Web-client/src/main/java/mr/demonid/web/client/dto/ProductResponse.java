@@ -8,9 +8,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
-/**
- * Подробная информация о товаре.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +18,5 @@ public class ProductResponse {
     private Long category;
     private int stock;
     private String description;
-    private List<String> imageBase64;
+    private List<String> imageUrls;
 }

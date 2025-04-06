@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductResponse;
-import mr.demonid.service.catalog.dto.ProductTableResponse;
 import mr.demonid.service.catalog.services.CategoryService;
 import mr.demonid.service.catalog.services.ProductService;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
-import mr.demonid.store.commons.dto.ProductDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/pk8000/api/catalog")
+@RequestMapping("/pk8000/api/catalog/products")
 @AllArgsConstructor
 public class ProductController {
 
@@ -31,13 +29,13 @@ public class ProductController {
      * Возвращает постраничный список доступных товаров.
      */
     @PostMapping("/get-all-without-empty")
-    public ResponseEntity<PageDTO<ProductDTO>> getAllProductsWithoutEmpty(@RequestBody ProduceFilter filter, Pageable pageable) {
+    public ResponseEntity<PageDTO<ProductResponse>> getAllProductsWithoutEmpty(@RequestBody ProduceFilter filter, Pageable pageable) {
         return ResponseEntity.ok(new PageDTO<>(productService.getProductsWithoutEmpty(filter, pageable)));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/get-all")
-    public ResponseEntity<PageDTO<ProductTableResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
+    public ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
         return ResponseEntity.ok(new PageDTO<>(productService.getAllProducts(filter, pageable)));
     }
 // http://localhost:9100/pk8000/api/catalog/get-all?&page=0&size=10&sort=name,asc

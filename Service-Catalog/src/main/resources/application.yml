@@ -132,3 +132,8 @@ eureka:
 #  level:
 #    org.springframework.cloud.stream: DEBUG
 #    org.springframework.amqp: DEBUG
+
+# Настройка пути до изменяемых ресурсов, например картинок к товарам
+app:
+  images-path: ./datas/catalog/images
+  images-url: /pk8000/api/catalog/images
