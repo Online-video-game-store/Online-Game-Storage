@@ -3,6 +3,7 @@ package mr.demonid.service.catalog.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.dto.ProductTableResponse;
 import mr.demonid.service.catalog.services.CategoryService;
 import mr.demonid.service.catalog.services.ProductService;
@@ -45,8 +46,8 @@ public class ProductController {
      * Возвращает продукт по его ID.
      */
     @GetMapping("/get-product/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        ProductDTO dto = productService.getProductById(id);
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        ProductResponse dto = productService.getProductById(id);
         return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
 

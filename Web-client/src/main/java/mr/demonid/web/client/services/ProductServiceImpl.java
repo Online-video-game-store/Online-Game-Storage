@@ -49,15 +49,15 @@ public class ProductServiceImpl implements ProductServices {
     }
 
 
-    @Override
-    public ProductDTO getProductById(Long id) {
-        try {
-            return productServiceClient.getProductById(id).getBody();
-        } catch (FeignException e) {
-            log.error("ProductServiceImpl.getProductById(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
-            return new ProductDTO();
-        }
-    }
+//    @Override
+//    public ProductDTO getProductById(Long id) {
+//        try {
+//            return productServiceClient.getProductById(id).getBody();
+//        } catch (FeignException e) {
+//            log.error("ProductServiceImpl.getProductById(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+//            return new ProductDTO();
+//        }
+//    }
 
 
     @Override

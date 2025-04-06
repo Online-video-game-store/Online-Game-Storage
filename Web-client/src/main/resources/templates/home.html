@@ -63,7 +63,7 @@
     <!-- Контент товаров -->
     <main class="content">
         <div class="product-grid">
-            <div th:each="product : ${products}" class="product-item">
+            <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}">
                 <div class="product-title" th:text="${product.name}">Product Name</div>
                 <img th:src="'data:image/jpeg;base64,' + ${product.imageBase64}" class="product-image" />
                 <div class="product-description" th:text="${product.description}">Product description...</div>
@@ -73,7 +73,7 @@
                     <input type="hidden" name="productId" th:value="${product.id}" />
                     <div class="quantity-controls">
                         <button type="button" onclick="decreaseQuantity(this)">-</button>
-                        <input type="number" name="quantity" value="1" min="1" max="5" class="quantity-input" style="width: 50px; text-align: center;" />
+                        <input type="number" name="quantity" value="1" min="1" class="quantity-input" style="width: 50px; text-align: center;" />
                         <button type="button" onclick="increaseQuantity(this)">+</button>
                     </div>
                     <button type="button" class="buy-button">В корзину</button>
@@ -152,11 +152,14 @@
 
     function increaseQuantity(button) {
         const quantityInput = button.parentElement.querySelector('.quantity-input');
-        const productStock = parseInt(button.closest('.product-item').querySelector('.product-stock').dataset.stock);
         let currentQuantity = parseInt(quantityInput.value);
-        if (currentQuantity < productStock) {
-            quantityInput.value = currentQuantity + 1;
-        }
+        quantityInput.value = currentQuantity + 1;
+        // const quantityInput = button.parentElement.querySelector('.quantity-input');
+        // const productStock = parseInt(button.closest('.product-item').querySelector('.product-stock').dataset.stock);
+        // let currentQuantity = parseInt(quantityInput.value);
+        // if (currentQuantity < productStock) {
+        //     quantityInput.value = currentQuantity + 1;
+        // }
     }
 
     function decreaseQuantity(button) {
@@ -167,6 +170,7 @@
         }
     }
 </script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const socket = new WebSocket("ws://localhost:9000/ws/notifications");

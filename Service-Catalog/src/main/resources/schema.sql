@@ -15,9 +15,14 @@ create table if not exists products (
     stock int not null,
     category_id bigint not null,
     description varchar(2048),
-    image_file varchar(255),
     primary key (id),
     foreign key (category_id) references categories (id) on delete restrict
+);
+
+create table if not exists product_images (
+    product_id bigint not null,
+    image_file varchar(255) not null,
+    foreign key (product_id) references products (id) on delete cascade
 );
 
 create table if not exists blocked_products (

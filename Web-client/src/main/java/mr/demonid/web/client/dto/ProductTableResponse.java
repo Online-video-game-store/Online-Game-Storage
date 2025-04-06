@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -21,5 +22,5 @@ public class ProductTableResponse {
     private Long category;
     private int stock;
     private String description;
-    private String imageFileName;
+    private List<String> imageFileNames;
 }

@@ -3,9 +3,11 @@ package mr.demonid.service.catalog.services;
 import lombok.AllArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.dto.ProductTableResponse;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
+import mr.demonid.service.catalog.utils.Converts;
 import mr.demonid.store.commons.dto.ProductDTO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -35,7 +37,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductDTO> getProductsWithoutEmpty(ProduceFilter produceFilter, Pageable pageable) {
         Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, false), pageable);
-        return items.map(e -> new ProductDTO(e.getId(), e.getName(), e.getPrice(), e.getCategory().getId(), e.getStock(), e.getDescription(), encodeImageToBase64(e.getImageFile())));
+        return items.map(Converts::entityToDTO);
     }
 
     /**
@@ -44,7 +46,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductTableResponse> getAllProducts(ProduceFilter produceFilter, Pageable pageable) {
         Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, true), pageable);
-        return items.map(e -> new ProductTableResponse(e.getId(), e.getName(), e.getPrice(), e.getCategory().getId(), e.getStock(), e.getDescription(), e.getImageFile()));
+        return items.map(Converts::entityToProductTableResponse);
     }
 
     /**
@@ -52,13 +54,9 @@ public class ProductService {
      * @param productId Идентификатор товара.
      */
     @Transactional(readOnly = true)
-    public ProductDTO getProductById(Long productId) {
+    public ProductResponse getProductById(Long productId) {
          Optional<ProductEntity> opt = productRepository.findByIdWithCategory(productId);
-         if (opt.isPresent()) {
-             ProductEntity p = opt.get();
-             return new ProductDTO(p.getId(), p.getName(), p.getPrice(), p.getCategory().getId(), p.getStock(), p.getDescription(), encodeImageToBase64(p.getImageFile()));
-         }
-         return null;
+        return opt.map(Converts::entityToProductResponse).orElse(null);
     }
 
 

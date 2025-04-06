@@ -2,27 +2,18 @@ package mr.demonid.web.client.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -53,16 +44,19 @@ public class ApiController {
     public ResponseEntity<?> addToCart(@RequestBody CartItemResponse request) {
         CartItemResponse res = cartServices.addItem(request.getProductId(), request.getQuantity());
         if (res != null) {
-            ProductDTO product = productServices.getProductById(request.getProductId());
-            return ResponseEntity.ok(
-                    new CartAddItemSuccess(true,
-                            product.getName(),
-                            request.getQuantity(),
-                            product.getPrice().multiply(new BigDecimal(request.getQuantity())),
-                            cartServices.getCountItems()
-                            ));
+            return ResponseEntity.ok(Map.of("success", true, "message", ""));
         }
-        return ResponseEntity.badRequest().body(new CartAddItemFailed(false, "Не удалось добавить товар в корзину. Попробуйте позже."));
+        return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Не удалось добавить товар в корзину. Попробуйте позже."));
+    }
+//        return ResponseEntity.ok(new CartAddStatus(true, "success"));
+//        return ResponseEntity.badRequest().body(new CartAddStatus(false, "Не удалось добавить товар в корзину. Попробуйте позже."));
+
+    /**
+     * Возвращает кол-во товаров в корзине.
+     */
+    @GetMapping("/get-cart-count")
+    public ResponseEntity<Integer> getCartCount() {
+        return ResponseEntity.ok(cartServices.getCountItems());
     }
 
 

@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductServices {
     PageDTO<ProductDTO> getProductsWithoutEmpty(ProduceFilter filter, Pageable pageable);
     PageDTO<ProductTableResponse> getAllProducts(ProduceFilter filter, Pageable pageable);
-    ProductDTO getProductById(Long id);
+//    ProductDTO getProductById(Long id);
     List<ProductCategoryDTO> getAllCategories();
 
     void updateImage(MultipartFile file);

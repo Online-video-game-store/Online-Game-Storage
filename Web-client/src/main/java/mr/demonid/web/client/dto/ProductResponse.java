@@ -1,5 +1,4 @@
-package mr.demonid.service.catalog.dto;
-
+package mr.demonid.web.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,17 +9,17 @@ import java.util.List;
 
 
 /**
- * Данные о товаре в админку.
+ * Подробная информация о товаре.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductTableResponse {
+public class ProductResponse {
     private Long id;
     private String name;
     private BigDecimal price;
     private Long category;
     private int stock;
     private String description;
-    private List<String> imageFileNames;
+    private List<String> imageBase64;
 }

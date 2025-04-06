@@ -5,6 +5,7 @@ import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.configs.FeignClientConfig;
 import mr.demonid.web.client.dto.ProduceFilter;
+import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.dto.ProductTableResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public interface ProductServiceClient {
     ResponseEntity<PageDTO<ProductTableResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable);
 
     @GetMapping("/pk8000/api/catalog/get-product/{id}")
-    ResponseEntity<ProductDTO> getProductById(@PathVariable Long id);
+    ResponseEntity<ProductResponse> getProductById(@PathVariable Long id);
 
     @GetMapping("/pk8000/api/catalog/get-categories")
     ResponseEntity<List<ProductCategoryDTO>> getAllCategories();

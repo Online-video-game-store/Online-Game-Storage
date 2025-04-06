@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.ProductDTO;
 import mr.demonid.web.client.dto.CartItem;
 import mr.demonid.web.client.dto.CartItemResponse;
+import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.CartServiceClient;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class CartServiceImpl implements CartServices {
             List<CartItemResponse> res = cartServiceClient.getItems().getBody();
             if (res != null && !res.isEmpty()) {
                 items = res.stream().map(e -> {
-                    ProductDTO product = productServiceClient.getProductById(e.getProductId()).getBody();
+                    ProductResponse product = productServiceClient.getProductById(e.getProductId()).getBody();
                     if (product != null) {
                         return new CartItem(
                                 e.getProductId(),
