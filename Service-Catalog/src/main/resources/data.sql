@@ -20,8 +20,13 @@ insert into products (category_id, name, price, stock, description) values
     (2, 'Пожарник', 1200.00, 1, 'Не дай погибнуть в огне домашним животным! Спаси от пожара всех мышек.');
 
 insert into product_images (product_id, image_file) values
+    (1, 'klad-title.png'),
     (1, 'klad.png'),
-    (2, 'pilot.png'),
+    (2, 'pilot-title.png'),
+    (2, 'pilot-1.png'),
+    (2, 'pilot-2.png'),
+    (2, 'pilot-3.png'),
+    (2, 'pilot-4.png'),
     (3, 'piton.png'),
     (4, 'chislo.png'),
     (5, 'tap-lap.png'),

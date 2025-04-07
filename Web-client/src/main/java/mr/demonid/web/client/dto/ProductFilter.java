@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProduceFilter {
+public class ProductFilter {
     private Long categoryId;
     private String productName;
     private BigDecimal minPrice;

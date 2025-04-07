@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @Log4j2
-@RequestMapping("/pk8000/catalog/api")
+@RequestMapping("/pk8000/catalog/api/product")
 public class ImagesController {
 
     private ProductServices productServices;
@@ -24,7 +24,7 @@ public class ImagesController {
      * Получение полого описания продукта.
      * Возвращает список картинок в Base64.
      */
-    @GetMapping("/product/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<List<String>> listImages(@PathVariable Long id) {
         System.out.println("get product: " + id);
         ProductResponse res = productServices.getProductById(id);
@@ -35,19 +35,37 @@ public class ImagesController {
         return ResponseEntity.ok(res.getImageUrls());
     }
 
-    @PostMapping("/image/{id}")
-    public ResponseEntity<?> uploadImages(@PathVariable Long id,
-                                          @RequestParam("images") List<MultipartFile> images) {
-
-        return ResponseEntity.ok().build();
+    /**
+     * Загрузка на сервер нового изображения, или замена старому.
+     * @param id              Продукт
+     * @param file            Новый файл.
+     * @param replaceFileName Имя старого файла, или null (если просто добавляем новый файл)
+     * @return                Строку "Uploaded", если все прошло успешно.
+     */
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id,
+                                              @RequestPart("file") MultipartFile file,
+                                              @RequestParam(value = "replace", required = false) String replaceFileName) {
+        System.out.println("upload product: " + id + ", " + file.getOriginalFilename() + ", replace to: " + replaceFileName);
+        if (productServices.uploadImage(id, file, replaceFileName)) {
+            return ResponseEntity.ok("Uploaded");
+        }
+        return ResponseEntity.noContent().build();
     }
 
 
-    @DeleteMapping("/product/{productId}/image/{fileName}")
+    /**
+     * Удаление изображения.
+     * @param productId Продукт
+     * @param fileName  Имя удаляемого файла.
+     */
+    @DeleteMapping("{productId}/image/{fileName}")
     public ResponseEntity<Void> deleteImage(
             @PathVariable Long productId,
             @PathVariable String fileName) {
 
+        System.out.println("delete product: " + productId + ", " + fileName);
+        productServices.deleteImage(productId, fileName);
         return ResponseEntity.noContent().build();
     }
 

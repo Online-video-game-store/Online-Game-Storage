@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
+/**
+ * Получение данных о товаре.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

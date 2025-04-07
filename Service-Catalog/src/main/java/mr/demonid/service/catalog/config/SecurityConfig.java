@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/pk8000/api/catalog/images/**").permitAll()
                         .requestMatchers("/pk8000/api/catalog/products/**").permitAll()
-                        .requestMatchers("/pk8000/api/catalog-edit/**").hasAnyRole("ADMIN", "DEVELOPER")
+                        .requestMatchers("/pk8000/api/catalog/edit/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .anyRequest().authenticated()              // Остальные требуют аутентификации
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

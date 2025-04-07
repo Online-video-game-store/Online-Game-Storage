@@ -66,7 +66,7 @@
                 <td><input type="number" th:name="'stock_' + ${product.id}" th:value="${product.stock}" id="stock_${product.id}" style="width: 70px;" /></td>
                 <td><textarea th:name="'description_' + ${product.id}" th:text="${product.description}" id="description_${product.id}" style="width: 100%; height: 60px;"></textarea></td>
                 <td>
-                    <button type="button" th:onclick="'openImageModal(' + ${product.id} + ')'" class="btn-image-manage">📷 Управление</button>
+                    <button type="button" th:onclick="'openImageModal(' + ${product.id} + ')'" class="btn-image-manage">📷 Изображения</button>
                 </td>
                 <td>
                     <!-- Кнопка сохранения, при нажатии будет сохранять данные через JS -->
@@ -78,13 +78,13 @@
     </main>
 </div>
 
-<div id="imageModal" class="modal" style="display:none;">
+<!-- Модальное окно управления изображениями -->
+<div id="imageModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Управление изображениями</h2>
-        <div id="imageList"></div>
-        <input type="file" id="fileInput" multiple />
-        <button onclick="uploadImages()">Загрузить</button>
+        <div id="imageList" style="display: flex; flex-wrap: wrap;"></div>
+        <input type="file" id="fileInput" class="hidden-file-input" />
     </div>
 </div>
 
@@ -155,6 +155,137 @@
         window.location.href = `/pk8000/catalog/index/setup?${queryParams.toString()}`;
     }
 </script>
+
+
+<script>
+    let currentProductId = null;
+    // let currentReplaceFileName = null;
+
+    function openImageModal(productId) {
+        currentProductId = productId;
+        fetch(`/pk8000/catalog/api/product/${productId}`)
+            .then(res => res.json())
+            .then(images => {
+                const imageList = document.getElementById("imageList");
+                imageList.innerHTML = "";
+
+                images.forEach(imageUrl => {
+                    const fileName = extractFileName(imageUrl);
+
+                    const container = document.createElement("div");
+                    container.className = "image-preview";
+
+                    const img = document.createElement("img");
+                    img.src = imageUrl;
+                    img.alt = fileName;
+                    img.title = "Кликните для замены изображения";
+                    img.onclick = () => {
+                        const fileInput = document.getElementById("fileInput");
+                        fileInput.dataset.replace = fileName;
+                        fileInput.click();
+                    };
+                    // img.onclick = function () {
+                    //     document.getElementById("fileInput").dataset.replace = this.dataset.replace;  //
+                    //     // currentReplaceFileName = fileName;
+                    //     document.getElementById("fileInput").click();
+                    // };
+                    // img.dataset.replace = fileName;         //
+
+                    const delBtn = document.createElement("button");
+                    delBtn.className = "delete-button";
+                    delBtn.innerHTML = "&times;";
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteImage(fileName);
+                    };
+
+                    container.appendChild(img);
+                    container.appendChild(delBtn);
+                    imageList.appendChild(container);
+                });
+
+                // Кнопка "добавить"
+                const addBtn = document.createElement("div");
+                addBtn.className = "add-image";
+                addBtn.innerHTML = "+";
+                addBtn.title = "Добавить новое изображение";
+                addBtn.onclick = () => {
+                    const fileInput = document.getElementById("fileInput");
+                    delete fileInput.dataset.replace;
+                    fileInput.click();
+                    // // currentReplaceFileName = null;
+                    // document.getElementById("fileInput").click();
+                };
+
+                imageList.appendChild(addBtn);
+                document.getElementById("imageModal").style.display = "block";
+            })
+            .catch(err => {
+                alert("Ошибка при загрузке изображений");
+                console.error(err);
+            });
+    }
+
+    function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+        if (!this.files || this.files.length === 0)
+            return;
+        const file = this.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        let url = `/pk8000/catalog/api/product/${currentProductId}/upload`;
+
+        // Получаем имя заменяемого файла, если есть
+        const replaceName = this.dataset.replace;
+        if (replaceName) {
+            console.log("replaceName", replaceName);
+            url += `?replace=${encodeURIComponent(replaceName)}`;
+            console.log("url = " + url);
+            delete this.dataset.replace; // Очищаем, чтобы не использовать повторно
+        }
+
+        fetch(url, {
+            method: "POST",
+            body: formData
+        }).then(() => {
+            this.value = ""; // Сброс input
+            openImageModal(currentProductId); // Перезагрузка изображений
+        }).catch(err => {
+            alert("Ошибка при загрузке изображения");
+            console.error(err);
+        });
+    });
+
+    // Вспомогательная функция для извлечения имени файла из URL
+    function extractFileName(url) {
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
+
+    // Удаление изображения по имени файла
+    function deleteImage(fileName) {
+
+        fetch(`/pk8000/catalog/api/product/${currentProductId}/image/${encodeURIComponent(fileName)}`, {
+            method: "DELETE"
+        })
+            .then(res => {
+                if (res.ok) {
+                    openImageModal(currentProductId); // перезагружаем список
+                } else {
+                    alert("Не удалось удалить изображение.");
+                }
+            })
+            .catch(err => {
+                alert("Ошибка при удалении изображения.");
+                console.error(err);
+            });
+    }
+
+</script>
+
 
 <script>
     function openFileDialog(productId) {
@@ -234,90 +365,6 @@
             .catch(error => {
                 console.error("Ошибка при сохранении продукта:", error);
                 alert("Ошибка при сохранении: " + error.message);
-            });
-    }
-
-</script>
-
-
-<script>
-    let currentProductId = null;
-
-    function openImageModal(productId) {
-        currentProductId = productId;
-        fetch(`/pk8000/catalog/api/product/${productId}`)
-            .then(res => res.json())
-            .then(images => {
-                console.log("images:", images);
-                const imageList = document.getElementById("imageList");
-                imageList.innerHTML = "";
-
-                images.forEach((imageUrl) => {
-                    const fileName = extractFileName(imageUrl);
-                    const div = document.createElement("div");
-                    div.style.marginBottom = "10px";
-
-                    div.innerHTML = `
-                    <img src="${imageUrl}" width="100" style="margin-right: 10px;" />
-                    <button onclick="deleteImage('${fileName}')">Удалить</button>
-                `;
-                    imageList.appendChild(div);
-                });
-
-                document.getElementById("imageModal").style.display = "block";
-            })
-            .catch(err => {
-                alert("Ошибка при загрузке изображений");
-                console.error(err);
-            });
-    }
-
-    function closeModal() {
-        document.getElementById("imageModal").style.display = "none";
-        currentProductId = null;
-    }
-
-
-    function uploadImages() {
-        const input = document.getElementById("fileInput");
-        const formData = new FormData();
-        for (const file of input.files) {
-            formData.append("images", file);
-        }
-
-        fetch(`/products/${currentProductId}/images`, {
-            method: "POST",
-            body: formData
-        })
-            .then(() => openImageModal(currentProductId)) // перезагрузка после добавления
-            .catch(err => {
-                alert("Ошибка загрузки изображений");
-                console.error(err);
-            });
-    }
-
-    // Вспомогательная функция для извлечения имени файла из URL
-    function extractFileName(url) {
-        return url.substring(url.lastIndexOf('/') + 1);
-    }
-
-    // Удаление изображения по имени файла
-    function deleteImage(fileName) {
-        if (!confirm(`Удалить изображение: ${fileName}?`)) return;
-
-        fetch(`/pk8000/catalog/api/product/${currentProductId}/image/${encodeURIComponent(fileName)}`, {
-            method: "DELETE"
-        })
-            .then(res => {
-                if (res.ok) {
-                    openImageModal(currentProductId); // перезагружаем список
-                } else {
-                    alert("Не удалось удалить изображение.");
-                }
-            })
-            .catch(err => {
-                alert("Ошибка при удалении изображения.");
-                console.error(err);
             });
     }
 

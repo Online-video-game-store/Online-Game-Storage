@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
-import mr.demonid.web.client.dto.ProduceFilter;
+import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductServices {
 
 
     @Override
-    public PageDTO<ProductResponse> getProductsWithoutEmpty(ProduceFilter filter, Pageable pageable) {
+    public PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable) {
         log.info("getProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductServices {
     }
 
     @Override
-    public PageDTO<ProductResponse> getAllProducts(ProduceFilter filter, Pageable pageable) {
+    public PageDTO<ProductResponse> getAllProducts(ProductFilter filter, Pageable pageable) {
         log.info("getAllProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProducts(filter, pageable).getBody();
@@ -69,12 +69,24 @@ public class ProductServiceImpl implements ProductServices {
     }
 
     @Override
-    public void updateImage(MultipartFile file) {
+    public boolean uploadImage(Long productId, MultipartFile file, String replaceFileName) {
         try {
-            productServiceClient.handleUpload(file);
+            return Boolean.TRUE.equals(productServiceClient.uploadImage(productId, file, replaceFileName).getBody());
         } catch (FeignException e) {
-            log.error("ProductServiceImpl.updateImage(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            log.error("ProductServiceImpl.uploadImage(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
         }
+        return false;
     }
+
+    @Override
+    public boolean deleteImage(Long productId, String fileName) {
+        try {
+            return Boolean.TRUE.equals(productServiceClient.deleteImage(productId, fileName).getBody());
+        } catch (FeignException e) {
+            log.error("ProductServiceImpl.deleteImage(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+        }
+        return false;
+    }
+
 
 }

@@ -3,7 +3,7 @@ package mr.demonid.web.client.links;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.web.client.configs.FeignClientConfig;
-import mr.demonid.web.client.dto.ProduceFilter;
+import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +19,7 @@ import java.util.List;
 public interface ProductServiceClient {
 
     @PostMapping("/pk8000/api/catalog/products/get-all-without-empty")
-    ResponseEntity<PageDTO<ProductResponse>> getAllProductsWithoutEmpty(@RequestBody ProduceFilter filter, Pageable pageable);
-
-    @PostMapping("/pk8000/api/catalog/products/get-all")
-    ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable);
+    ResponseEntity<PageDTO<ProductResponse>> getAllProductsWithoutEmpty(@RequestBody ProductFilter filter, Pageable pageable);
 
     @GetMapping("/pk8000/api/catalog/products/get-product/{id}")
     ResponseEntity<ProductResponse> getProductById(@PathVariable Long id);
@@ -31,7 +28,16 @@ public interface ProductServiceClient {
     ResponseEntity<List<ProductCategoryDTO>> getAllCategories();
 
 
-    @PostMapping(value = "/pk8000/api/catalog-edit/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<String> handleUpload(@RequestPart("file") MultipartFile file);
+    // админка
+    @PostMapping("/pk8000/api/catalog/products/get-all")
+    ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProductFilter filter, Pageable pageable);
+
+    @PostMapping(value = "/pk8000/api/catalog/edit/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Boolean> uploadImage(@PathVariable Long id,
+                                       @RequestPart("file") MultipartFile file,
+                                       @RequestParam(value = "replace", required = false) String replaceFileName);
+
+    @DeleteMapping("/pk8000/api/catalog/edit/{id}/delete")
+    ResponseEntity<Boolean> deleteImage(@PathVariable Long id, @RequestParam String fileName);
 
 }

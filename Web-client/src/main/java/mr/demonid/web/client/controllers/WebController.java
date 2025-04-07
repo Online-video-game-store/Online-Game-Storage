@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
-import mr.demonid.web.client.dto.ProduceFilter;
+import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.ProductServices;
@@ -70,7 +70,7 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductResponse> page = productServices.getProductsWithoutEmpty(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        PageDTO<ProductResponse> page = productServices.getProductsWithoutEmpty(new ProductFilter(categoryId, productName, minPrice, maxPrice), pageable);
         System.out.println("products: " + page.getContent());
         model.addAttribute("products", page.getContent());
 
@@ -120,7 +120,7 @@ public class WebController {
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductResponse> page = productServices.getAllProducts(new ProduceFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        PageDTO<ProductResponse> page = productServices.getAllProducts(new ProductFilter(categoryId, productName, minPrice, maxPrice), pageable);
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах

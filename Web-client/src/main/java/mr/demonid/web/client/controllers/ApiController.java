@@ -84,14 +84,14 @@ public class ApiController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveProduct(@ModelAttribute ProductTableRequest product) throws IOException {
+    public ResponseEntity<?> saveProduct(@ModelAttribute ProductRequest product) throws IOException {
         System.out.println("save(): " + product);
 
-        if (product.getFile() != null && !product.getFile().isEmpty()) {
-            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
-            productServices.updateImage(product.getFile());
-        }
-        System.out.println("original file: " + product.getImageFileName());
+//        if (product.getFile() != null && !product.getFile().isEmpty()) {
+//            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
+//            productServices.updateImage(product.getFile());
+//        }
+//        System.out.println("original file: " + product.getImageFileName());
 
 
         return ResponseEntity.ok().build();
