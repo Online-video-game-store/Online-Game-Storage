@@ -11,6 +11,7 @@ public class NotAvailableException extends CatalogException {
 
     private String message;
 
+
     public NotAvailableException(List<CartNeededResponse> products) {
         format(products);
     }
@@ -30,6 +31,6 @@ public class NotAvailableException extends CatalogException {
                     .append("]");
         }
         message = res.toString();
-        System.out.println(message);
     }
+
 }

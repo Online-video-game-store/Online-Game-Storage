@@ -6,6 +6,7 @@ import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
+import mr.demonid.service.catalog.exceptions.UpdateProductException;
 import mr.demonid.service.catalog.repositories.CategoryRepository;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -60,26 +60,52 @@ public class ProductService {
     }
 
 
+
     /**
-     * Обновление данных о товаре.
-     * @param product
-     * @return
+     * Добавление нового товара.
      */
     @Transactional
-    public ProductResponse updateProduct(ProductRequest product) {
-        if (product != null && product.getProductId() != null && product.getCategory() != null) {
+    public void createProduct(ProductRequest product) {
+        try {
+            if (product == null || product.getCategory() == null) {
+                throw new Exception("поступили некорректные данные");
+            }
+            product.setProductId(null);
+            ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
+            if (category == null) {
+                throw new Exception("Неверная категория товара");
+            }
+            ProductEntity productEntity = converts.requestProductToEntity(product, category);
+            productRepository.save(productEntity);
+        } catch (Exception e) {
+            throw new UpdateProductException(e.getMessage());
+        }
+    }
+
+    /**
+     * Обновление данных о товаре.
+     */
+    @Transactional
+    public void updateProduct(ProductRequest product) {
+        try {
+            if (product == null || product.getProductId() == null || product.getCategory() == null) {
+                throw new Exception("поступили некорректные данные");
+            }
             ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
             ProductEntity productEntity = productRepository.findById(product.getProductId()).orElse(null);
-            if (productEntity != null && category != null) {
-                productEntity.setName(product.getName());
-                productEntity.setPrice(product.getPrice());
-                productEntity.setStock(product.getStock());
-                productEntity.setDescription(product.getDescription());
-                productEntity.setCategory(category);
-                return converts.entityToProductResponse(productRepository.save(productEntity));
+            if (productEntity == null || category == null) {
+                throw new Exception("Данные о продукте или категории не найдены в БД");
             }
+            productEntity.setName(product.getName());
+            productEntity.setPrice(product.getPrice());
+            productEntity.setStock(product.getStock());
+            productEntity.setDescription(product.getDescription());
+            productEntity.setCategory(category);
+            productRepository.save(productEntity);
+//            return converts.entityToProductResponse(productRepository.save(productEntity));
+        } catch (Exception e) {
+            throw new UpdateProductException(e.getMessage());
         }
-        return null;
     }
 
 

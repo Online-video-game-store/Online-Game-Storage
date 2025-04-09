@@ -9,7 +9,6 @@ import mr.demonid.service.catalog.dto.CartNeededResponse;
 import mr.demonid.service.catalog.dto.events.ProductTransferred;
 import mr.demonid.service.catalog.exceptions.CatalogException;
 import mr.demonid.service.catalog.exceptions.NotAvailableException;
-import mr.demonid.service.catalog.exceptions.NotFoundException;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.repositories.ReservedProductRepository;
 import org.springframework.stereotype.Service;

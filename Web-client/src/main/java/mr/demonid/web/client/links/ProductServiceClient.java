@@ -33,8 +33,11 @@ public interface ProductServiceClient {
     @PostMapping("/pk8000/api/catalog/edit/get-all")
     ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProductFilter filter, Pageable pageable);
 
+    @PostMapping("/pk8000/api/catalog/edit/create")
+    ResponseEntity<?> createProduct(@RequestBody ProductRequest product);
+
     @PostMapping("/pk8000/api/catalog/edit/update")
-    ResponseEntity<Boolean> updateProduct(@RequestBody ProductRequest product);
+    ResponseEntity<?> updateProduct(@RequestBody ProductRequest product);
 
     @PostMapping(value = "/pk8000/api/catalog/edit/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Boolean> uploadImage(@PathVariable Long id,

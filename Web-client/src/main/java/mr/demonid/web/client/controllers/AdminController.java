@@ -25,21 +25,21 @@ public class AdminController {
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
-    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateProduct(@ModelAttribute ProductRequest product) throws IOException {
-        System.out.println("save(): " + product);
+    @PostMapping("/create")
+    public ResponseEntity<?> createProduct(@ModelAttribute ProductRequest product) throws IOException {
+        return productServices.createProduct(product);
+    }
 
-        if (productServices.updateProduct(product)) {
-            return ResponseEntity.ok().build();
-        }
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateProduct(@ModelAttribute ProductRequest product) throws IOException {
+        return productServices.updateProduct(product);
+    }
 //        if (product.getFile() != null && !product.getFile().isEmpty()) {
 //            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
 //            productServices.updateImage(product.getFile());
 //        }
 //        System.out.println("original file: " + product.getImageFileName());
-
-        return ResponseEntity.badRequest().build();
-    }
 
 
     /**

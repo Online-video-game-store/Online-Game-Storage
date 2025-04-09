@@ -9,11 +9,16 @@ import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
+import mr.demonid.web.client.utils.FeignErrorUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Реализация интерфейса ProductServices
@@ -28,7 +33,6 @@ public class ProductServiceImpl implements ProductServices {
 
     @Override
     public PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable) {
-        log.info("getProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
         } catch (FeignException e) {
@@ -39,7 +43,6 @@ public class ProductServiceImpl implements ProductServices {
 
     @Override
     public PageDTO<ProductResponse> getAllProducts(ProductFilter filter, Pageable pageable) {
-        log.info("getAllProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
             return productServiceClient.getAllProducts(filter, pageable).getBody();
         } catch (FeignException e) {
@@ -70,16 +73,32 @@ public class ProductServiceImpl implements ProductServices {
     }
 
 
-
+    /**
+     * Добавление нового товара.
+     * @return Просто проксирует ответ от удаленого микросервиса дальше.
+     */
     @Override
-    public boolean updateProduct(ProductRequest product) {
+    public ResponseEntity<?> createProduct(ProductRequest product) {
         try {
-            return Boolean.TRUE.equals(productServiceClient.updateProduct(product).getBody());
+            return productServiceClient.createProduct(product);
         } catch (FeignException e) {
-            log.error("ProductServiceImpl.updateProduct(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
         }
-        return false;
     }
+
+    /**
+     * Обновление данных о товаре.
+     * @return Просто проксирует ответ от удаленого микросервиса дальше.
+     */
+    @Override
+    public ResponseEntity<?> updateProduct(ProductRequest product) {
+        try {
+            return productServiceClient.updateProduct(product);
+        } catch (FeignException e) {
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
+        }
+    }
+
 
     @Override
     public boolean uploadImage(Long productId, MultipartFile file, String replaceFileName) {

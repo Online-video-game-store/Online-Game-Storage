@@ -1,18 +1,17 @@
 package mr.demonid.service.catalog.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Table(name = "products")
 public class ProductEntity {
@@ -39,5 +38,5 @@ public class ProductEntity {
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_file")
-    private List<String> imageFiles;
+    private List<String> imageFiles = new ArrayList<>();
 }

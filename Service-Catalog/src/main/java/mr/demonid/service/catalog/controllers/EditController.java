@@ -40,17 +40,27 @@ public class EditController {
     }
 
 
+
+    /**
+     * Создание нового товара.
+     */
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
+    @PostMapping("/create")
+    public ResponseEntity<?> createProduct(@RequestBody ProductRequest product) {
+        System.out.println("create product: " + product);
+        productService.createProduct(product);
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * Обновление данных о товаре.
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/update")
-    public ResponseEntity<Boolean> updateProduct(@RequestBody ProductRequest product) {
+    public ResponseEntity<?> updateProduct(@RequestBody ProductRequest product) {
         System.out.println("update product: " + product);
-        if (productService.updateProduct(product) != null) {
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.ok(false);
+        productService.updateProduct(product);
+        return ResponseEntity.ok().build();
     }
 
 

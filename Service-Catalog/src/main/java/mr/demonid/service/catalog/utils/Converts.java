@@ -1,13 +1,16 @@
 package mr.demonid.service.catalog.utils;
 
 
+import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
+import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.dto.events.CatalogReserveRequestEvent;
 import mr.demonid.service.catalog.dto.events.PaymentRequestEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -43,6 +46,18 @@ public class Converts {
                         .filter(Predicate.not(String::isBlank))
                         .map(e -> imagesUrl + "/" + e)
                         .toList()
+        );
+    }
+
+    public ProductEntity requestProductToEntity(ProductRequest product, ProductCategoryEntity category) {
+        return new ProductEntity(
+                null,
+                product.getName(),
+                product.getPrice(),
+                product.getStock(),
+                category,
+                product.getDescription(),
+                new ArrayList<>()
         );
     }
 
