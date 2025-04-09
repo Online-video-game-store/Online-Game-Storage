@@ -3,6 +3,7 @@ package mr.demonid.web.client.services;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ public interface ProductServices {
     ProductResponse getProductById(Long id);
     List<ProductCategoryDTO> getAllCategories();
 
+    boolean updateProduct(ProductRequest product);
     boolean uploadImage(Long productId, MultipartFile file, String replaceFileName);
     boolean deleteImage(Long productId, String fileName);
 }

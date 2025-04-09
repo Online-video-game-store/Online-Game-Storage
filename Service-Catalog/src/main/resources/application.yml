@@ -8,6 +8,12 @@ spring:
 
   output.ansi.enabled: ALWAYS
 
+  # ограничение на размер MultipartFile файлов
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+
   security:
     oauth2:
       resourceserver:

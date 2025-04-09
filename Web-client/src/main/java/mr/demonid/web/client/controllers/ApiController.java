@@ -4,14 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.services.CartServices;
-import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +17,6 @@ import java.util.Map;
 @RequestMapping("/pk8000/catalog/api")
 public class ApiController {
 
-    private ProductServices productServices;
     private CartServices cartServices;
 
 
@@ -81,22 +76,6 @@ public class ApiController {
         cartServices.removeItem(itemId);
         return ResponseEntity.ok().build();
     }
-
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
-    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveProduct(@ModelAttribute ProductRequest product) throws IOException {
-        System.out.println("save(): " + product);
-
-//        if (product.getFile() != null && !product.getFile().isEmpty()) {
-//            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
-//            productServices.updateImage(product.getFile());
-//        }
-//        System.out.println("original file: " + product.getImageFileName());
-
-
-        return ResponseEntity.ok().build();
-    }
-
 
 }
 

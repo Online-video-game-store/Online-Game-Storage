@@ -10,7 +10,6 @@ import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,15 +27,9 @@ public class ProductController {
     /**
      * Возвращает постраничный список доступных товаров.
      */
-    @PostMapping("/get-all-without-empty")
-    public ResponseEntity<PageDTO<ProductResponse>> getAllProductsWithoutEmpty(@RequestBody ProduceFilter filter, Pageable pageable) {
-        return ResponseEntity.ok(new PageDTO<>(productService.getProductsWithoutEmpty(filter, pageable)));
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/get-all")
     public ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
-        return ResponseEntity.ok(new PageDTO<>(productService.getAllProducts(filter, pageable)));
+        return ResponseEntity.ok(new PageDTO<>(productService.getProductsWithoutEmpty(filter, pageable)));
     }
 // http://localhost:9100/pk8000/api/catalog/get-all?&page=0&size=10&sort=name,asc
 

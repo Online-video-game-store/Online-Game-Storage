@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,7 @@ public class ProductServiceImpl implements ProductServices {
     public PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable) {
         log.info("getProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
-            return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
+            return productServiceClient.getAllProducts(filter, pageable).getBody();
         } catch (FeignException e) {
             log.error("ProductServiceImpl.getProductsWithoutEmpty(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
             return PageDTO.empty();
@@ -66,6 +67,18 @@ public class ProductServiceImpl implements ProductServices {
             log.error("ProductServiceImpl.getAllCategories(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
             return List.of(new ProductCategoryDTO(0L, "All", "Все категории"));
         }
+    }
+
+
+
+    @Override
+    public boolean updateProduct(ProductRequest product) {
+        try {
+            return Boolean.TRUE.equals(productServiceClient.updateProduct(product).getBody());
+        } catch (FeignException e) {
+            log.error("ProductServiceImpl.updateProduct(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+        }
+        return false;
     }
 
     @Override

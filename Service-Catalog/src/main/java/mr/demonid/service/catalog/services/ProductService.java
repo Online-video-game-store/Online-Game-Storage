@@ -7,16 +7,11 @@ import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
 import mr.demonid.service.catalog.utils.Converts;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Base64;
 import java.util.Optional;
 
 /**
@@ -60,21 +55,21 @@ public class ProductService {
     }
 
 
-    /**
-     * Конвертирует файл в строку Base64.
-     */
-    private String encodeImageToBase64(String fileName) {
-        try {
-            // ClassPathResource строит путь из src/main/resource, независимо от того, упакован файл в JAR, или выполняется из IDEA.
-            ClassPathResource imgFile = new ClassPathResource("pics/" + fileName);
-            Path imagePath = imgFile.getFile().toPath();
-            // Читаем байты и кодируем в Base64
-            byte[] imageBytes = Files.readAllBytes(imagePath);
-            return Base64.getEncoder().encodeToString(imageBytes);
-
-        } catch (IOException e) {
-            return "";
-        }
-    }
+//    /**
+//     * Конвертирует файл в строку Base64.
+//     */
+//    private String encodeImageToBase64(String fileName) {
+//        try {
+//            // ClassPathResource строит путь из src/main/resource, независимо от того, упакован файл в JAR, или выполняется из IDEA.
+//            ClassPathResource imgFile = new ClassPathResource("pics/" + fileName);
+//            Path imagePath = imgFile.getFile().toPath();
+//            // Читаем байты и кодируем в Base64
+//            byte[] imageBytes = Files.readAllBytes(imagePath);
+//            return Base64.getEncoder().encodeToString(imageBytes);
+//
+//        } catch (IOException e) {
+//            return "";
+//        }
+//    }
 
 }

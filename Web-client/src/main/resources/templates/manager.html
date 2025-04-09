@@ -288,40 +288,40 @@
 
 
 <script>
-    function openFileDialog(productId) {
-        const fileInput = document.getElementById('fileInput_' + productId);
-        if (fileInput) {
-            fileInput.click();
-        } else {
-            console.error("File input element not found for product ID", productId);
-        }
-    }
-
-    function handleFileChange(event, productId) {
-        const input = event.target;
-        const fileNameSpan = document.getElementById('fileName_' + productId);
-        // const hiddenInput = document.getElementById('fileHidden_' + productId);
-
-        if (input.files && input.files.length > 0) {
-            const fileName = input.files[0].name;
-
-            if (fileNameSpan) {
-                fileNameSpan.innerText = fileName;  // Обновляем имя файла, видимое пользователю
-            } else {
-                console.error("fileName span not found for product ID", productId);
-            }
-
-            // if (hiddenInput) {
-            //     hiddenInput.value = fileName;  // Обновляем hidden поле для последующей отправки
-            // } else {
-            //     console.error("Hidden input not found for product ID", productId);
-            // }
-
-            console.log(`Выбран файл "${fileName}" для продукта ${productId}`);
-        } else {
-            console.log(`Файл не выбран для продукта ${productId}`);
-        }
-    }
+    // function openFileDialog(productId) {
+    //     const fileInput = document.getElementById('fileInput_' + productId);
+    //     if (fileInput) {
+    //         fileInput.click();
+    //     } else {
+    //         console.error("File input element not found for product ID", productId);
+    //     }
+    // }
+    //
+    // function handleFileChange(event, productId) {
+    //     const input = event.target;
+    //     const fileNameSpan = document.getElementById('fileName_' + productId);
+    //     // const hiddenInput = document.getElementById('fileHidden_' + productId);
+    //
+    //     if (input.files && input.files.length > 0) {
+    //         const fileName = input.files[0].name;
+    //
+    //         if (fileNameSpan) {
+    //             fileNameSpan.innerText = fileName;  // Обновляем имя файла, видимое пользователю
+    //         } else {
+    //             console.error("fileName span not found for product ID", productId);
+    //         }
+    //
+    //         // if (hiddenInput) {
+    //         //     hiddenInput.value = fileName;  // Обновляем hidden поле для последующей отправки
+    //         // } else {
+    //         //     console.error("Hidden input not found for product ID", productId);
+    //         // }
+    //
+    //         console.log(`Выбран файл "${fileName}" для продукта ${productId}`);
+    //     } else {
+    //         console.log(`Файл не выбран для продукта ${productId}`);
+    //     }
+    // }
 
     function saveProduct(productId) {
         console.log("Сохраняем продукт ID:", productId);
@@ -334,8 +334,6 @@
         const categoryInput = document.querySelector(`input[name="category_${productId}"]`);
         const stockInput = document.querySelector(`input[name="stock_${productId}"]`);
         const descriptionInput = document.querySelector(`textarea[name="description_${productId}"]`);
-        const fileInput = document.getElementById(`fileInput_${productId}`);
-        const hiddenFileNameInput = document.getElementById(`fileHidden_${productId}`);
 
         // Добавляем поля
         formData.append("productId", productId);
@@ -344,14 +342,9 @@
         if (categoryInput) formData.append("category", categoryInput.value);
         if (stockInput) formData.append("stock", stockInput.value);
         if (descriptionInput) formData.append("description", descriptionInput.value);
-        if (hiddenFileNameInput) formData.append("imageFileName", hiddenFileNameInput.value);
-        // Если был выбран файл — добавим его
-        if (fileInput && fileInput.files.length > 0) {
-            formData.append("file", fileInput.files[0]);
-        }
 
         // Отправляем на сервер
-        fetch("/pk8000/catalog/api/save", {
+        fetch("/pk8000/catalog/api/product/update", {
             method: "POST",
             body: formData
         })

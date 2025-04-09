@@ -4,6 +4,7 @@ import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.ProductCategoryDTO;
 import mr.demonid.web.client.configs.FeignClientConfig;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ import java.util.List;
 @FeignClient(name = "CATALOG-SERVICE", configuration = FeignClientConfig.class)      // имя сервиса, под которым он зарегистрирован в Eureka
 public interface ProductServiceClient {
 
-    @PostMapping("/pk8000/api/catalog/products/get-all-without-empty")
+    @PostMapping("/pk8000/api/catalog/products/get-all")
     ResponseEntity<PageDTO<ProductResponse>> getAllProductsWithoutEmpty(@RequestBody ProductFilter filter, Pageable pageable);
 
     @GetMapping("/pk8000/api/catalog/products/get-product/{id}")
@@ -29,8 +30,11 @@ public interface ProductServiceClient {
 
 
     // админка
-    @PostMapping("/pk8000/api/catalog/products/get-all")
+    @PostMapping("/pk8000/api/catalog/edit/get-all")
     ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProductFilter filter, Pageable pageable);
+
+    @PostMapping("/pk8000/api/catalog/edit/update")
+    ResponseEntity<Boolean> updateProduct(@RequestBody ProductRequest product);
 
     @PostMapping(value = "/pk8000/api/catalog/edit/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Boolean> uploadImage(@PathVariable Long id,
