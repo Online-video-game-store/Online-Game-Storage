@@ -1,9 +1,12 @@
 package mr.demonid.service.catalog.services;
 
 import lombok.AllArgsConstructor;
+import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
+import mr.demonid.service.catalog.repositories.CategoryRepository;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
 import mr.demonid.service.catalog.utils.Converts;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -23,6 +27,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private Converts converts;
 
 
@@ -52,6 +57,29 @@ public class ProductService {
     public ProductResponse getProductById(Long productId) {
          Optional<ProductEntity> opt = productRepository.findByIdWithCategory(productId);
         return opt.map(converts::entityToProductResponse).orElse(null);
+    }
+
+
+    /**
+     * Обновление данных о товаре.
+     * @param product
+     * @return
+     */
+    @Transactional
+    public ProductResponse updateProduct(ProductRequest product) {
+        if (product != null && product.getProductId() != null && product.getCategory() != null) {
+            ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
+            ProductEntity productEntity = productRepository.findById(product.getProductId()).orElse(null);
+            if (productEntity != null && category != null) {
+                productEntity.setName(product.getName());
+                productEntity.setPrice(product.getPrice());
+                productEntity.setStock(product.getStock());
+                productEntity.setDescription(product.getDescription());
+                productEntity.setCategory(category);
+                return converts.entityToProductResponse(productRepository.save(productEntity));
+            }
+        }
+        return null;
     }
 
 

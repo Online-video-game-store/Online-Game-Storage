@@ -40,12 +40,19 @@ public class EditController {
     }
 
 
+    /**
+     * Обновление данных о товаре.
+     */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/update")
     public ResponseEntity<Boolean> updateProduct(@RequestBody ProductRequest product) {
         System.out.println("update product: " + product);
-        return ResponseEntity.ok(true);
+        if (productService.updateProduct(product) != null) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
     }
+
 
     /**
      * Добавление нового или замена существующего изображения.

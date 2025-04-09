@@ -30,7 +30,7 @@ public class ProductServiceImpl implements ProductServices {
     public PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable) {
         log.info("getProducts: categoryId: {}, pageable: {}", filter, pageable);
         try {
-            return productServiceClient.getAllProducts(filter, pageable).getBody();
+            return productServiceClient.getAllProductsWithoutEmpty(filter, pageable).getBody();
         } catch (FeignException e) {
             log.error("ProductServiceImpl.getProductsWithoutEmpty(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
             return PageDTO.empty();
