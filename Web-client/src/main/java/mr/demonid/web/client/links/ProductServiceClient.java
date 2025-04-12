@@ -16,7 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 
-@FeignClient(name = "CATALOG-SERVICE", configuration = FeignClientConfig.class)      // имя сервиса, под которым он зарегистрирован в Eureka
+@FeignClient(name = "CATALOG-SERVICE", configuration = FeignClientConfig.class)
+// имя сервиса, под которым он зарегистрирован в Eureka
 public interface ProductServiceClient {
 
     @PostMapping("/pk8000/api/catalog/products/get-all")
@@ -40,11 +41,11 @@ public interface ProductServiceClient {
     ResponseEntity<?> updateProduct(@RequestBody ProductRequest product);
 
     @PostMapping(value = "/pk8000/api/catalog/edit/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Boolean> uploadImage(@PathVariable Long id,
-                                       @RequestPart("file") MultipartFile file,
-                                       @RequestParam(value = "replace", required = false) String replaceFileName);
+    ResponseEntity<?> uploadImage(@PathVariable Long id,
+                                  @RequestPart("file") MultipartFile file,
+                                  @RequestParam(value = "replace", required = false) String replaceFileName);
 
     @DeleteMapping("/pk8000/api/catalog/edit/{id}/delete")
-    ResponseEntity<Boolean> deleteImage(@PathVariable Long id, @RequestParam String fileName);
+    ResponseEntity<?> deleteImage(@PathVariable Long id, @RequestParam String fileName);
 
 }

@@ -143,3 +143,4 @@ eureka:
 app:
   images-path: ./datas/catalog/images
   images-url: /pk8000/api/catalog/images
+  images-temp: ./datas/temp/images

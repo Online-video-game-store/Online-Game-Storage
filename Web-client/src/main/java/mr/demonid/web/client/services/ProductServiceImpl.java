@@ -99,25 +99,29 @@ public class ProductServiceImpl implements ProductServices {
         }
     }
 
-
+    /**
+     * Обновление или добавление картинки к товару.
+     * @param productId       Продукт.
+     * @param file            Новый файл для загрузки.
+     * @param replaceFileName Заменяемый файл или null.
+     * @return Просто проксирует ответ от удаленого микросервиса дальше.
+     */
     @Override
-    public boolean uploadImage(Long productId, MultipartFile file, String replaceFileName) {
+    public ResponseEntity<?> uploadImage(Long productId, MultipartFile file, String replaceFileName) {
         try {
-            return Boolean.TRUE.equals(productServiceClient.uploadImage(productId, file, replaceFileName).getBody());
+            return productServiceClient.uploadImage(productId, file, replaceFileName);
         } catch (FeignException e) {
-            log.error("ProductServiceImpl.uploadImage(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
         }
-        return false;
     }
 
     @Override
-    public boolean deleteImage(Long productId, String fileName) {
+    public ResponseEntity<?> deleteImage(Long productId, String fileName) {
         try {
-            return Boolean.TRUE.equals(productServiceClient.deleteImage(productId, fileName).getBody());
+            return productServiceClient.deleteImage(productId, fileName);
         } catch (FeignException e) {
-            log.error("ProductServiceImpl.deleteImage(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
         }
-        return false;
     }
 
 

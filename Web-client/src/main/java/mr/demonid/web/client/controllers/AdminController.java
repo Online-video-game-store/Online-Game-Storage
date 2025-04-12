@@ -35,16 +35,9 @@ public class AdminController {
     public ResponseEntity<?> updateProduct(@ModelAttribute ProductRequest product) throws IOException {
         return productServices.updateProduct(product);
     }
-//        if (product.getFile() != null && !product.getFile().isEmpty()) {
-//            System.out.println("-- new file: " + product.getFile().getOriginalFilename());
-//            productServices.updateImage(product.getFile());
-//        }
-//        System.out.println("original file: " + product.getImageFileName());
-
 
     /**
      * Получение полого описания продукта.
-     * Возвращает список картинок в Base64.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @GetMapping("/{id}")
@@ -58,24 +51,20 @@ public class AdminController {
         return ResponseEntity.ok(res.getImageUrls());
     }
 
-
     /**
      * Загрузка на сервер нового изображения, или замена старому.
      * @param id              Продукт
      * @param file            Новый файл.
      * @param replaceFileName Имя старого файла, или null (если просто добавляем новый файл)
-     * @return                Строку "Uploaded", если все прошло успешно.
+     * @return                Проксируем ответ удаленного сервера во фронтенд.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @PostMapping("/{id}/upload")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id,
+    public ResponseEntity<?> uploadImage(@PathVariable Long id,
                                               @RequestPart("file") MultipartFile file,
                                               @RequestParam(value = "replace", required = false) String replaceFileName) {
         System.out.println("upload product: " + id + ", " + file.getOriginalFilename() + ", replace to: " + replaceFileName);
-        if (productServices.uploadImage(id, file, replaceFileName)) {
-            return ResponseEntity.ok("Uploaded");
-        }
-        return ResponseEntity.noContent().build();
+        return productServices.uploadImage(id, file, replaceFileName);
     }
 
 
@@ -86,13 +75,12 @@ public class AdminController {
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @DeleteMapping("{productId}/image/{fileName}")
-    public ResponseEntity<Void> deleteImage(
+    public ResponseEntity<?> deleteImage(
             @PathVariable Long productId,
             @PathVariable String fileName) {
 
         System.out.println("delete product: " + productId + ", " + fileName);
-        productServices.deleteImage(productId, fileName);
-        return ResponseEntity.noContent().build();
+        return productServices.deleteImage(productId, fileName);
     }
 
 }

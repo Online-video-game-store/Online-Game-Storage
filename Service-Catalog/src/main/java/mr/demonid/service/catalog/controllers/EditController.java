@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
+import mr.demonid.service.catalog.services.ProductAdminService;
 import mr.demonid.service.catalog.services.ProductService;
 import mr.demonid.store.commons.dto.PageDTO;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ import java.util.UUID;
 @RequestMapping("/pk8000/api/catalog/edit")
 public class EditController {
 
-    private ProductService productService;
+    private ProductAdminService productAdminService;
 
 
     /**
@@ -36,10 +37,8 @@ public class EditController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/get-all")
     public ResponseEntity<PageDTO<ProductResponse>> getAllProducts(@RequestBody ProduceFilter filter, Pageable pageable) {
-        return ResponseEntity.ok(new PageDTO<>(productService.getAllProducts(filter, pageable)));
+        return ResponseEntity.ok(new PageDTO<>(productAdminService.getAllProducts(filter, pageable)));
     }
-
-
 
     /**
      * Создание нового товара.
@@ -48,7 +47,7 @@ public class EditController {
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody ProductRequest product) {
         System.out.println("create product: " + product);
-        productService.createProduct(product);
+        productAdminService.createProduct(product);
         return ResponseEntity.ok().build();
     }
 
@@ -59,7 +58,7 @@ public class EditController {
     @PostMapping("/update")
     public ResponseEntity<?> updateProduct(@RequestBody ProductRequest product) {
         System.out.println("update product: " + product);
-        productService.updateProduct(product);
+        productAdminService.updateProduct(product);
         return ResponseEntity.ok().build();
     }
 
@@ -72,12 +71,12 @@ public class EditController {
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/{id}/upload")
-    public ResponseEntity<Boolean> uploadImage(@PathVariable Long id,
+    public ResponseEntity<?> uploadImage(@PathVariable Long id,
                                               @RequestPart("file") MultipartFile file,
                                               @RequestParam(value = "replace", required = false) String replaceFileName) {
         System.out.println("upload product: " + id + ", " + file.getOriginalFilename() + ", replace to: " + replaceFileName);
-
-        return ResponseEntity.ok(true);
+        productAdminService.updateImage(id, file, replaceFileName);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -87,13 +86,13 @@ public class EditController {
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Boolean> deleteImage(@PathVariable Long id, @RequestParam String fileName) throws IOException {
+    public ResponseEntity<?> deleteImage(@PathVariable Long id, @RequestParam String fileName) throws IOException {
         System.out.println("delete product: " + id + ", " + fileName);
 
         return ResponseEntity.ok(true);
     }
 
-
+/*
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/upload")
     public ResponseEntity<String> handleUpload(@RequestPart("file") MultipartFile file) throws IOException {
@@ -130,5 +129,6 @@ public class EditController {
         System.out.println("-- file moved to: " + finalFile.toFile());
         return ResponseEntity.ok("Файл успешно загружен");
     }
+*/
 
 }

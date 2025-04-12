@@ -19,6 +19,6 @@ public interface ProductServices {
 
     ResponseEntity<?> createProduct(ProductRequest product);
     ResponseEntity<?> updateProduct(ProductRequest product);
-    boolean uploadImage(Long productId, MultipartFile file, String replaceFileName);
-    boolean deleteImage(Long productId, String fileName);
+    ResponseEntity<?> uploadImage(Long productId, MultipartFile file, String replaceFileName);
+    ResponseEntity<?> deleteImage(Long productId, String fileName);
 }

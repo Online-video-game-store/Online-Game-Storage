@@ -254,19 +254,46 @@
         fetch(url, {
             method: "POST",
             body: formData
-        }).then(() => {
-            this.value = ""; // Сброс input
-            openImageModal(currentProductId); // Перезагрузка изображений
-        }).catch(err => {
-            alert("Ошибка при загрузке изображения");
-            console.error(err);
-        });
+        })
+            .then(async response => {
+                if (response.ok) {
+                    this.value = ""; // Сброс input
+                    openImageModal(currentProductId); // Перезагрузка изображений
+                } else {
+                    const contentType = response.headers.get("Content-Type");
+                    let errorMessage = `Ошибка ${response.status}`;
+                    if (contentType && contentType.includes("application/json")) {
+                        // это JSON
+                        try {
+                            const errorJson = await response.json();
+                            errorMessage = errorJson.message || JSON.stringify(errorJson);
+                        } catch (e) {
+                            errorMessage = "Ошибка при разборе JSON-ответа от сервера.";
+                        }
+                    } else {
+                        // это просто текст
+                        try {
+                            const text = await response.text();
+                            if (text.trim()) errorMessage = text;
+                        } catch (e) {
+                            errorMessage = "Ошибка при получении ответа от сервера.";
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+            })
+            .catch(error => {
+                console.error("Ошибка при загрузке изображения:", error);
+                alert("Ошибка при загрузке изображения: " + error.message);
+            });
     });
+
 
     // Вспомогательная функция для извлечения имени файла из URL
     function extractFileName(url) {
         return url.substring(url.lastIndexOf('/') + 1);
     }
+
 
     // Удаление изображения по имени файла
     function deleteImage(fileName) {
@@ -274,16 +301,35 @@
         fetch(`/pk8000/catalog/api/product/${currentProductId}/image/${encodeURIComponent(fileName)}`, {
             method: "DELETE"
         })
-            .then(res => {
-                if (res.ok) {
+            .then(async response => {
+                if (response.ok) {
                     openImageModal(currentProductId); // перезагружаем список
                 } else {
-                    alert("Не удалось удалить изображение.");
+                    const contentType = response.headers.get("Content-Type");
+                    let errorMessage = `Ошибка ${response.status}`;
+                    if (contentType && contentType.includes("application/json")) {
+                        // это JSON
+                        try {
+                            const errorJson = await response.json();
+                            errorMessage = errorJson.message || JSON.stringify(errorJson);
+                        } catch (e) {
+                            errorMessage = "Ошибка при разборе JSON-ответа от сервера.";
+                        }
+                    } else {
+                        // это просто текст
+                        try {
+                            const text = await response.text();
+                            if (text.trim()) errorMessage = text;
+                        } catch (e) {
+                            errorMessage = "Ошибка при получении ответа от сервера.";
+                        }
+                    }
+                    throw new Error(errorMessage);
                 }
             })
-            .catch(err => {
-                alert("Ошибка при удалении изображения.");
-                console.error(err);
+            .catch(error => {
+                console.error("Ошибка при загрузке изображения:", error);
+                alert("Ошибка при удалении изображения: " + error.message);
             });
     }
 
@@ -372,8 +418,26 @@
                     alert("Товар добавлен!");
                     location.reload();
                 } else {
-                    const text = await response.text();
-                    throw new Error(text);
+                    const contentType = response.headers.get("Content-Type");
+                    let errorMessage = `Ошибка ${response.status}`;
+                    if (contentType && contentType.includes("application/json")) {
+                        // это JSON
+                        try {
+                            const errorJson = await response.json();
+                            errorMessage = errorJson.message || JSON.stringify(errorJson);
+                        } catch (e) {
+                            errorMessage = "Ошибка при разборе JSON-ответа от сервера.";
+                        }
+                    } else {
+                        // это просто текст
+                        try {
+                            const text = await response.text();
+                            if (text.trim()) errorMessage = text;
+                        } catch (e) {
+                            errorMessage = "Ошибка при получении ответа от сервера.";
+                        }
+                    }
+                    throw new Error(errorMessage);
                 }
             })
             .catch(error => {
@@ -381,6 +445,7 @@
                 alert("Ошибка при добавлении: " + error.message);
             });
     }
+
 
     function deleteProduct(productId) {
         if (!confirm("Удалить этот товар?")) return;

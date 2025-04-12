@@ -27,7 +27,6 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
     private Converts converts;
 
 
@@ -41,15 +40,6 @@ public class ProductService {
     }
 
     /**
-     * Возвращает постраничный список товаров для админки.
-     */
-    @Transactional(readOnly = true)
-    public Page<ProductResponse> getAllProducts(ProduceFilter produceFilter, Pageable pageable) {
-        Page<ProductEntity> items = productRepository.findAll(ProductSpecification.filter(produceFilter, true), pageable);
-        return items.map(converts::entityToProductResponse);
-    }
-
-    /**
      * Возвращает информацию по конкретному товару.
      * @param productId Идентификатор товара.
      */
@@ -57,55 +47,6 @@ public class ProductService {
     public ProductResponse getProductById(Long productId) {
          Optional<ProductEntity> opt = productRepository.findByIdWithCategory(productId);
         return opt.map(converts::entityToProductResponse).orElse(null);
-    }
-
-
-
-    /**
-     * Добавление нового товара.
-     */
-    @Transactional
-    public void createProduct(ProductRequest product) {
-        try {
-            if (product == null || product.getCategory() == null) {
-                throw new Exception("поступили некорректные данные");
-            }
-            product.setProductId(null);
-            ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
-            if (category == null) {
-                throw new Exception("Неверная категория товара");
-            }
-            ProductEntity productEntity = converts.requestProductToEntity(product, category);
-            productRepository.save(productEntity);
-        } catch (Exception e) {
-            throw new UpdateProductException(e.getMessage());
-        }
-    }
-
-    /**
-     * Обновление данных о товаре.
-     */
-    @Transactional
-    public void updateProduct(ProductRequest product) {
-        try {
-            if (product == null || product.getProductId() == null || product.getCategory() == null) {
-                throw new Exception("поступили некорректные данные");
-            }
-            ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
-            ProductEntity productEntity = productRepository.findById(product.getProductId()).orElse(null);
-            if (productEntity == null || category == null) {
-                throw new Exception("Данные о продукте или категории не найдены в БД");
-            }
-            productEntity.setName(product.getName());
-            productEntity.setPrice(product.getPrice());
-            productEntity.setStock(product.getStock());
-            productEntity.setDescription(product.getDescription());
-            productEntity.setCategory(category);
-            productRepository.save(productEntity);
-//            return converts.entityToProductResponse(productRepository.save(productEntity));
-        } catch (Exception e) {
-            throw new UpdateProductException(e.getMessage());
-        }
     }
 
 
