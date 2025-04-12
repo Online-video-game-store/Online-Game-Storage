@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * Запрос от фронтенда на добавление новой банковской карты.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

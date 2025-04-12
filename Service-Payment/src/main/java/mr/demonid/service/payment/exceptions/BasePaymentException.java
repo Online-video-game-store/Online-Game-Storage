@@ -8,11 +8,5 @@ import lombok.Getter;
  */
 @Getter
 public abstract class BasePaymentException extends RuntimeException {
-    private final String title;
-
-    public BasePaymentException(String title, String message) {
-        super(message);
-        this.title = title;
-    }
 
 }

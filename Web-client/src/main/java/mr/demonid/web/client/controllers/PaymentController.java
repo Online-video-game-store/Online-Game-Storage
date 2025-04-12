@@ -45,13 +45,7 @@ public class PaymentController {
     @ResponseBody
     public ResponseEntity<?> addCard(@RequestBody NewCardRequest request) {
         log.info("== addCard");
-        if (request.getCardNumber().isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Некорректный номер карты"));
-        }
-        if (paymentService.addNewCard(request)) {
-            return ResponseEntity.ok(Map.of("status", "success", "message", "Карта добавлена!"));
-        }
-        return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Ошибка добавления карты. Попробуйте попозже."));
+        return paymentService.addNewCard(request);
     }
 
 

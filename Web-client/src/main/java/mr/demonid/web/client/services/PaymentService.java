@@ -6,8 +6,12 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.NewCardRequest;
 import mr.demonid.web.client.dto.PaymentMethod;
 import mr.demonid.web.client.dto.payment.CardResponse;
+import mr.demonid.web.client.dto.payment.CreateCardRequest;
+import mr.demonid.web.client.exceptions.CreateCardException;
 import mr.demonid.web.client.links.PaymentServiceClient;
+import mr.demonid.web.client.utils.FeignErrorUtils;
 import mr.demonid.web.client.utils.IdnUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,17 +46,21 @@ public class PaymentService {
         return List.of();
     }
 
-    public boolean addNewCard(NewCardRequest cardRequest) {
-        try {
-            UUID userId = IdnUtil.getUserId();
-            if (userId != null) {
-                log.info("-- Adding new card user: {}", userId);
-                paymentServiceClient.addCard(new mr.demonid.web.client.dto.payment.NewCardRequest(userId, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
-                return true;
-            }
-        } catch (FeignException e) {
-            log.error("PaymentService.addNewCard(): {}", e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+    public ResponseEntity<?> addNewCard(NewCardRequest cardRequest) {
+        if (cardRequest.getCardNumber().isEmpty()) {
+            throw new CreateCardException("Некорректный номер карты");
         }
-        return false;
+        UUID userId = IdnUtil.getUserId();
+        if (userId == null) {
+            throw new CreateCardException("Пользователь не авторизирован");
+        }
+        try {
+            log.info("-- Adding new card user: {}", userId);
+            return paymentServiceClient.addCard(new CreateCardRequest(userId, cardRequest.getCardNumber(), cardRequest.getExpiryDate(), cardRequest.getCvv()));
+        } catch (FeignException e) {
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Payment-Service");
+        }
     }
+
+
 }

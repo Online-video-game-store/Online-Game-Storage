@@ -67,14 +67,13 @@ public class CardService {
         if (!CardUtil.isCardNumberValid(cardRequest.getCardNumber())
                 || !CardUtil.isExpiryDateValid(cardRequest.getExpiryDate())
                 || !CardUtil.isCvvValid(cardRequest.getCvv())) {
-            log.error("Bad card format");
             throw new AddCardException("Неверный формат данных.");
         }
 
         if (cardRepository.existsByCardNumber(cardRequest.getCardNumber())) {
-            log.error("Card number already exists");
             throw new AddCardException("Карта уже существует.");
         }
+
         try {
             Optional<UserEntity> userPayment = userEntityRepository.findById(cardRequest.getUserId());
             userEntity = userPayment.orElseGet(() -> new UserEntity(cardRequest.getUserId(), new HashSet<>()));

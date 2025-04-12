@@ -10,7 +10,7 @@ import java.util.UUID;
  */
 @Data
 @AllArgsConstructor
-public class NewCardRequest {
+public class CreateCardRequest {
     private UUID userId;
     private String cardNumber;
     private String expiryDate;

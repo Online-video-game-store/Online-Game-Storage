@@ -1,11 +1,11 @@
-package mr.demonid.service.payment.exceptions;
+package mr.demonid.web.client.exceptions;
 
-public class AddCardException extends BasePaymentException {
+public class CreateCardException extends WebClientException {
 
     private final String message;
 
 
-    public AddCardException(String message) {
+    public CreateCardException(String message) {
         this.message = message;
     }
 
