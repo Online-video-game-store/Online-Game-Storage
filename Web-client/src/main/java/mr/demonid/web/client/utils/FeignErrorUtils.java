@@ -19,8 +19,9 @@ public class FeignErrorUtils {
         log.error("Feign exception: {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
 
         HttpStatus status = HttpStatus.resolve(e.status());
-        if (status == null) status = HttpStatus.INTERNAL_SERVER_ERROR;
-
+        if (status == null) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
         String content = e.contentUTF8() == null ? fallbackMessage : e.contentUTF8();
         MediaType mediaType = content.trim().startsWith("{") ? MediaType.APPLICATION_JSON : MediaType.TEXT_PLAIN;
         return ResponseEntity.status(status).contentType(mediaType).body(content);

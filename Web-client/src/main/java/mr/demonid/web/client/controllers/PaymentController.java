@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.dto.payment.CardResponse;
+import mr.demonid.web.client.exceptions.CreateOrderException;
 import mr.demonid.web.client.services.OrderService;
 import mr.demonid.web.client.services.PaymentService;
 import org.springframework.http.ResponseEntity;
@@ -61,16 +62,8 @@ public class PaymentController {
     @ResponseBody
     public ResponseEntity<?> processPayment(@RequestBody PaymentRequest request) {
         log.info("== processPayment: {}", request);
-        if (request.getPaymentMethodId() == null) {
-            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Выберите платежную систему"));
-        }
-        // Формируем заказ
-        if (orderService.createOrder(request)) {
-            log.info("-- order proceed...");
-            return ResponseEntity.ok(Map.of("status", "success", "message", "Оплата успешна!"));
-        }
-        log.error("-- order can't proceed");
-        return ResponseEntity.ok(Map.of("status", "error", "message", "Ошибка оплаты. Попробуйте позже."));
+        return orderService.createOrder(request);
     }
+
 
 }

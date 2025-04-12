@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface OrderServiceClient {
 
     @PostMapping("/pk8000/api/order/create-order")
-    ResponseEntity<Boolean> createOrder(@RequestBody OrderCreateRequest orderCreateRequest);
+    ResponseEntity<?> createOrder(@RequestBody OrderCreateRequest orderCreateRequest);
 }

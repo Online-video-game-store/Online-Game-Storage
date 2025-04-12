@@ -21,10 +21,10 @@ public class ApiController {
      * Оформление и проведение заказа.
      */
     @PostMapping("/create-order")
-    public ResponseEntity<Boolean> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
         log.info("-- begin crete order: {}", orderCreateRequest);
         orderService.createOrder(orderCreateRequest);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok().build();
     }
 
 }

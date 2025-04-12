@@ -99,20 +99,27 @@
                 cardId: selectedCard ? selectedCard.value : null
             };
 
-            const response = await fetch("/pk8000/catalog/payment/process", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paymentData)
-            });
+            try {
+                const response = await fetch("/pk8000/catalog/payment/process", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(paymentData)
+                });
 
-            const result = await response.json();
-            if (result.status === "success") {
-                window.location.href = "/pk8000/catalog/index";
-            } else {
-                alert(result.message);
+                if (response.ok) {
+                    window.location.href = "/pk8000/catalog/index";
+                } else {
+                    const error = await response.json();
+                    alert(error.message || "Произошла ошибка при обработке платежа");
+                }
+            } catch (e) {
+                // Сетевые ошибки или проблемы с JSON
+                console.error("Ошибка запроса на создание заказа:", e);
+                alert("Не удалось связаться с сервером.");
             }
         }
     </script>
+
 </head>
 <body>
 <div class="container">

@@ -27,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
      * Возвращает предварительное состояние операции, не дожидаясь её фактического завершения.
      */
     public void createOrder(OrderCreateRequest request) {
+
         try {
             Order order = Order.builder()
                     .userId(request.getUserId())
