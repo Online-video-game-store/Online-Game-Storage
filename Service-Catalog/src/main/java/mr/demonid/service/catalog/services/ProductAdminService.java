@@ -1,7 +1,6 @@
 package mr.demonid.service.catalog.services;
 
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
@@ -9,6 +8,7 @@ import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.exceptions.CreateProductException;
+import mr.demonid.service.catalog.exceptions.DeleteImageException;
 import mr.demonid.service.catalog.exceptions.UpdateImageException;
 import mr.demonid.service.catalog.exceptions.UpdateProductException;
 import mr.demonid.service.catalog.repositories.CategoryRepository;
@@ -18,12 +18,10 @@ import mr.demonid.service.catalog.utils.Converts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,7 +59,7 @@ public class ProductAdminService {
     public void createProduct(ProductRequest product) {
         try {
             if (product == null || product.getCategory() == null) {
-                throw new Exception("поступили некорректные данные");
+                throw new Exception("Поступили некорректные данные");
             }
             product.setProductId(null);
             ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
@@ -82,7 +80,7 @@ public class ProductAdminService {
     public void updateProduct(ProductRequest product) {
         try {
             if (product == null || product.getProductId() == null || product.getCategory() == null) {
-                throw new Exception("поступили некорректные данные");
+                throw new Exception("Поступили некорректные данные");
             }
             ProductCategoryEntity category = categoryRepository.findById(product.getCategory()).orElse(null);
             ProductEntity productEntity = productRepository.findById(product.getProductId()).orElse(null);
@@ -101,6 +99,13 @@ public class ProductAdminService {
         }
     }
 
+    /**
+     * Обновление существующего, или добавление нового изображения.
+     * @param productId       Продукт.
+     * @param file            Файл от клиента.
+     * @param replaceFileName Имя существующего файла, или null.
+     */
+    @Transactional
     public void updateImage(Long productId, MultipartFile file, String replaceFileName) {
         try {
             if (file.isEmpty()) {
@@ -117,10 +122,10 @@ public class ProductAdminService {
                 }
             }
             // сохраняем во временную папку
-            Path tmpFile = toTempDirectory(file);
+            Path tmpFile = loadToTempDirectory(file);
             // переносим в pics
             String finalFileName = replaceFileName == null ? file.getOriginalFilename() : replaceFileName.isBlank() ? file.getOriginalFilename() : replaceFileName;
-            toImageDirectory(tmpFile, imagesPath, finalFileName);
+            moveToImageDirectory(tmpFile, imagesPath, finalFileName);
 
             // корректируем БД
             if (replaceFileName == null || replaceFileName.isEmpty()) {
@@ -132,31 +137,63 @@ public class ProductAdminService {
         }
     }
 
-    private void toImageDirectory(Path src, String destPath, String destFileName) {
+    /**
+     * Удаление изображения.
+     * @param productId Продукт.
+     * @param fileName  Имя удаляемого файла. Удаляет как с БД, так и с диска.
+     */
+    @Transactional
+    public void deleteImage(Long productId, String fileName) {
+        try {
+            if (productId == null || fileName == null || fileName.isEmpty()) {
+                throw new Exception("Некорректные данные");
+            }
+            ProductEntity productEntity = productRepository.findById(productId).orElse(null);
+            if (productEntity == null) {
+                throw new Exception("Товар не найден");
+            }
+            if (!productEntity.getImageFiles().contains(fileName)) {
+                throw new Exception("Товар не содержит такого изображения");
+            }
+            // удаляем из БД
+            productEntity.getImageFiles().remove(fileName);
+            productRepository.save(productEntity);
+
+            // удаляем файл с носителя
+            Path imgFile = Paths.get(imagesPath + fileName).toAbsolutePath().normalize();
+            Files.deleteIfExists(imgFile);
+
+        } catch (Exception e) {
+            throw new DeleteImageException(e.getMessage());
+        }
+    }
+
+
+    /*
+    Перемещает файл с временной папки в каталог изображений
+     */
+    private void moveToImageDirectory(Path src, String destPath, String destFileName) {
         try {
             Path picsDir = Paths.get(destPath).toAbsolutePath().normalize();
             Files.createDirectories(picsDir);
-
             Path finalFile = picsDir.resolve(Objects.requireNonNull(destFileName));
-            System.out.println("  -- replace: " + src.toFile() + " -> " + finalFile.toFile());
             Files.move(src, finalFile, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("-- file moved to: " + finalFile.toFile());
 
         } catch (Exception e) {
             throw new UpdateImageException(e.getMessage());
         }
     }
 
-    private Path toTempDirectory(MultipartFile file) {
+    /*
+    Сохраняет пришедший файл во временную папку
+     */
+    private Path loadToTempDirectory(MultipartFile file) {
         // сохраняем во временную папку
         try {
             Path tmpDir = Paths.get(tempPath).toAbsolutePath().normalize();
             Files.createDirectories(tmpDir);
-
             Path tmpFile = tmpDir.resolve(UUID.randomUUID() + "_" + file.getOriginalFilename());
-            System.out.println("  -- resolve: " + tmpFile.toFile());
             file.transferTo(tmpFile.toFile());
-
             // проверяем MIME-тип
             String contentType = Files.probeContentType(tmpFile);
             if (contentType == null || !contentType.startsWith("image/")) {
@@ -170,40 +207,4 @@ public class ProductAdminService {
         }
     }
 
-
-
-    /*
-        System.out.println("-- receive file: " + file.getOriginalFilename());
-
-        // сохраняем во временную папку
-        Path tmpDir = Paths.get("uploads/tmp/").toAbsolutePath().normalize();
-        Files.createDirectories(tmpDir);
-
-        Path tmpFile = tmpDir.resolve(UUID.randomUUID() + "_" + file.getOriginalFilename());
-        System.out.println("  -- resolve: " + tmpFile.toFile());
-        file.transferTo(tmpFile.toFile());
-
-        // проверяем MIME-тип
-        String contentType = Files.probeContentType(tmpFile);
-        if (contentType == null || !contentType.startsWith("image/")) {
-            // удаляем и возвращаем ошибку
-            Files.deleteIfExists(tmpFile);
-            return ResponseEntity.badRequest().body("Файл не является изображением");
-        }
-
-        // переносим в pics
-        Path picsDir = Paths.get("uploads/pics/").toAbsolutePath().normalize();
-        Files.createDirectories(picsDir);
-
-        // TODO: заменить на имя оригинального файла!!!
-        Path finalFile = picsDir.resolve(Objects.requireNonNull(file.getOriginalFilename()));
-        Files.move(tmpFile, finalFile, StandardCopyOption.REPLACE_EXISTING);
-
-        System.out.println("-- file moved to: " + finalFile.toFile());
-        return ResponseEntity.ok("Файл успешно загружен");
-
-
-
-
-     */
 }

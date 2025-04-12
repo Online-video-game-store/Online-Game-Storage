@@ -6,7 +6,6 @@ import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.services.ProductAdminService;
-import mr.demonid.service.catalog.services.ProductService;
 import mr.demonid.store.commons.dto.PageDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.UUID;
+
 
 @RestController
 @AllArgsConstructor
@@ -46,7 +40,6 @@ public class EditController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody ProductRequest product) {
-        System.out.println("create product: " + product);
         productAdminService.createProduct(product);
         return ResponseEntity.ok().build();
     }
@@ -57,7 +50,6 @@ public class EditController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
     @PostMapping("/update")
     public ResponseEntity<?> updateProduct(@RequestBody ProductRequest product) {
-        System.out.println("update product: " + product);
         productAdminService.updateProduct(product);
         return ResponseEntity.ok().build();
     }
@@ -65,70 +57,30 @@ public class EditController {
 
     /**
      * Добавление нового или замена существующего изображения.
-     * @param id              Продукт.
+     * @param productId       Продукт.
      * @param file            Новый файл.
      * @param replaceFileName Имя существующего файла или null.
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
-    @PostMapping("/{id}/upload")
-    public ResponseEntity<?> uploadImage(@PathVariable Long id,
+    @PostMapping("/{productId}/upload")
+    public ResponseEntity<?> uploadImage(@PathVariable Long productId,
                                               @RequestPart("file") MultipartFile file,
                                               @RequestParam(value = "replace", required = false) String replaceFileName) {
-        System.out.println("upload product: " + id + ", " + file.getOriginalFilename() + ", replace to: " + replaceFileName);
-        productAdminService.updateImage(id, file, replaceFileName);
+        productAdminService.updateImage(productId, file, replaceFileName);
         return ResponseEntity.ok().build();
     }
 
     /**
      * Удаление изображения.
-     * @param id       Продукт.
-     * @param fileName Имя удаляемого файла
+     * @param productId Продукт.
+     * @param fileName  Имя удаляемого файла
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteImage(@PathVariable Long id, @RequestParam String fileName) throws IOException {
-        System.out.println("delete product: " + id + ", " + fileName);
-
+    @DeleteMapping("/{productId}/delete")
+    public ResponseEntity<?> deleteImage(@PathVariable Long productId, @RequestParam String fileName) throws IOException {
+        productAdminService.deleteImage(productId, fileName);
         return ResponseEntity.ok(true);
     }
 
-/*
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
-    @PostMapping("/upload")
-    public ResponseEntity<String> handleUpload(@RequestPart("file") MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Пустой файл");
-        }
-
-        System.out.println("-- receive file: " + file.getOriginalFilename());
-
-        // сохраняем во временную папку
-        Path tmpDir = Paths.get("uploads/tmp/").toAbsolutePath().normalize();
-        Files.createDirectories(tmpDir);
-
-        Path tmpFile = tmpDir.resolve(UUID.randomUUID() + "_" + file.getOriginalFilename());
-        System.out.println("  -- resolve: " + tmpFile.toFile());
-        file.transferTo(tmpFile.toFile());
-
-        // проверяем MIME-тип
-        String contentType = Files.probeContentType(tmpFile);
-        if (contentType == null || !contentType.startsWith("image/")) {
-            // удаляем и возвращаем ошибку
-            Files.deleteIfExists(tmpFile);
-            return ResponseEntity.badRequest().body("Файл не является изображением");
-        }
-
-        // переносим в pics
-        Path picsDir = Paths.get("uploads/pics/").toAbsolutePath().normalize();
-        Files.createDirectories(picsDir);
-
-        // TODO: заменить на имя оригинального файла!!!
-        Path finalFile = picsDir.resolve(Objects.requireNonNull(file.getOriginalFilename()));
-        Files.move(tmpFile, finalFile, StandardCopyOption.REPLACE_EXISTING);
-
-        System.out.println("-- file moved to: " + finalFile.toFile());
-        return ResponseEntity.ok("Файл успешно загружен");
-    }
-*/
 
 }

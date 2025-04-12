@@ -100,7 +100,6 @@ public class ReservedService {
     }
 
 
-
     /*
         Подтверждение покупки.
      */
