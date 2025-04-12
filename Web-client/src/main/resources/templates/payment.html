@@ -3,131 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Оплата заказа</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            width: 400px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h2, h3 {
-            text-align: center;
-        }
-        .payment-option {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin: 5px 0;
-            cursor: pointer;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-        }
-    </style>
-    <script>
-        function updatePaymentUI() {
-            let selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
-            let cardSection = document.getElementById("cardSection");
-            cardSection.style.display = selectedPayment && selectedPayment.dataset.supportsCards === "true" ? "block" : "none";
-        }
-
-        function formatCardNumber(input) {
-            input.value = input.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().substring(0, 19);
-        }
-
-        function formatExpiryDate(input) {
-            input.value = input.value.replace(/\D/g, "").replace(/(\d{2})(\d{0,2})/, "$1/$2").substring(0, 5);
-        }
-
-        function validateCVV(input) {
-            input.value = input.value.replace(/\D/g, "").substring(0, 3);
-        }
-
-
-        async function addNewCard() {
-            const cardNumber = document.getElementById("newCardNumber").value;
-            const expiryDate = document.getElementById("newCardExpiry").value;
-            const cvv = document.getElementById("newCardCvv").value;
-
-            try {
-                const response = await fetch("/pk8000/catalog/payment/add-card", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ cardNumber, expiryDate, cvv })
-                });
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || "Произошла ошибка при добавлении карты");
-                }
-            } catch (e) {
-                // Сетевые ошибки или проблемы с JSON
-                console.error("Ошибка запроса на добавление карты:", e);
-                alert("Не удалось связаться с сервером.");
-            }
-        }
-
-
-        async function processPayment() {
-            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
-            const selectedCard = document.querySelector('input[name="selectedCard"]:checked');
-
-            if (!selectedPayment) {
-                alert("Выберите платежную систему");
-                return;
-            }
-
-            let paymentData = {
-                paymentMethodId: selectedPayment.value,
-                cardId: selectedCard ? selectedCard.value : null
-            };
-
-            try {
-                const response = await fetch("/pk8000/catalog/payment/process", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(paymentData)
-                });
-                if (response.ok) {
-                    window.location.href = "/pk8000/catalog/index";
-                } else {
-                    const error = await response.json();
-                    alert(error.message || "Произошла ошибка при обработке платежа");
-                }
-            } catch (e) {
-                // Сетевые ошибки или проблемы с JSON
-                console.error("Ошибка запроса на создание заказа:", e);
-                alert("Не удалось связаться с сервером.");
-            }
-        }
-    </script>
-
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/payment.css}">
+    <script th:src="@{/pk8000/catalog/static/js/payment.js}"></script>
+    <script th:src="@{/pk8000/catalog/static/js/web-socket.js}"></script>
 </head>
+
+
 <body>
 <div class="container">
     <h2>Оплата заказа</h2>
@@ -164,35 +45,6 @@
 
     <button type="button" onclick="processPayment()">Оплатить</button>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const socket = new WebSocket("ws://localhost:9000/ws/notifications");
-
-        socket.onopen = function () {
-            console.log("WebSocket connection established.");
-        };
-
-        socket.onmessage = function (event) {
-            console.log("Notification received: " + event.data);
-            alert("Уведомление: " + event.data);
-        };
-
-        socket.onerror = function(error) {
-            console.error("WebSocket Error: ", error);
-        };
-
-        socket.onclose = function(event) {
-            console.log("WebSocket connection closed.", event);
-            if (event.wasClean) {
-                console.log(`Closed cleanly, code=<span class="math-inline">\{event\.code\} reason\=</span>{event.reason}`);
-            } else {
-                console.error('Connection died');
-            }
-        };
-
-    });
-</script>
 
 </body>
 </html>

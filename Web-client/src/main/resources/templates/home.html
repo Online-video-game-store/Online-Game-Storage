@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/cart-popup.css}">
     <script th:src="@{/pk8000/catalog/static/js/add-to-cart.js}"></script>
     <script th:src="@{/pk8000/catalog/static/js/cart-popup.js}"></script>
+    <script th:src="@{/pk8000/catalog/static/js/web-socket.js}"></script>
 </head>
 
 <body>
@@ -129,6 +130,23 @@
 </div>
 
 
+<!-- Всплывающее окно корзины -->
+<div id="cart-popup" class="cart-popup">
+    <div class="cart-popup-content">
+        <span class="close-button">&times;</span>
+        <h2>Ваша корзина</h2>
+
+        <div class="cart-items">
+            <!-- Товары добавляются динамически через JS -->
+        </div>
+
+        <div class="cart-total">
+            <strong>Итого:</strong> <span>$0.00</span>
+        </div>
+        <button class="checkout-button">Оплатить</button>
+    </div>
+</div>
+
 
 <script>
     function redirectToCategory(element = null) {
@@ -173,56 +191,6 @@
     }
 </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const socket = new WebSocket("ws://localhost:9000/ws/notifications");
-
-        socket.onopen = function () {
-            console.log("WebSocket connection established.");
-        };
-
-        socket.onmessage = function (event) {
-            console.log("Notification received: " + event.data);
-            alert("Уведомление: " + event.data);
-            window.location.reload();
-        };
-
-        socket.onerror = function(error) {
-            console.error("WebSocket Error: ", error);
-        };
-
-        // socket.onclose = function () {
-        //     console.log("WebSocket connection closed.");
-        // };
-        socket.onclose = function(event) {
-            console.log("WebSocket connection closed.", event);
-            if (event.wasClean) {
-                console.log(`Closed cleanly, code=<span class="math-inline">\{event\.code\} reason\=</span>{event.reason}`);
-            } else {
-                console.error('Connection died');
-            }
-        };
-
-    });
-</script>
-
-
-<!-- Всплывающее окно корзины -->
-<div id="cart-popup" class="cart-popup">
-    <div class="cart-popup-content">
-        <span class="close-button">&times;</span>
-        <h2>Ваша корзина</h2>
-
-        <div class="cart-items">
-            <!-- Товары добавляются динамически через JS -->
-        </div>
-
-        <div class="cart-total">
-            <strong>Итого:</strong> <span>$0.00</span>
-        </div>
-        <button class="checkout-button">Оплатить</button>
-    </div>
-</div>
 
 </body>
 </html>
