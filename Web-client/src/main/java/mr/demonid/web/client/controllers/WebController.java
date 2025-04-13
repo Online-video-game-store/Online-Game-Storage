@@ -117,6 +117,7 @@ public class WebController {
             model.addAttribute("currentCategory", "All");
         }
         model.addAttribute("categories", categories);
+        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
 
         // Создаем выборку очередной страницы
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
@@ -124,7 +125,6 @@ public class WebController {
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
-        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("elemsOfPage", pageSize);

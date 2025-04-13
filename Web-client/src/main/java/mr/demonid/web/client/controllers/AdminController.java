@@ -36,15 +36,20 @@ public class AdminController {
         return productServices.updateProduct(product);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable long id) throws IOException {
+        return productServices.deleteProduct(id);
+    }
+
+
     /**
      * Получение полого описания продукта.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @GetMapping("/{id}")
     public ResponseEntity<List<String>> listImages(@PathVariable Long id) {
-        System.out.println("get product: " + id);
         ProductResponse res = productServices.getProductById(id);
-        System.out.println("product: " + res);
         if (res == null) {
             return ResponseEntity.notFound().build();
         }

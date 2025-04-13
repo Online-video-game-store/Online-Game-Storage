@@ -2,7 +2,7 @@ package mr.demonid.service.catalog.exceptions;
 
 public class DeleteImageException extends CatalogException {
 
-    private String message;
+    private final String message;
 
     public DeleteImageException(String message) {
         this.message = message;

@@ -54,7 +54,12 @@ public class EditController {
         return ResponseEntity.ok().build();
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        productAdminService.deleteProduct(id);
+        return ResponseEntity.ok().build();
+    }
     /**
      * Добавление нового или замена существующего изображения.
      * @param productId       Продукт.

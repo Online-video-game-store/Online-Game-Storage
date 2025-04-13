@@ -189,7 +189,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const nameInput = document.querySelector(`input[name="name_${productId}"]`);
         const priceInput = document.querySelector(`input[name="price_${productId}"]`);
-        const categoryInput = document.querySelector(`input[name="category_${productId}"]`);
+        // const categoryInput = document.querySelector(`input[name="category_${productId}"]`);
+        const categoryInput = document.querySelector(`select[name="category_${productId}"]`);
         const stockInput = document.querySelector(`input[name="stock_${productId}"]`);
         const descriptionInput = document.querySelector(`textarea[name="description_${productId}"]`);
 
@@ -295,7 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteProduct(productId) {
         if (!confirm("Удалить этот товар?")) return;
 
-        fetch(`/pk8000/catalog/api/product/delete/${productId}`, {
+        fetch(`/pk8000/catalog/api/product/${productId}`, {
             method: "DELETE"
         })
             .then(async response => {

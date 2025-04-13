@@ -40,6 +40,9 @@ public interface ProductServiceClient {
     @PostMapping("/pk8000/api/catalog/edit/update")
     ResponseEntity<?> updateProduct(@RequestBody ProductRequest product);
 
+    @DeleteMapping("/pk8000/api/catalog/edit/delete/{id}")
+    ResponseEntity<?> deleteProduct(@PathVariable Long id);
+
     @PostMapping(value = "/pk8000/api/catalog/edit/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> uploadImage(@PathVariable Long id,
                                   @RequestPart("file") MultipartFile file,

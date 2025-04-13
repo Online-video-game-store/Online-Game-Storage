@@ -7,10 +7,7 @@ import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
-import mr.demonid.service.catalog.exceptions.CreateProductException;
-import mr.demonid.service.catalog.exceptions.DeleteImageException;
-import mr.demonid.service.catalog.exceptions.UpdateImageException;
-import mr.demonid.service.catalog.exceptions.UpdateProductException;
+import mr.demonid.service.catalog.exceptions.*;
 import mr.demonid.service.catalog.repositories.CategoryRepository;
 import mr.demonid.service.catalog.repositories.ProductRepository;
 import mr.demonid.service.catalog.services.filters.ProductSpecification;
@@ -93,9 +90,22 @@ public class ProductAdminService {
             productEntity.setDescription(product.getDescription());
             productEntity.setCategory(category);
             productRepository.save(productEntity);
-//            return converts.entityToProductResponse(productRepository.save(productEntity));
         } catch (Exception e) {
             throw new UpdateProductException(e.getMessage());
+        }
+    }
+
+    /**
+     * Удаление товара из БД.
+     * @param productId Продукт.
+     */
+    @Transactional
+    public void deleteProduct(Long productId) {
+        try {
+            // TODO: добавь удаление изображений
+            productRepository.deleteById(productId);
+        } catch (Exception e) {
+            throw new DeleteProductException(e.getMessage());
         }
     }
 

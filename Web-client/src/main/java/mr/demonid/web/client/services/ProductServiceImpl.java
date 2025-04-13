@@ -99,6 +99,15 @@ public class ProductServiceImpl implements ProductServices {
         }
     }
 
+    @Override
+    public ResponseEntity<?> deleteProduct(Long productId) {
+        try {
+            return productServiceClient.deleteProduct(productId);
+        } catch (FeignException e) {
+            return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
+        }
+    }
+
     /**
      * Обновление или добавление картинки к товару.
      * @param productId       Продукт.
