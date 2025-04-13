@@ -24,27 +24,36 @@ public class AdminController {
     private ProductServices productServices;
 
 
+    /**
+     * Добавление нового продукта.
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @PostMapping("/create")
-    public ResponseEntity<?> createProduct(@ModelAttribute ProductRequest product) throws IOException {
+    public ResponseEntity<?> createProduct(@ModelAttribute ProductRequest product) {
         return productServices.createProduct(product);
     }
 
+    /**
+     * Обновление данных о продукте.
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateProduct(@ModelAttribute ProductRequest product) throws IOException {
+    public ResponseEntity<?> updateProduct(@ModelAttribute ProductRequest product) {
         return productServices.updateProduct(product);
     }
 
+    /**
+     * Удаление продукта.
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable long id) throws IOException {
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable long id) {
         return productServices.deleteProduct(id);
     }
 
 
     /**
-     * Получение полого описания продукта.
+     * Получение полного описания продукта.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @GetMapping("/{id}")
@@ -79,12 +88,10 @@ public class AdminController {
      * @param fileName  Имя удаляемого файла.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
-    @DeleteMapping("{productId}/image/{fileName}")
+    @DeleteMapping("/image/{productId}/{fileName}")
     public ResponseEntity<?> deleteImage(
             @PathVariable Long productId,
             @PathVariable String fileName) {
-
-        System.out.println("delete product: " + productId + ", " + fileName);
         return productServices.deleteImage(productId, fileName);
     }
 

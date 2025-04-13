@@ -10,6 +10,8 @@ import mr.demonid.service.catalog.dto.events.PaymentRequestEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -44,7 +46,7 @@ public class Converts {
                 entity.getImageFiles().stream()
                         .filter(Objects::nonNull)
                         .filter(Predicate.not(String::isBlank))
-                        .map(e -> imagesUrl + "/" + e)
+                        .map(e -> Paths.get(imagesUrl, entity.getId().toString(), e).toString())
                         .toList()
         );
     }

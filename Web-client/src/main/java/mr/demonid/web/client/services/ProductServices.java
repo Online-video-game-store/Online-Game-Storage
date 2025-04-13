@@ -14,8 +14,8 @@ import java.util.List;
 public interface ProductServices {
     PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable);
     PageDTO<ProductResponse> getAllProducts(ProductFilter filter, Pageable pageable);
-    ProductResponse getProductById(Long id);
     List<ProductCategoryDTO> getAllCategories();
+    ProductResponse getProductById(Long id);
 
     ResponseEntity<?> createProduct(ProductRequest product);
     ResponseEntity<?> updateProduct(ProductRequest product);

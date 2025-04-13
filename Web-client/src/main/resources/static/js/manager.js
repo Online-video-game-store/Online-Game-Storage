@@ -95,8 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let url = `/pk8000/catalog/api/product/${currentProductId}/upload`;
 
         // Получаем имя заменяемого файла, если есть
-        const replaceName = this.dataset.replace;
-        if (replaceName) {
+        const replaceRaw = this.dataset.replace;
+        if (replaceRaw) {
+            let replaceName = replaceRaw.split(/[/\\]/).pop();
             console.log("replaceName", replaceName);
             url += `?replace=${encodeURIComponent(replaceName)}`;
             console.log("url = " + url);
@@ -148,8 +149,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Удаление изображения по имени файла
     function deleteImage(fileName) {
+        console.log("deleteImage", fileName);
+        let replaceName = fileName.split(/[/\\]/).pop();
 
-        fetch(`/pk8000/catalog/api/product/${currentProductId}/image/${encodeURIComponent(fileName)}`, {
+        fetch(`/pk8000/catalog/api/product/image/${currentProductId}/${encodeURIComponent(replaceName)}`, {
             method: "DELETE"
         })
             .then(async response => {
@@ -179,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .catch(error => {
-                console.error("Ошибка при загрузке изображения:", error);
+                console.error("Ошибка при удалении изображения:", error);
                 alert("Ошибка при удалении изображения: " + error.message);
             });
     }
@@ -296,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function deleteProduct(productId) {
         if (!confirm("Удалить этот товар?")) return;
 
-        fetch(`/pk8000/catalog/api/product/${productId}`, {
+        fetch(`/pk8000/catalog/api/product/delete/${productId}`, {
             method: "DELETE"
         })
             .then(async response => {
@@ -318,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.redirectToCategory = redirectToCategory
     window.openImageModal = openImageModal
     window.closeModal = closeModal
-    window.deleteImage = deleteImage
+    // window.deleteImage = deleteImage
     window.saveProduct = saveProduct
     window.addNewProduct = addNewProduct
     window.deleteProduct = deleteProduct

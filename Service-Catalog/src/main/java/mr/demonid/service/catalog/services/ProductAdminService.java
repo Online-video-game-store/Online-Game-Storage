@@ -2,6 +2,7 @@ package mr.demonid.service.catalog.services;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.ProduceFilter;
@@ -19,16 +20,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ProductAdminService {
 
     private final ProductRepository productRepository;
@@ -102,8 +107,8 @@ public class ProductAdminService {
     @Transactional
     public void deleteProduct(Long productId) {
         try {
-            // TODO: добавь удаление изображений
             productRepository.deleteById(productId);
+            deleteDirectory(Paths.get(imagesPath, productId.toString()));
         } catch (Exception e) {
             throw new DeleteProductException(e.getMessage());
         }
@@ -135,7 +140,7 @@ public class ProductAdminService {
             Path tmpFile = loadToTempDirectory(file);
             // переносим в pics
             String finalFileName = replaceFileName == null ? file.getOriginalFilename() : replaceFileName.isBlank() ? file.getOriginalFilename() : replaceFileName;
-            moveToImageDirectory(tmpFile, imagesPath, finalFileName);
+            moveToImageDirectory(tmpFile, Paths.get(imagesPath, productId.toString()).toString(), finalFileName);
 
             // корректируем БД
             if (replaceFileName == null || replaceFileName.isEmpty()) {
@@ -170,7 +175,7 @@ public class ProductAdminService {
             productRepository.save(productEntity);
 
             // удаляем файл с носителя
-            Path imgFile = Paths.get(imagesPath + fileName).toAbsolutePath().normalize();
+            Path imgFile = Paths.get(imagesPath, productId.toString(), fileName).toAbsolutePath().normalize();
             Files.deleteIfExists(imgFile);
 
         } catch (Exception e) {
@@ -216,5 +221,24 @@ public class ProductAdminService {
             throw new UpdateImageException(e.getMessage());
         }
     }
+
+    /*
+     * Удаление каталога со всем содержимым.
+     */
+    private void deleteDirectory(Path path) {
+        try (Stream<Path> stream = Files.walk(path)) {
+            stream.sorted(Comparator.reverseOrder())
+                    .forEach(p -> {
+                        try {
+                            Files.delete(p);
+                        } catch (IOException e) {
+                            log.error("Не удалось удалить '{}': {}", p, e);
+                        }
+                    });
+        } catch (IOException e) {
+            log.error("Ошибка удаления: {}", e.getMessage());
+        }
+    }
+
 
 }
