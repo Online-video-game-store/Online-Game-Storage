@@ -124,6 +124,7 @@ public class WebController {
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
+        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("elemsOfPage", pageSize);
