@@ -8,9 +8,12 @@
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/pagination.css}">
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/notification.css}">
     <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/cart-popup.css}">
+    <link rel="stylesheet" th:href="@{/pk8000/catalog/static/css/product-model.css}">
     <script th:src="@{/pk8000/catalog/static/js/add-to-cart.js}"></script>
     <script th:src="@{/pk8000/catalog/static/js/cart-popup.js}"></script>
     <script th:src="@{/pk8000/catalog/static/js/web-socket.js}"></script>
+    <script th:src="@{/pk8000/catalog/static/js/product-popup.js}"></script>
+
 </head>
 
 <body>
@@ -64,12 +67,20 @@
     <!-- Контент товаров -->
     <main class="content">
         <div class="product-grid">
-            <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}">
+            <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}"
+            >
                 <div class="product-title" th:text="${product.name}">Product Name</div>
-<!--                <img th:src="@{${product.imageUrl}}" class="product-image" alt="Product image" />-->
-                <img th:src="${product.imageUrls != null and !product.imageUrls.isEmpty()} ? @{${product.imageUrls[0]}} : @{/images/no-image.png}"
-                     class="product-image"
-                     alt="Product image" />
+
+                <div class="product-image-container">
+                    <img th:each="imgUrl, iterStat : ${product.imageUrls}"
+                         th:src="@{${imgUrl}}"
+                         class="product-image"
+                         th:classappend="${iterStat.index != 0} ? ' hidden' : ''"
+                         alt="Product image" />
+                </div>
+<!--                <img th:src="${product.imageUrls != null and !product.imageUrls.isEmpty()} ? @{${product.imageUrls[0]}} : @{/images/no-image.png}"-->
+<!--                     class="product-image"-->
+<!--                     alt="Product image" />-->
                 <div class="product-description" th:text="${product.description}">Product description...</div>
                 <div class="product-price" th:text="'$' + ${product.price}">Price</div>
                 <form>
@@ -144,6 +155,27 @@
             <strong>Итого:</strong> <span>$0.00</span>
         </div>
         <button class="checkout-button">Оплатить</button>
+    </div>
+</div>
+
+<!-- Модальное окно с подробностями товара -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-body">
+            <div class="modal-image-wrapper">
+                <img id="modal-image" class="modal-image" src="" alt="Product Image" />
+                <button id="prev-image" class="nav-button">&#10094;</button>
+                <button id="next-image" class="nav-button">&#10095;</button>
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-title">Название</h2>
+                <p><strong>Категория:</strong> <span id="modal-category"></span></p>
+                <p><strong>Цена:</strong> $<span id="modal-price"></span></p>
+                <p id="modal-description">Описание товара</p>
+                <button class="add-to-cart-button">В корзину</button>
+            </div>
+        </div>
     </div>
 </div>
 

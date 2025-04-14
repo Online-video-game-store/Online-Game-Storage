@@ -143,3 +143,7 @@
 .product-table textarea {
     resize: vertical;
 }
+
+.product-image.hidden {
+    display: none;
+}
