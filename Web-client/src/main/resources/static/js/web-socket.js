@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("ws://localhost:9000/ws/notifications");
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.hostname;
+    console.log("host = " + host);
+    const socket = new WebSocket(`${protocol}://${host}:9000/ws/notifications`);
+    // const socket = new WebSocket("ws://localhost:9000/ws/notifications");
+    socket.onopen = () => console.log("✔ WS OPEN");
+    socket.onerror = (e) => console.error("❌ WS Error", e);
 
     socket.onopen = function () {
         console.log("WebSocket connection established.");

@@ -18,9 +18,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
+          jwk-set-uri: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm/protocol/openid-connect/certs
         # путь до Keycloack
-        uri-base: http://localhost:8080/realms/online-store-realm   # /.well-known/openid-configuration
+        uri-base: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm   # /.well-known/openid-configuration
 
   # Cloud Bus + RabbitMQ
   cloud:

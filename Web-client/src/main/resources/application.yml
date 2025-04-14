@@ -13,14 +13,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 12MB
 
-
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
+          jwk-set-uri: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm/protocol/openid-connect/certs
         # путь до Keycloack
-        uri-base: http://localhost:8080/realms/online-store-realm   # /.well-known/openid-configuration
+        uri-base: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm   # /.well-known/openid-configuration
 
   # Cloud Bus + RabbitMQ
   cloud:
@@ -68,7 +67,7 @@ eureka:
   client:
     service-url:
       defaultZone:
-        http://localhost:7777/eureka
+        ${EUREKA_SERVER_URL:http://localhost:7777/eureka}
     register-with-eureka: true                # Регистрация клиента в Eureka Server
     fetch-registry: true                      # Извлечение реестра из Eureka Server
     retry-on-connect-errors: true             # Повторные подключения к Eureka при сбоях

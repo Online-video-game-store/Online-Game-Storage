@@ -3,6 +3,7 @@ package mr.demonid.web.client.configs;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,14 +30,13 @@ public class SecurityConfig {
 
     private AnonymousCookieFilter anonymousCookieFilter;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // Разрешаем CORS
                 .csrf(AbstractHttpConfigurer::disable)                      // Отключаем CSRF для запросов API
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/pk8000/catalog/**", "/pk8000/auth/**", "/pk8000/catalog/images/**").permitAll()  // Главная и публичные ресурсы
+                        .requestMatchers("/pk8000/catalog/**", "/pk8000/auth/**", "/pk8000/catalog/images/**", "/ws/**").permitAll()  // Главная и публичные ресурсы
                         .anyRequest().authenticated()  // Остальные требуют аутентификации
                 )
 //                .anonymous(Customizer.withDefaults()) // Включение анонимных пользователей

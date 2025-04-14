@@ -13,11 +13,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/online-store-realm/protocol/openid-connect/certs
+          jwk-set-uri: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm/protocol/openid-connect/certs
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:8080/realms/online-store-realm
+            issuer-uri: ${OAUTH2_BASE_ISSUER_URI:http://localhost:8080}/realms/online-store-realm
         registration:
           online-store-client-id:
             provider: keycloak
@@ -67,9 +67,9 @@ spring:
 # Настройки приложения.
 # Адреса переадресации после аутентификации и выхода из профиля
 application:
-  login-uri: http://localhost:9000/pk8000/auth/login
-  logout-uri: http://localhost:9000/pk8000/auth/logout
-#  login-uri: http://localhost:9000/pk8000/catalog/index
+  login-uri: ${OAUTH2_BASE_AUTH_URI:http://localhost:9000}/pk8000/auth/login
+  logout-uri: ${OAUTH2_BASE_AUTH_URI:http://localhost:9000}/pk8000/auth/logout
+#  login-uri: ${OAUTH2_BASE_AUTH_URI:http://localhost:9000}/pk8000/catalog/index
 
 
 eureka:
