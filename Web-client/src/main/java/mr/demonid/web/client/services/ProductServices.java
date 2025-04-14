@@ -1,7 +1,7 @@
 package mr.demonid.web.client.services;
 
 import mr.demonid.store.commons.dto.PageDTO;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
@@ -14,7 +14,7 @@ import java.util.List;
 public interface ProductServices {
     PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable);
     PageDTO<ProductResponse> getAllProducts(ProductFilter filter, Pageable pageable);
-    List<ProductCategoryDTO> getAllCategories();
+    List<CategoryResponse> getAllCategories();
     ProductResponse getProductById(Long id);
 
     ResponseEntity<?> createProduct(ProductRequest product);

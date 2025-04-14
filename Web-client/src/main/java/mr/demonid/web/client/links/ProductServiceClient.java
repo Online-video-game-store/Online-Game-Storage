@@ -1,7 +1,7 @@
 package mr.demonid.web.client.links;
 
 import mr.demonid.store.commons.dto.PageDTO;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.configs.FeignClientConfig;
 import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductRequest;
@@ -27,7 +27,7 @@ public interface ProductServiceClient {
     ResponseEntity<ProductResponse> getProductById(@PathVariable Long id);
 
     @GetMapping("/pk8000/api/catalog/products/get-categories")
-    ResponseEntity<List<ProductCategoryDTO>> getAllCategories();
+    ResponseEntity<List<CategoryResponse>> getAllCategories();
 
 
     // админка

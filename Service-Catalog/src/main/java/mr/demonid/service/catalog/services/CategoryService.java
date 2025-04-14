@@ -3,7 +3,7 @@ package mr.demonid.service.catalog.services;
 import lombok.AllArgsConstructor;
 import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.repositories.CategoryRepository;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +35,12 @@ public class CategoryService {
      * Возвращает список всех доступных категорий.
      */
     @Transactional(readOnly = true)
-    public List<ProductCategoryDTO> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         List<ProductCategoryEntity> entities = categoryRepository.findAll();
         if (entities.isEmpty()) {
             return new ArrayList<>();
         }
-        return entities.stream().map(e -> new ProductCategoryDTO(e.getId(), e.getName(), e.getDescription())).toList();
+        return entities.stream().map(e -> new CategoryResponse(e.getId(), e.getName(), e.getDescription())).toList();
     }
 
 

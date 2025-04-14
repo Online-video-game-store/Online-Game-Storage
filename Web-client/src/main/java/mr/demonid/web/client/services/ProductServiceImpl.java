@@ -4,21 +4,18 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
 import mr.demonid.web.client.utils.FeignErrorUtils;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Реализация интерфейса ProductServices
@@ -63,12 +60,12 @@ public class ProductServiceImpl implements ProductServices {
 
 
     @Override
-    public List<ProductCategoryDTO> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         try {
             return productServiceClient.getAllCategories().getBody();
         } catch (FeignException e) {
             log.error("ProductServiceImpl.getAllCategories(): {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
-            return List.of(new ProductCategoryDTO(0L, "All", "Все категории"));
+            return List.of(new CategoryResponse(0L, "All", "Все категории"));
         }
     }
 

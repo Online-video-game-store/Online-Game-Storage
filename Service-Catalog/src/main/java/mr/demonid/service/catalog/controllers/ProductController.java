@@ -7,7 +7,7 @@ import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.services.CategoryService;
 import mr.demonid.service.catalog.services.ProductService;
 import mr.demonid.store.commons.dto.PageDTO;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +47,7 @@ public class ProductController {
      * Возвращает список категорий
      */
     @GetMapping("/get-categories")
-    public ResponseEntity<List<ProductCategoryDTO>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 

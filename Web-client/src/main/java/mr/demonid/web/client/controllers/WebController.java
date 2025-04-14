@@ -3,7 +3,7 @@ package mr.demonid.web.client.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
-import mr.demonid.store.commons.dto.ProductCategoryDTO;
+import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.dto.ProductFilter;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.services.CartServices;
@@ -47,43 +47,19 @@ public class WebController {
         productName = normalizeProductName(productName);
 
         List<String> scopes = IdnUtil.getCurrentUserAuthorities();
-        System.out.println("Scopes: " + scopes);
         boolean isAuthenticated = IdnUtil.isAuthenticated();
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("username", isAuthenticated ? IdnUtil.getUserName() : null);
         model.addAttribute("isAdmin", scopes.contains("ROLE_ADMIN") || scopes.contains("ROLE_DEVELOPER"));
+        model.addAttribute("cartItemCount", cartServices.getCountItems());
 
-        List<ProductCategoryDTO> categories = productServices.getAllCategories();
-        categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
-        if (categoryId != null) {
-            ProductCategoryDTO curCat = categories.stream().filter(e -> Objects.equals(e.getId(), categoryId)).findFirst().orElse(null);
-            if (curCat != null) {
-                model.addAttribute("currentCategory", curCat.getName());
-            } else {
-                model.addAttribute("currentCategory", "All");
-            }
-        } else {
-            model.addAttribute("currentCategory", "All");
-        }
-        model.addAttribute("categories", categories);
+        setCategories(model, categoryId);
 
-        // Создаем выборку очередной страницы
+        // Создаем выборку очередной страницы и корректируем данные о страницах
         Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
         PageDTO<ProductResponse> page = productServices.getProductsWithoutEmpty(new ProductFilter(categoryId, productName, minPrice, maxPrice), pageable);
-        System.out.println("products: " + page.getContent());
-        model.addAttribute("products", page.getContent());
-
-        // корректируем данные о страницах
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("elemsOfPage", pageSize);
-        model.addAttribute("categoryId", categoryId);
-        model.addAttribute("productName", productName);
-        model.addAttribute("minPrice", minPrice);
-        model.addAttribute("maxPrice", maxPrice);
-
-        model.addAttribute("cartItemCount", cartServices.getCountItems());
+        setPageModel(model, page, pageSize, productName, minPrice, maxPrice);
 
         return "home";
     }
@@ -104,10 +80,27 @@ public class WebController {
         maxPrice = normalizePrice(maxPrice);
         productName = normalizeProductName(productName);
 
-        List<ProductCategoryDTO> categories = productServices.getAllCategories();
-        categories.add(0, new ProductCategoryDTO(0L, "All", "Все товары"));
+        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
+
+        setCategories(model, categoryId);
+
+        // Создаем выборку очередной страницы и корректируем данные о страницах
+        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
+        PageDTO<ProductResponse> page = productServices.getAllProducts(new ProductFilter(categoryId, productName, minPrice, maxPrice), pageable);
+        setPageModel(model, page, pageSize, productName, minPrice, maxPrice);
+
+        return "manager";
+    }
+
+
+    /*
+    Установка категории в модели.
+     */
+    private void setCategories(Model model, Long categoryId) {
+        List<CategoryResponse> categories = productServices.getAllCategories();
+        categories.add(0, new CategoryResponse(0L, "All", "Все товары"));
         if (categoryId != null) {
-            ProductCategoryDTO curCat = categories.stream().filter(e -> Objects.equals(e.getId(), categoryId)).findFirst().orElse(null);
+            CategoryResponse curCat = categories.stream().filter(e -> Objects.equals(e.getId(), categoryId)).findFirst().orElse(null);
             if (curCat != null) {
                 model.addAttribute("currentCategory", curCat.getName());
             } else {
@@ -117,36 +110,41 @@ public class WebController {
             model.addAttribute("currentCategory", "All");
         }
         model.addAttribute("categories", categories);
-        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
+        model.addAttribute("categoryId", categoryId);
+    }
 
-        // Создаем выборку очередной страницы
-        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-        PageDTO<ProductResponse> page = productServices.getAllProducts(new ProductFilter(categoryId, productName, minPrice, maxPrice), pageable);
+    /*
+    Установка очередной выборки данных страницы
+     */
+    private void setPageModel(Model model, PageDTO<ProductResponse> page, int pageSize, String productName, BigDecimal minPrice, BigDecimal maxPrice) {
+        // Задаем выборку очередной страницы
         model.addAttribute("products", page.getContent());
 
         // корректируем данные о страницах
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("elemsOfPage", pageSize);
-        model.addAttribute("categoryId", categoryId);
         model.addAttribute("productName", productName);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
-
-        return "manager";
     }
 
 
-
-        private BigDecimal normalizePrice(BigDecimal n) {
+    /*
+    Нормализация цены.
+     */
+    private BigDecimal normalizePrice(BigDecimal n) {
         if (n == null || n.compareTo(BigDecimal.ZERO) <= 0) {
             return null;
         }
         return n;
     }
 
+    /*
+    Нормализация названий.
+     */
     private String normalizeProductName(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty() || name.trim().isEmpty()) {
             return null;
         }
         return name;
