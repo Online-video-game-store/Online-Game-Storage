@@ -5,6 +5,10 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.utils.IdnUtil;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,26 @@ public class ApiController {
 
     private CartServices cartServices;
 
+    @GetMapping("/get-user")
+    public ResponseEntity<String> getUser() {
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl("http://localhost:8080")
+                .realm("master")
+                .clientId("admin-cli")
+                .username("admin")
+                .password("admin")
+                .grantType(OAuth2Constants.PASSWORD)
+                .build();
+
+        UserRepresentation user = keycloak
+                .realm("online-store-realm")
+                .users()
+                .get("9ff2e04e-692e-4a44-95c5-a47cebe5443b")
+                .toRepresentation();
+
+        System.out.println("Username: " + user.getUsername());
+        return ResponseEntity.ok(user.getUsername());
+    }
 
     /**
      * Проверка аутентификации пользователя.

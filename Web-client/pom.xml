@@ -81,6 +81,11 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+            <version>26.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>mr.demonid.store.commons</groupId>
