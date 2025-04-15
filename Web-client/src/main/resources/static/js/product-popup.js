@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const container = this.querySelector('.product-image-container');
             const images = container.querySelectorAll('img');
             currentImages = Array.from(images).map(img => img.getAttribute('src'));
-            console.log("currentImages", currentImages);
 
             currentImageIndex = 0;
 
@@ -29,30 +28,27 @@ document.addEventListener("DOMContentLoaded", function () {
             modalDescription.textContent = productDesc;
             modalCategory.textContent = category;
             modalImage.src = currentImages[currentImageIndex];
-
-            modal.style.display = "block";
+            modal.classList.add("show");
         });
     });
 
     closeModal.addEventListener('click', () => {
-        modal.style.display = "none";
+        modal.classList.remove("show");
     });
 
     document.getElementById("prev-image").addEventListener('click', () => {
         currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
-        console.log("-- prev image: ", currentImages[currentImageIndex]);
         modalImage.src = currentImages[currentImageIndex];
     });
 
     document.getElementById("next-image").addEventListener('click', () => {
         currentImageIndex = (currentImageIndex + 1) % currentImages.length;
-        console.log("-- next image: ", currentImages[currentImageIndex]);
         modalImage.src = currentImages[currentImageIndex];
     });
 
     window.onclick = function(event) {
         if (event.target === modal) {
-            modal.style.display = "none";
+            modal.classList.remove("show");
         }
     }
 

@@ -79,10 +79,11 @@ eureka:
     register-with-eureka: true                # Регистрация клиента в Eureka Server
     fetch-registry: true                      # Извлечение реестра из Eureka Server
     retry-on-connect-errors: true             # Повторные подключения к Eureka при сбоях
+    registry-fetch-interval-seconds: 5        # (30)
   instance:
     prefer-ip-address: false                  # Использовать IP-адрес вместо имени хоста
-    lease-renewal-interval-in-seconds: 10     # Интервал отправки heartbeats
-    lease-expiration-duration-in-seconds: 30  # Таймаут для истечения lease (сердцебиений)
+    lease-renewal-interval-in-seconds: 5      # Интервал отправки heartbeats (30)
+    lease-expiration-duration-in-seconds: 10  # Таймаут для истечения lease (сердцебиений) (60)
 
 #logging:
 #  level:

@@ -162,19 +162,26 @@
 <div id="product-modal" class="modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
-        <div class="modal-body">
-            <div class="modal-image-wrapper">
-                <img id="modal-image" class="modal-image" src="" alt="Product Image" />
-                <button id="prev-image" class="nav-button">&#10094;</button>
-                <button id="next-image" class="nav-button">&#10095;</button>
+
+        <div class="modal-image-wrapper">
+            <div class="modal-image-container">
+                <img id="modal-image" class="modal-image" src="" alt="Product">
             </div>
-            <div class="modal-info">
-                <h2 id="modal-title">Название</h2>
-                <p><strong>Категория:</strong> <span id="modal-category"></span></p>
-                <p><strong>Цена:</strong> $<span id="modal-price"></span></p>
-                <p id="modal-description">Описание товара</p>
-                <button class="add-to-cart-button">В корзину</button>
-            </div>
+            <button id="prev-image" class="nav-button">&#10094;</button>
+            <button id="next-image" class="nav-button">&#10095;</button>
+        </div>
+
+<!--        <div class="modal-image-wrapper">-->
+<!--            <button id="prev-image" class="nav-button">&#10094;</button>-->
+<!--            <img id="modal-image" class="modal-image" src="" alt="Product Image" />-->
+<!--            <button id="next-image" class="nav-button">&#10095;</button>-->
+<!--        </div>-->
+        <div class="modal-info">
+            <h2 id="modal-title">Название</h2>
+            <p class="price" id="modal-price">Цена</p>
+            <p class="category" id="modal-category">Категория</p>
+            <p id="modal-description">Описание товара</p>
+            <button class="add-to-cart">В корзину</button>
         </div>
     </div>
 </div>
