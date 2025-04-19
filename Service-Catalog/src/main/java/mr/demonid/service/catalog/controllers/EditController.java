@@ -3,9 +3,11 @@ package mr.demonid.service.catalog.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.service.catalog.dto.ProduceFilter;
+import mr.demonid.service.catalog.dto.ProductLogResponse;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.services.ProductAdminService;
+import mr.demonid.service.catalog.services.ProductLogService;
 import mr.demonid.store.commons.dto.PageDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -23,6 +27,7 @@ import java.io.IOException;
 public class EditController {
 
     private ProductAdminService productAdminService;
+    private ProductLogService productLogService;
 
 
     /**
@@ -87,5 +92,16 @@ public class EditController {
         return ResponseEntity.ok(true);
     }
 
+
+    /**
+     * Возвращает детали операции по конкретному заказу.
+     * Ошибок не генерирует, просто возвращает пустой список.
+     * @param orderId Номер заказа.
+     */
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER')")
+    @GetMapping("/get-order/{orderId}")
+    public List<ProductLogResponse> getOrder(@PathVariable UUID orderId) {
+         return productLogService.getProductsOnOrderId(orderId);
+    }
 
 }

@@ -2,6 +2,7 @@ package mr.demonid.service.catalog.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.service.catalog.domain.ReservationStatus;
 import mr.demonid.service.catalog.domain.ReservedProductEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
 import mr.demonid.service.catalog.dto.CartItemResponse;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class ReservedService {
     private final ProductRepository productRepository;
     private final ReservedProductRepository reservedRepository;
+    private final ProductLogService productLogService;
 
 
     /**
@@ -82,6 +84,7 @@ public class ReservedService {
                     productRepository.save(productEntity);
                 }
             }
+            productLogService.store(reservedProductEntity, ReservationStatus.CANCELLED);
         }
     }
 
@@ -93,7 +96,7 @@ public class ReservedService {
         List<ReservedProductEntity> reservedProductEntity = proofOfPurchaseOrder(orderId);
         if (reservedProductEntity != null) {
             // да собственно больше ничего и не нужно делать, разве что в историю отправить.
-
+            productLogService.store(reservedProductEntity, ReservationStatus.APPROVED);
             return reservedProductEntity.stream().map(e -> new ProductTransferred(e.getProductId(), e.getQuantity())).toList();
         }
         return List.of();

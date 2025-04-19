@@ -4,6 +4,7 @@ import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.configs.FeignClientConfig;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductLogResponse;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @FeignClient(name = "CATALOG-SERVICE", configuration = FeignClientConfig.class)
@@ -50,5 +52,8 @@ public interface ProductServiceClient {
 
     @DeleteMapping("/pk8000/api/catalog/edit/{id}/delete")
     ResponseEntity<?> deleteImage(@PathVariable Long id, @RequestParam String fileName);
+
+    @GetMapping("/pk8000/api/catalog/edit/get-order/{orderId}")
+    List<ProductLogResponse> getOrder(@PathVariable UUID orderId);
 
 }

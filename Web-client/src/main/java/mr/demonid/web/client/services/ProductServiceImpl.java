@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductLogResponse;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Реализация интерфейса ProductServices
@@ -121,6 +123,11 @@ public class ProductServiceImpl implements ProductServices {
         }
     }
 
+    /**
+     * Удаление изображения на удаленном сервере-ресурсов.
+     * @param productId Номер продукта.
+     * @param fileName  Имя файла.
+     */
     @Override
     public ResponseEntity<?> deleteImage(Long productId, String fileName) {
         try {
@@ -128,6 +135,20 @@ public class ProductServiceImpl implements ProductServices {
         } catch (FeignException e) {
             return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Catalog-Service");
         }
+    }
+
+    /**
+     * Возвращает детализацию товаров заказа.
+     * @param orderId Номер заказа.
+     */
+    @Override
+    public List<ProductLogResponse> getOrderDetails(UUID orderId) {
+        try {
+            return productServiceClient.getOrder(orderId);
+        } catch (FeignException e) {
+            log.error("Ошибка микросервиса Catalog-Service: {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+        }
+        return List.of();
     }
 
 

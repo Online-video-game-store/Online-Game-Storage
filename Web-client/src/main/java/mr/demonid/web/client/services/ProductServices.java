@@ -3,6 +3,7 @@ package mr.demonid.web.client.services;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
 import mr.demonid.web.client.dto.ProductFilter;
+import mr.demonid.web.client.dto.ProductLogResponse;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductServices {
     PageDTO<ProductResponse> getProductsWithoutEmpty(ProductFilter filter, Pageable pageable);
@@ -22,4 +24,5 @@ public interface ProductServices {
     ResponseEntity<?> deleteProduct(Long productId);
     ResponseEntity<?> uploadImage(Long productId, MultipartFile file, String replaceFileName);
     ResponseEntity<?> deleteImage(Long productId, String fileName);
+    List<ProductLogResponse> getOrderDetails(UUID orderId);
 }

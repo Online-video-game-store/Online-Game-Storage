@@ -3,6 +3,8 @@ package mr.demonid.service.catalog.utils;
 
 import mr.demonid.service.catalog.domain.ProductCategoryEntity;
 import mr.demonid.service.catalog.domain.ProductEntity;
+import mr.demonid.service.catalog.domain.ProductLogEntity;
+import mr.demonid.service.catalog.dto.ProductLogResponse;
 import mr.demonid.service.catalog.dto.ProductRequest;
 import mr.demonid.service.catalog.dto.ProductResponse;
 import mr.demonid.service.catalog.dto.events.CatalogReserveRequestEvent;
@@ -60,6 +62,15 @@ public class Converts {
                 category,
                 product.getDescription(),
                 new ArrayList<>()
+        );
+    }
+
+    public ProductLogResponse productLogToResponse(ProductLogEntity entity) {
+        return new ProductLogResponse(
+                entity.getOrderId(),
+                entity.getName(),
+                entity.getQuantity(),
+                entity.getReservationStatus()
         );
     }
 
