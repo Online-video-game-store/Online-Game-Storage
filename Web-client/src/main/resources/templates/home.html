@@ -21,12 +21,18 @@
 <div class="header">
     <div class="page-title">Игры для ПК8000</div>
     <div class="user-info">
+        <div th:if="${isAuthenticated}">
+            <span th:text="'Привет, ' + ${username} + '!'">Привет, Гость!</span>
+        </div>
         <div th:if="${isAdmin}">
             <a th:href="@{/pk8000/catalog/index/setup}" class="login-button">Управление</a>
         </div>
+        <div th:if="${isAdmin}">
+            <a th:href="@{/pk8000/catalog/index/logs}" class="login-button">Статистика</a>
+        </div>
         <div th:if="${isAuthenticated}">
-            <span th:text="'Привет, ' + ${username} + '!'">Привет, Гость!</span>
             <a th:href="@{/logout}" class="logout-button">Выход</a>
+<!--            <span th:text="'Привет, ' + ${username} + '!'">Привет, Гость!</span>-->
         </div>
         <div th:if="${!isAuthenticated}">
             <a th:href="@{/oauth2/authorization/online-store-client-id}" class="login-button">Вход</a>

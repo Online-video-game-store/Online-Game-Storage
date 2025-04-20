@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -25,6 +26,10 @@ public class ReservedProductEntity {
 
     @Column(nullable = false)
     private Long productId;
+
     @Column(nullable = false)
     private int quantity;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 }

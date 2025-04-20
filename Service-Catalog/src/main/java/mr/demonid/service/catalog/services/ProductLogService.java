@@ -34,6 +34,7 @@ public class ProductLogService {
                             product.getProductId(),
                             name,
                             product.getQuantity(),
+                            product.getPrice(),
                             status
                     );
                     productLogRepository.save(entity);

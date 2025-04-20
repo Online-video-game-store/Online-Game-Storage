@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,6 +91,32 @@ public class WebController {
         setPageModel(model, page, pageSize, productName, minPrice, maxPrice);
 
         return "manager";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @GetMapping("/index/logs")
+    public String logs(
+            @RequestParam(name = "elemsOfPage", defaultValue = "8") int pageSize,
+            @RequestParam(name = "pageNo", defaultValue = "0") int currentPage,
+            @RequestParam(name = "categoryId", defaultValue = "0") Long categoryId,
+            @RequestParam(required = false) LocalDateTime from,
+            @RequestParam(required = false) LocalDateTime to,
+            Model model) {
+        System.out.println("logs: from=" + from + ", to=" + to);
+
+        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
+        model.addAttribute("from", from);
+        model.addAttribute("to", to);
+        setCategories(model, categoryId);
+
+        model.addAttribute("products", List.of());
+
+        // корректируем данные о страницах
+        model.addAttribute("totalPages", 2);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("elemsOfPage", pageSize);
+
+        return "logs";
     }
 
 

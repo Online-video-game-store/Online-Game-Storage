@@ -23,8 +23,8 @@
 }
 
 .sidebar {
-    width: 150px;
-    padding: 20px;
+    width: 180px;
+    padding: 10px;
     background: #2c3e50;
     color: white;
     display: flex;
@@ -64,18 +64,19 @@
 
 .filter {
     background: #5d8fbf;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-top: 15px;
 }
+
 .filter h3 {
     margin-bottom: 10px;
     font-size: 16px;
     color: #333;
 }
 .filter-input {
-    width: calc(100% - 10px);
+    width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #113455;
@@ -97,4 +98,20 @@
 }
 .filter-button:hover {
     background: #0056b3;
+}
+
+
+/* Общий стиль для всех инпутов фильтра */
+.filter input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    font-size: 13px;
+}
+
+/* Специально для datetime-local */
+.filter input[type="datetime-local"] {
+    font-size: 11px;
+    padding: 4px;
 }

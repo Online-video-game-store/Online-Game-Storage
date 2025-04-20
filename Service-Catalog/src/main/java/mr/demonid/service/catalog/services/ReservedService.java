@@ -60,7 +60,7 @@ public class ReservedService {
                 // резервируем товар
                 productEntity.setStock(productEntity.getStock() - item.getQuantity());
                 productRepository.save(productEntity);
-                reservedRepository.save(new ReservedProductEntity(null, orderId, productEntity.getId(), item.getQuantity()));
+                reservedRepository.save(new ReservedProductEntity(null, orderId, productEntity.getId(), item.getQuantity(), productEntity.getPrice()));
             }
         });
         if (!products.isEmpty()) {

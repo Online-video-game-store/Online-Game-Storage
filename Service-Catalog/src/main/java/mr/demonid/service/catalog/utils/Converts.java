@@ -70,6 +70,7 @@ public class Converts {
                 entity.getOrderId(),
                 entity.getName(),
                 entity.getQuantity(),
+                entity.getPrice(),
                 entity.getReservationStatus()
         );
     }
