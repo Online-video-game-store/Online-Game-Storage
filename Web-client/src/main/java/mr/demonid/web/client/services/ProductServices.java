@@ -2,8 +2,8 @@ package mr.demonid.web.client.services;
 
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
-import mr.demonid.web.client.dto.ProductFilter;
-import mr.demonid.web.client.dto.ProductLogResponse;
+import mr.demonid.web.client.dto.filters.ProductFilter;
+import mr.demonid.web.client.dto.logs.ProductLogResponse;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import org.springframework.data.domain.Pageable;

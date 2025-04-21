@@ -31,7 +31,7 @@ public class Order {
     private Long paymentId;
     private Long cardId;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -85,13 +85,13 @@ public class Order {
             return this;
         }
 
-        public Builder createAt(LocalDateTime createAt) {
-            order.createAt = createAt;
+        public Builder createdAt(LocalDateTime createAt) {
+            order.createdAt = createAt;
             return this;
         }
 
         public Builder createAtNow() {
-            order.createAt = LocalDateTime.now();
+            order.createdAt = LocalDateTime.now();
             return this;
         }
 
@@ -101,8 +101,8 @@ public class Order {
         }
 
         public Order build() {
-            if (order.createAt == null) {
-                order.createAt = LocalDateTime.now();
+            if (order.createdAt == null) {
+                order.createdAt = LocalDateTime.now();
             }
             return order;
         }

@@ -48,6 +48,7 @@
     /*height: 150px;*/
     object-fit: cover;
     object-position: center;
+    cursor: zoom-in;
 }
 .product-title {
     font-size: 1.1em;
@@ -147,3 +148,24 @@
 .product-image.hidden {
     display: none;
 }
+
+
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.zoom-icon {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    pointer-events: none; /* Чтобы клики шли сквозь лупу на изображение */
+}
+

@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
-import mr.demonid.web.client.dto.ProductFilter;
-import mr.demonid.web.client.dto.ProductLogResponse;
+import mr.demonid.web.client.dto.filters.ProductFilter;
+import mr.demonid.web.client.dto.logs.ProductLogResponse;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
 import mr.demonid.web.client.links.ProductServiceClient;
@@ -144,7 +144,7 @@ public class ProductServiceImpl implements ProductServices {
     @Override
     public List<ProductLogResponse> getOrderDetails(UUID orderId) {
         try {
-            return productServiceClient.getOrder(orderId);
+            return productServiceClient.getOrderDetails(orderId);
         } catch (FeignException e) {
             log.error("Ошибка микросервиса Catalog-Service: {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
         }

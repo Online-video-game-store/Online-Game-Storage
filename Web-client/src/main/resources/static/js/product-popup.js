@@ -10,17 +10,20 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentImageIndex = 0;
     let currentImages = [];
 
-    document.querySelectorAll('.product-item').forEach(item => {
-        item.addEventListener('click', function () {
+    // Вешаем обработчик только на блок с изображением
+    document.querySelectorAll('.product-item .product-image-container').forEach(imageContainer => {
+        imageContainer.addEventListener('click', function (event) {
+            event.stopPropagation(); // Не даём всплыть событию
+
+            const item = this.closest('.product-item');
+
             const productName = item.dataset.name;
             const productPrice = item.dataset.price;
             const productDesc = item.querySelector('.product-description').textContent;
             const category = document.querySelector('.category-button.active-category span')?.textContent || 'Без категории';
 
-            const container = this.querySelector('.product-image-container');
-            const images = container.querySelectorAll('img');
+            const images = this.querySelectorAll('img');
             currentImages = Array.from(images).map(img => img.getAttribute('src'));
-
             currentImageIndex = 0;
 
             modalTitle.textContent = productName;
@@ -46,10 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
         modalImage.src = currentImages[currentImageIndex];
     });
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target === modal) {
             modal.classList.remove("show");
         }
-    }
-
+    };
 });
+

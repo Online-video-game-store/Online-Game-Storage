@@ -4,7 +4,7 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.NewCardRequest;
-import mr.demonid.web.client.dto.PaymentMethod;
+import mr.demonid.web.client.dto.payment.PaymentMethod;
 import mr.demonid.web.client.dto.payment.CardResponse;
 import mr.demonid.web.client.dto.payment.CreateCardRequest;
 import mr.demonid.web.client.exceptions.CreateCardException;

@@ -6,12 +6,18 @@ import mr.demonid.service.order.domain.Order;
 import mr.demonid.service.order.domain.OrderStatus;
 import mr.demonid.service.order.dto.OrderCreateRequest;
 import mr.demonid.service.order.dto.OrderResponse;
+import mr.demonid.service.order.dto.filters.OrderFilter;
 import mr.demonid.service.order.events.OrderPublisher;
 import mr.demonid.service.order.exceptions.CreateOrderException;
 import mr.demonid.service.order.repository.OrderRepository;
+import mr.demonid.service.order.services.filters.OrderSpecifications;
 import mr.demonid.service.order.utils.Converts;
+import mr.demonid.store.commons.dto.PageDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -77,5 +83,13 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(UUID.fromString(orderId));
     }
+
+
+    @Override
+    public Page<OrderResponse> getAllOrders(OrderFilter filter, Pageable pageable) {
+        Page<Order> items = orderRepository.findAll(OrderSpecifications.filter(filter), pageable);
+        return items.map(Converts::orderToDto);
+    }
+
 
 }

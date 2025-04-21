@@ -1,4 +1,4 @@
-package mr.demonid.web.client.dto;
+package mr.demonid.web.client.dto.filters;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

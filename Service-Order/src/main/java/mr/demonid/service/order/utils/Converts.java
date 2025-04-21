@@ -26,7 +26,8 @@ public class Converts {
                 order.getUserId(),
                 order.getTotalAmount(),
                 order.getPaymentId(),
-                order.getCreateAt(),
+                order.getCardId(),
+                order.getCreatedAt(),
                 order.getStatus()
         );
     }
@@ -36,7 +37,8 @@ public class Converts {
                 .orderId(dto.getOrderId())
                 .userId(dto.getUserId())
                 .paymentId(dto.getPaymentId())
-                .createAt(dto.getCreateAt())
+                .cardId(dto.getCardId())
+                .createdAt(dto.getCreatedAt())
                 .totalAmount(dto.getTotalAmount())
                 .status(dto.getStatus())
                 .build();

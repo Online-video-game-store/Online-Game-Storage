@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.web.client.dto.ProductRequest;
 import mr.demonid.web.client.dto.ProductResponse;
+import mr.demonid.web.client.dto.logs.ProductLogResponse;
 import mr.demonid.web.client.services.ProductServices;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -53,7 +55,7 @@ public class AdminController {
 
 
     /**
-     * Получение полного описания продукта.
+     * Получение списка изображений продукта.
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
     @GetMapping("/{id}")
@@ -94,5 +96,14 @@ public class AdminController {
             @PathVariable String fileName) {
         return productServices.deleteImage(productId, fileName);
     }
+
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DEVELOPER')")
+    @GetMapping("/statistics/get-products-form-order/{orderId}")
+    public ResponseEntity<List<ProductLogResponse>> getProductsFormOrder(@PathVariable UUID orderId) {
+        System.out.println("getProductsFormOrder: " + orderId);
+        return ResponseEntity.ok(productServices.getOrderDetails(orderId));
+    }
+
 
 }

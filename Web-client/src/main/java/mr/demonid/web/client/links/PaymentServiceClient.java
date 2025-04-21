@@ -1,7 +1,7 @@
 package mr.demonid.web.client.links;
 
 import mr.demonid.web.client.configs.FeignClientConfig;
-import mr.demonid.web.client.dto.PaymentMethod;
+import mr.demonid.web.client.dto.payment.PaymentMethod;
 import mr.demonid.web.client.dto.payment.CardResponse;
 import mr.demonid.web.client.dto.payment.CreateCardRequest;
 import org.springframework.cloud.openfeign.FeignClient;

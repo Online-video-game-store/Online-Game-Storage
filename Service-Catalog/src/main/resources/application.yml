@@ -92,7 +92,7 @@ spring:
   # H2 database
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:magazin         # будем использовать БД в памяти.
+    url: jdbc:h2:file:./data/catalog;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
   # консоль для отладки
@@ -106,20 +106,22 @@ spring:
   # автозапуск schema.sql
   sql:
     init:
-      mode: always
-#      platform: mysql
+      mode: never                            # always - выполнит schema.sql и data.sql, если они есть
+      data-locations: classpath:data.sql
+      schema-locations: classpath:schema.sql
+
+
   # Spring Jpa Hibernate
   jpa:
+    hibernate:
+      ddl-auto: update
+#    show-sql: false
     properties:
       hibernate:
-        hbm2ddl:
-          auto: none
         show_sql: false
         format_sql: false
 
-    generate-ddl: false
-#    defer-datasource-initialization: true
-#    open-in-view: false
+
 
 # настройки Эврики
 eureka:

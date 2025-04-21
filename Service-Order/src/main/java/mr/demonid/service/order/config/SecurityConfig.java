@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/pk8000/api/order/**").permitAll()
+//                        .requestMatchers("/pk8000/api/order/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.

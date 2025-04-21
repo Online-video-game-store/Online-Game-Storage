@@ -1,4 +1,4 @@
-package mr.demonid.web.client.dto.payment;
+package mr.demonid.web.client.dto.orders;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,14 +3,18 @@ package mr.demonid.web.client.services;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.web.client.dto.CartItem;
 import mr.demonid.web.client.dto.CartItemResponse;
-import mr.demonid.web.client.dto.PaymentRequest;
-import mr.demonid.web.client.dto.payment.OrderCreateRequest;
+import mr.demonid.web.client.dto.filters.OrderFilter;
+import mr.demonid.web.client.dto.orders.OrderResponse;
+import mr.demonid.web.client.dto.payment.PaymentRequest;
+import mr.demonid.web.client.dto.orders.OrderCreateRequest;
 import mr.demonid.web.client.exceptions.CreateOrderException;
 import mr.demonid.web.client.links.OrderServiceClient;
 import mr.demonid.web.client.utils.FeignErrorUtils;
 import mr.demonid.web.client.utils.IdnUtil;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +61,16 @@ public class OrderService {
             return orderServiceClient.createOrder(order);
         } catch (FeignException e) {
             return FeignErrorUtils.toResponse(e, "Ошибка микросервиса Order-Service");
+        }
+    }
+
+
+    public PageDTO<OrderResponse> getAllOrders(OrderFilter filter, Pageable page) {
+        try {
+            return orderServiceClient.getOrders(filter, page).getBody();
+        } catch (FeignException e) {
+            log.error("Feign exception: {}",e.contentUTF8().isBlank() ? e.getMessage() : e.contentUTF8());
+            return PageDTO.empty();
         }
     }
 

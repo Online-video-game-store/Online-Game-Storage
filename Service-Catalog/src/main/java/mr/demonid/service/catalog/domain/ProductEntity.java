@@ -32,7 +32,7 @@ public class ProductEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private ProductCategoryEntity category;
 
-    @Column
+    @Column(length = 2048)
     private String description;
 
     @ElementCollection

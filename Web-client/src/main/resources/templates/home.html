@@ -28,11 +28,10 @@
             <a th:href="@{/pk8000/catalog/index/setup}" class="login-button">Управление</a>
         </div>
         <div th:if="${isAdmin}">
-            <a th:href="@{/pk8000/catalog/index/logs}" class="login-button">Статистика</a>
+            <a th:href="@{/pk8000/catalog/index/statistics}" class="login-button">Статистика</a>
         </div>
         <div th:if="${isAuthenticated}">
             <a th:href="@{/logout}" class="logout-button">Выход</a>
-<!--            <span th:text="'Привет, ' + ${username} + '!'">Привет, Гость!</span>-->
         </div>
         <div th:if="${!isAuthenticated}">
             <a th:href="@{/oauth2/authorization/online-store-client-id}" class="login-button">Вход</a>
@@ -73,20 +72,18 @@
     <!-- Контент товаров -->
     <main class="content">
         <div class="product-grid">
-            <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}"
-            >
+            <div th:each="product : ${products}" class="product-item" th:data-name="${product.name}" th:data-price="${product.price}">
                 <div class="product-title" th:text="${product.name}">Product Name</div>
-
                 <div class="product-image-container">
-                    <img th:each="imgUrl, iterStat : ${product.imageUrls}"
-                         th:src="@{${imgUrl}}"
-                         class="product-image"
-                         th:classappend="${iterStat.index != 0} ? ' hidden' : ''"
-                         alt="Product image" />
+                    <div class="image-wrapper">
+                        <img th:each="imgUrl, iterStat : ${product.imageUrls}"
+                             th:src="@{${imgUrl}}"
+                             class="product-image"
+                             th:classappend="${iterStat.index != 0} ? ' hidden' : ''"
+                             alt="Product image" />
+<!--                        <div class="zoom-icon">&#128269;</div> &lt;!&ndash; Unicode иконка лупы &ndash;&gt;-->
+                    </div>
                 </div>
-<!--                <img th:src="${product.imageUrls != null and !product.imageUrls.isEmpty()} ? @{${product.imageUrls[0]}} : @{/images/no-image.png}"-->
-<!--                     class="product-image"-->
-<!--                     alt="Product image" />-->
                 <div class="product-description" th:text="${product.description}">Product description...</div>
                 <div class="product-price" th:text="'$' + ${product.price}">Price</div>
                 <form>
@@ -176,18 +173,12 @@
             <button id="prev-image" class="nav-button">&#10094;</button>
             <button id="next-image" class="nav-button">&#10095;</button>
         </div>
-
-<!--        <div class="modal-image-wrapper">-->
-<!--            <button id="prev-image" class="nav-button">&#10094;</button>-->
-<!--            <img id="modal-image" class="modal-image" src="" alt="Product Image" />-->
-<!--            <button id="next-image" class="nav-button">&#10095;</button>-->
-<!--        </div>-->
         <div class="modal-info">
             <h2 id="modal-title">Название</h2>
             <p class="price" id="modal-price">Цена</p>
             <p class="category" id="modal-category">Категория</p>
             <p id="modal-description">Описание товара</p>
-            <button class="add-to-cart">В корзину</button>
+<!--            <button class="add-to-cart">В корзину</button>-->
         </div>
     </div>
 </div>

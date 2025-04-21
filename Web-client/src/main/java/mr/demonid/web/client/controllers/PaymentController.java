@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mr.demonid.web.client.dto.*;
 import mr.demonid.web.client.dto.payment.CardResponse;
-import mr.demonid.web.client.exceptions.CreateOrderException;
+import mr.demonid.web.client.dto.payment.PaymentMethod;
+import mr.demonid.web.client.dto.payment.PaymentRequest;
 import mr.demonid.web.client.services.OrderService;
 import mr.demonid.web.client.services.PaymentService;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
