@@ -23,27 +23,27 @@ public class ApiController {
 
     private CartServices cartServices;
 
-    @GetMapping("/get-user")
-    public ResponseEntity<String> getUser() {
-        Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl("http://localhost:8080")
-                .realm("master")
-                .clientId("admin-cli")
-                .username("admin")
-                .password("admin")
-                .grantType(OAuth2Constants.PASSWORD)
-                .build();
-
-        UserRepresentation user = keycloak
-                .realm("online-store-realm")
-                .users()
-                .get("9ff2e04e-692e-4a44-95c5-a47cebe5443b")
-                .toRepresentation();
-
-        System.out.println("Username: " + user.getUsername());
-        return ResponseEntity.ok(user.getUsername());
-    }
-
+//    @GetMapping("/get-user")
+//    public ResponseEntity<String> getUser() {
+//        Keycloak keycloak = KeycloakBuilder.builder()
+//                .serverUrl("http://localhost:8080")
+//                .realm("master")
+//                .clientId("admin-cli")
+//                .username("admin")
+//                .password("admin")
+//                .grantType(OAuth2Constants.PASSWORD)
+//                .build();
+//
+//        UserRepresentation user = keycloak
+//                .realm("online-store-realm")
+//                .users()
+//                .get("9ff2e04e-692e-4a44-95c5-a47cebe5443b")
+//                .toRepresentation();
+//
+//        System.out.println("Username: " + user.getUsername());
+//        return ResponseEntity.ok(user.getUsername());
+//    }
+//
     /**
      * Проверка аутентификации пользователя.
      */

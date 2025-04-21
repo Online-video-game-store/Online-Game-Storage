@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mr.demonid.store.commons.dto.PageDTO;
 import mr.demonid.store.commons.dto.CategoryResponse;
-import mr.demonid.web.client.dto.filters.OrderFilter;
 import mr.demonid.web.client.dto.filters.ProductFilter;
 import mr.demonid.web.client.dto.ProductResponse;
-import mr.demonid.web.client.dto.logs.OrderStatistic;
-import mr.demonid.web.client.dto.orders.OrderResponse;
 import mr.demonid.web.client.services.CartServices;
 import mr.demonid.web.client.services.OrderService;
+import mr.demonid.web.client.services.PaymentService;
 import mr.demonid.web.client.services.ProductServices;
 import mr.demonid.web.client.utils.IdnUtil;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +32,6 @@ public class WebController {
 
     private ProductServices productServices;
     private CartServices cartServices;
-    private OrderService orderService;
 
 
     @GetMapping("/index")
@@ -96,47 +92,6 @@ public class WebController {
         setPageModel(model, page, pageSize, productName, minPrice, maxPrice);
 
         return "manager";
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEVELOPER')")
-    @GetMapping("/index/statistics")
-    public String statistics(
-            @RequestParam(name = "elemsOfPage", defaultValue = "32") int pageSize,
-            @RequestParam(name = "pageNo", defaultValue = "0") int currentPage,
-            @RequestParam(name = "categoryId", defaultValue = "0") Long categoryId,
-            @RequestParam(name = "productName", defaultValue = "") String productName,
-            @RequestParam(required = false) LocalDateTime from,
-            @RequestParam(required = false) LocalDateTime to,
-            Model model) {
-
-        productName = normalizeProductName(productName);
-
-        System.out.println("Statistics:");
-        System.out.println("from: " + from + ", to: " + to);
-
-        model.addAttribute("username", IdnUtil.isAuthenticated() ? IdnUtil.getUserName() : "Хьюстон");
-        model.addAttribute("from", from);
-        model.addAttribute("to", to);
-        model.addAttribute("productName", productName);
-
-        setCategories(model, categoryId);
-        // Создаем выборку очередной страницы и корректируем данные о страницах
-//        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("createdAt").ascending());
-        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by("createdAt").descending());
-        PageDTO<OrderResponse> page = orderService.getAllOrders(new OrderFilter(from, to), pageable);
-        System.out.println("page = " + page);
-
-
-        List<OrderStatistic> items = page.getContent().stream().map(e -> new OrderStatistic(e.getOrderId(), e.getUserId(), "ФИО", e.getPaymentId().toString(), e.getTotalAmount(), e.getCreatedAt(), e.getStatus())).toList();
-        System.out.println("items = " + items);
-        model.addAttribute("orderStatistics", items);
-
-        // корректируем данные о страницах
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("elemsOfPage", pageSize);
-
-        return "statistics";
     }
 
 

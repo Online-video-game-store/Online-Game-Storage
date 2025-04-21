@@ -86,6 +86,11 @@
             <artifactId>keycloak-admin-client</artifactId>
             <version>26.0.0</version>
         </dependency>
+        <!-- кэширование-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>mr.demonid.store.commons</groupId>
