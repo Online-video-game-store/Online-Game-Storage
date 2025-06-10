@@ -54,3 +54,30 @@ docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
 Админка соответственно: http://localhost:15672
 
 Пароль и логин: `guest`
+
+
+## MySql
+Чтобы не плодить новых контейнеров с БД, решил использовать ту, что уже стоит
+в связке с Keycloak. Можно конечно заново пересоздать контейнер, заложив в него
+создание всех нужных БД, но если не хочется терять данных Keycloak, то можно
+сделать это ручками в контейнере.
+
+```shell
+mysql -uroot -padmin
+CREATE DATABASE IF NOT EXISTS payment_db;
+GRANT ALL PRIVILEGES ON payment_db.* TO 'admin'@'%';
+FLUSH PRIVILEGES;
+```
+И так для всех БД (для каждого микросервиса).
+
+Или создать init.sql и запустить его:
+```shell
+
+mysql -uroot -padmin < init.sql
+```
+
+TODO: подправить docker-compose.yml, внедрив init.sql с созданием всех БД.
+
+
+docker run --rm -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin -v D:/Users/Andrey/AppData/IdeaProjects/Online-Game-Storage/exports:/opt/keycloak/data/export quay.io/keycloak/keycloak:latest export --dir=/opt/keycloak/data/export --realm=online-store-realm --users=realm_file
+docker-compose up -d

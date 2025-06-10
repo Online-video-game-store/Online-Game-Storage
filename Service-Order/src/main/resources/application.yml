@@ -74,16 +74,12 @@ spring:
     password: guest
 
 
-
-  # H2 database
+  # SQL database
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./data/order
-    username: sa
-    password:
-  hikari:
-    connection-init-sql: SET MODE MYSQL
-
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/orders_db
+    username: admin
+    password: admin
   # Spring Jpa Hibernate
   jpa:
     properties:
@@ -101,10 +97,9 @@ spring:
   sql:
     init:
       mode: never           # не нужен
-  # консоль для отладки
-  h2:
-    console:
-      enabled: false
+  #      mode: always
+  #      schema-locations: classpath:schema.sql
+
 
 # настройки Эврики
 eureka:
