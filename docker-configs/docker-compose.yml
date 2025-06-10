@@ -25,12 +25,15 @@ services:
       - .env.keycloak
     ports:
       - "8080:8080/tcp"
-    command: start-dev --http-port=8080
+    command: start-dev --http-port=8080 --features=scripts
     restart: unless-stopped
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
       - mysql
     networks:
       - keycloak-network
+    profiles: ["manual"]
 
   rabbitmq:
     image: rabbitmq:management
