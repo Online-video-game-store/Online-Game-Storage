@@ -79,7 +79,7 @@ b) На вкладке `Roles` создаем роли: ADMIN, USER, DEVELOPER.
 
 c) На вкладке `Client scopes`:
 - В списке `scopes` переходим на `online-store-client-id-dedicated`.
-- Переходим на вкладку Scope и задаем флаг `Full scope allowed` в положение `Off`.
+- Переходим на вкладку `Scope` и задаем флаг `Full scope allowed` в положение `Off`.
 
 Это приведет к тому, что в токен будут попадать только те роли, что присвоены конкретному пользователю.
 
@@ -129,5 +129,13 @@ Token Claim Name = roles
 `Clients` -> `online-store-client-id` -> `Client scopes` -> `Add client scope`. выбираем скоп, созданный выше и добавляем с `Assigned type = Default`.
 
 Теперь в токене `scopes` будут прописаны в зависимости от роли пользователя. 
+
+### 7) Добавляем локализацию.
+`Realm settings` -> `Localization`:
+```text
+Internationalization = On
+Supported locales = Russian; English
+Default locale = Russian
+```
 
 Такая настройка позволяет манипулировать как ролями, так и отдельными разрешениями. Например, можно понизить какие-то права конкретному пользователю, не меняя его роли. Разумеется программа тоже должна уметь это делать.

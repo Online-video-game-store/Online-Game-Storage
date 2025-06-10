@@ -1,4 +1,37 @@
-## Keycloak
+## Создание контейнера с Keycloak, MySql и RabbitMQ.
+
+В папке docker-configs запускаем docker-compose.yml:
+```shell
+docker-compose up -d
+```
+Дождавшись полной инициализации MySql (5-10 минут при первом запуске),
+увидим что-то вроде:
+```shell
+2025-06-10 14:35:35 2025-06-10 11:35:35+00:00 [Note] [Entrypoint]: Stopping temporary server
+2025-06-10 14:35:58 2025-06-10 11:35:58+00:00 [Note] [Entrypoint]: Temporary server stopped
+2025-06-10 14:35:58
+2025-06-10 14:35:58 2025-06-10 11:35:58+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.
+2025-06-10 14:35:58
+```
+Далее запускаем Keycloak:
+```shell
+docker-compose --profile manual up -d keycloak
+```
+
+### Альтернатива.
+Можно разделить docker-compose.yml на два файла:
+```shell
+docker-compose.base.yml — без Keycloak
+docker-compose.keycloak.yml — только Keycloak
+```
+И так же последовательно запускать их:
+```shell
+docker-compose -f docker-compose.base.yml up -d    # только mysql и rabbitmq
+docker-compose -f docker-compose.keycloak.yml up -d  # потом — keycloak
+```
+
+
+## Настройка на Keycloak.
 
 Установка и настройка: [Keycloak.md](Keycloak.md)
 
