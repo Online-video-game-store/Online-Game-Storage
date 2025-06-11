@@ -153,5 +153,14 @@ insert into product_images (product_id, image_file) values
     (27, 'higway-title-2.png'),
     (27, 'higway-2.png'),
     (27, 'higway-3.png')
-
 ;
+
+
+USE payment_db;
+
+INSERT INTO payment_method (name, supports_cards) VALUES
+    ('Visa/MasterCard', true),
+    ('Мир', true),
+    ('PayPal', false),
+    ('SberPay', false),
+    ('Быстрый платеж', false);

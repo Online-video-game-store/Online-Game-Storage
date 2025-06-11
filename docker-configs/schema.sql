@@ -29,3 +29,12 @@ CREATE TABLE IF NOT EXISTS blocked_products (
     quantity INT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+USE payment_db;
+
+CREATE TABLE payment_method (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    supports_cards BOOLEAN NOT NULL
+);

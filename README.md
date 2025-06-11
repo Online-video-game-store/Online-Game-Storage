@@ -30,6 +30,30 @@ docker-compose -f docker-compose.base.yml up -d    # только mysql и rabbi
 docker-compose -f docker-compose.keycloak.yml up -d  # потом — keycloak
 ```
 
+## Создание слепка настроек Keycloak.
+В контейнере:
+````shell
+/opt/keycloak/bin/kc.sh export --dir=/opt/keycloak/data/export --realm=online-store-realm --users realm_file
+````
+Копируем файл из контейнера в текущую папку:
+```shell
+docker cp keycloak-ogs:/opt/keycloak/data/export/online-store-realm-realm.json ./online-store-realm-realm.json
+```
+
+## Импорт настроек в Keycloak.
+Создаем папку под импорт в контейнере:
+```shell
+mkdir /opt/keycloak/data/import
+```
+Копируем туда файл с настройками (из текущей директории, прямо в IDEA):
+```shell
+docker cp ./online-store-realm-realm.json keycloak-ogs:/opt/keycloak/data/import/online-store-realm-realm.json
+```
+И в контейнере запускаем полный импорт:
+```shell
+/opt/keycloak/bin/kc.sh import --dir=/opt/keycloak/data/import --override true --features=scripts
+```
+
 
 ## Настройка на Keycloak.
 

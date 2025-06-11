@@ -122,7 +122,7 @@ Token Claim Name = roles
 
 Переходим на вкладку `Scope` -> `Assign role` и добавляем роли, к которым будет привязано данное право (scope).
 
-Например: read - роли ADMIN, USER, DEVELOPER. write - роли ADMIN, DEVELOPER.
+Например: read/write - роли ADMIN, USER, DEVELOPER. delete/update/rename - роли ADMIN, DEVELOPER.
 
 Далее, разрешаем эти скопы у нашего клиента:
 
