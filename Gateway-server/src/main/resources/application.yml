@@ -22,7 +22,7 @@ spring:
           online-store-client-id:
             provider: keycloak
             client-id: online-store-client-id
-            client-secret: ${CLIENT_SECRET:oB4Wpq1rP190Y0Bs9nGQGoloTkv0GXlm}
+            client-secret: ${CLIENT_SECRET:SPAk8C8b4sD0TtoAYGRy28rouzh9BFHH}
             authorization-grant-type: authorization_code
             scope: openid
 
