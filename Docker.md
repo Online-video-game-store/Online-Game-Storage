@@ -1,11 +1,10 @@
 ## Создание контейнера с Keycloak, MySql и RabbitMQ.
 
-В папке `docker-configs` создаем контейнеры из `docker-compose.yml`:
+В папке `/tools/ogs-docker-container` создаем контейнеры из `docker-compose.yml`:
 ```shell
 docker-compose up -d
 ```
-Дождавшись полной инициализации `MySql` (1-10 минут при первом запуске),
-увидим что-то вроде:
+Дождавшись полной инициализации `MySql`, увидим что-то вроде:
 ```shell
 2025-06-10 14:35:35 2025-06-10 11:35:35+00:00 [Note] [Entrypoint]: Stopping temporary server
 2025-06-10 14:35:58 2025-06-10 11:35:58+00:00 [Note] [Entrypoint]: Temporary server stopped

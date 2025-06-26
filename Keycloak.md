@@ -8,46 +8,48 @@
 
 ```dockerfile
 version: '3'
+
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql-ogs
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - .env.mysql
     ports:
       - "3306:3306"
     restart: unless-stopped
     volumes:
       - keycloak-and-mysql-volume:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: keycloak_db
+      - ./init.sql:/docker-entrypoint-initdb.d/00-init.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/02-data.sql
     networks:
       - keycloak-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.0.8
+    container_name: keycloak-ogs
+    env_file:
+      - .env.keycloak
     ports:
       - "8080:8080/tcp"
-    command: start-dev --http-port=8080
+    command: start-dev --http-port=8080 --features=scripts
     restart: unless-stopped
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      DB_VENDOR: mysql
-      DB_ADDR: jdbc:mysql://mysql:3306/keycloak_db
-      DB_USER: admin
-      DB_PASSWORD: admin
     depends_on:
-      mysql:
-        condition: "service_started"
+      - mysql
     networks:
       - keycloak-network
+    profiles: ["manual"]
 
 networks:
   keycloak-network:
     driver: bridge
+
+volumes:
+  keycloak-and-mysql-volume:
 ```
+
 Собираем и запускаем контейнер:
 ```shell
 docker-compose up -d
